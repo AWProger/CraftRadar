@@ -1,0 +1,59 @@
+<?php
+/**
+ * CraftRadar — Шапка сайта
+ */
+
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/auth.php';
+
+$pageTitle = isset($pageTitle) ? $pageTitle . ' — ' . SITE_NAME : SITE_NAME;
+?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= e($pageTitle) ?></title>
+    <meta name="description" content="<?= e($pageDescription ?? 'Мониторинг серверов Minecraft — рейтинг, статистика, голосование') ?>">
+    <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="<?= SITE_URL ?>/" class="logo">
+                    <span class="logo-icon">📡</span>
+                    <span class="logo-text"><?= SITE_NAME ?></span>
+                </a>
+
+                <nav class="nav">
+                    <a href="<?= SITE_URL ?>/" class="nav-link">Главная</a>
+                    <a href="<?= SITE_URL ?>/servers.php" class="nav-link">Серверы</a>
+                </nav>
+
+                <div class="header-actions">
+                    <?php if (isLoggedIn()): ?>
+                        <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-sm btn-outline">Кабинет</a>
+                        <?php if (isModerator()): ?>
+                            <a href="<?= SITE_URL ?>/admin/" class="btn btn-sm btn-outline">Админка</a>
+                        <?php endif; ?>
+                        <span class="header-user"><?= e($_SESSION['username'] ?? '') ?></span>
+                        <a href="<?= SITE_URL ?>/logout.php" class="btn btn-sm btn-ghost">Выйти</a>
+                    <?php else: ?>
+                        <a href="<?= SITE_URL ?>/login.php" class="btn btn-sm btn-outline">Войти</a>
+                        <a href="<?= SITE_URL ?>/register.php" class="btn btn-sm btn-primary">Регистрация</a>
+                    <?php endif; ?>
+                </div>
+
+                <button class="burger" id="burger" aria-label="Меню">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <?= showFlash() ?>
