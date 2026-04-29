@@ -1,0 +1,39 @@
+# === Зависимости ===
+/vendor/
+/node_modules/
+
+# === Временные файлы и кэш ===
+/storage/
+/cache/
+*.log
+*.tmp
+*.swp
+*.bak
+*~
+
+# === Загрузки пользователей ===
+/assets/img/icons/*.png
+/assets/img/banners/*
+!/assets/img/icons/.gitkeep
+!/assets/img/banners/.gitkeep
+
+# === Секреты и конфиги окружения ===
+.env
+config.local.php
+
+# === IDE ===
+.idea/
+.vscode/
+*.sublime-*
+.DS_Store
+Thumbs.db
+
+# === OS ===
+desktop.ini
+.Spotlight-V100
+.Trashes
+
+# === PHPUnit ===
+.phpunit.result.cache
+.phpunit.cache/
+/coverage/
