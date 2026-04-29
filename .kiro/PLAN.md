@@ -19,13 +19,13 @@
 - [x] 1.12 `assets/js/app.js` — базовый JS (копирование IP, уведомления, AJAX)
 
 ## Этап 2 — Серверы
-- [ ] 2.1 `includes/minecraft_ping.php` — класс Minecraft Server List Ping
-- [ ] 2.2 `dashboard/add.php` — форма добавления сервера + валидация
-- [ ] 2.3 `dashboard/index.php` — личный кабинет (список моих серверов)
-- [ ] 2.4 `cron/ping_servers.php` — cron-скрипт пинга серверов
-- [ ] 2.5 `server.php` — страница сервера (описание, статус, график)
-- [ ] 2.6 `servers.php` — каталог серверов с пагинацией
-- [ ] 2.7 `index.php` — главная страница (топы, статистика)
+- [x] 2.1 `includes/minecraft_ping.php` — класс Minecraft Server List Ping
+- [x] 2.2 `dashboard/add.php` — форма добавления сервера + валидация
+- [x] 2.3 `dashboard/index.php` — личный кабинет (список моих серверов)
+- [x] 2.4 `cron/ping_servers.php` — cron-скрипт пинга серверов
+- [x] 2.5 `server.php` — страница сервера (описание, статус, график)
+- [x] 2.6 `servers.php` — каталог серверов с пагинацией
+- [x] 2.7 `index.php` — главная страница (топы, статистика)
 
 ## Этап 3 — Рейтинг и взаимодействие
 - [ ] 3.1 `vote.php` — система голосования (AJAX)
