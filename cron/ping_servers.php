@@ -6,6 +6,7 @@
 
 // Запуск только из CLI
 if (php_sapi_name() !== 'cli') {
+    http_response_code(403);
     die('CLI only');
 }
 
@@ -13,6 +14,32 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/minecraft_ping.php';
+
+// Защита от двойного запуска
+$lockFile = ROOT_PATH . 'storage/cron_ping.lock';
+$lockDir = dirname($lockFile);
+if (!is_dir($lockDir)) mkdir($lockDir, 0755, true);
+
+if (file_exists($lockFile)) {
+    $lockTime = (int)file_get_contents($lockFile);
+    if (time() - $lockTime < 600) { // 10 минут
+        cronLog("SKIP: предыдущий запуск ещё не завершён (lock: " . date('H:i:s', $lockTime) . ")");
+        exit(0);
+    }
+}
+file_put_contents($lockFile, time());
+register_shutdown_function(function() use ($lockFile) { @unlink($lockFile); });
+
+// Логирование в файл
+function cronLog(string $message): void
+{
+    $logDir = ROOT_PATH . 'storage/logs/';
+    if (!is_dir($logDir)) mkdir($logDir, 0755, true);
+    $logFile = $logDir . 'cron_ping_' . date('Y-m-d') . '.log';
+    $line = '[' . date('Y-m-d H:i:s') . '] ' . $message . "\n";
+    file_put_contents($logFile, $line, FILE_APPEND);
+    echo $line;
+}
 
 $db = getDB();
 
@@ -23,7 +50,7 @@ $total = count($servers);
 $online = 0;
 $offline = 0;
 
-echo "[" . date('Y-m-d H:i:s') . "] Пинг серверов: {$total} шт.\n";
+cronLog("Пинг серверов: {$total} шт.");
 
 foreach ($servers as $server) {
     $result = pingMinecraftServer($server['ip'], $server['port'], PING_TIMEOUT);
@@ -65,7 +92,7 @@ foreach ($servers as $server) {
         ');
         $stmt->execute([$server['id'], $result['players'], $result['ping_ms'], now()]);
 
-        echo "  ✓ #{$server['id']} {$server['ip']}:{$server['port']} — {$result['players']}/{$result['max_players']} ({$result['ping_ms']}ms)\n";
+        cronLog("  ✓ #{$server['id']} {$server['ip']}:{$server['port']} — {$result['players']}/{$result['max_players']} ({$result['ping_ms']}ms)");
 
     } else {
         $offline++;
@@ -90,11 +117,11 @@ foreach ($servers as $server) {
         ');
         $stmt->execute([$server['id'], now()]);
 
-        echo "  ✗ #{$server['id']} {$server['ip']}:{$server['port']} — OFFLINE (fails: {$fails})\n";
+        cronLog("  ✗ #{$server['id']} {$server['ip']}:{$server['port']} — OFFLINE (fails: {$fails})");
     }
 }
 
-echo "[" . date('Y-m-d H:i:s') . "] Готово. Онлайн: {$online}, Оффлайн: {$offline}\n";
+cronLog("Готово. Онлайн: {$online}, Оффлайн: {$offline}");
 
 /**
  * Сохранение иконки сервера (для cron)
