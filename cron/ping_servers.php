@@ -1,19 +1,26 @@
 <?php
 /**
  * CraftRadar — Cron: Пинг всех активных серверов
- * Запуск: */10 * * * * php /path/to/CraftRadar/cron/ping_servers.php
+ * 
+ * Расписание: каждые 10 минут
+ * Хостинг:    wget -qO- "https://yourdomain.com/cron/ping_servers.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
+ * CLI:        php /path/to/CraftRadar/cron/ping_servers.php
  */
-
-// Запуск только из CLI
-if (php_sapi_name() !== 'cli') {
-    http_response_code(403);
-    die('CLI only');
-}
 
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/minecraft_ping.php';
+
+// Авторизация: CLI пропускаем, HTTP — проверяем ключ
+if (php_sapi_name() !== 'cli') {
+    if (!isset($_GET['key']) || $_GET['key'] !== CRON_SECRET_KEY) {
+        http_response_code(403);
+        die('Access denied');
+    }
+    // Отключаем вывод для HTTP — отдаём 200 OK сразу
+    header('Content-Type: text/plain; charset=utf-8');
+}
 
 // Защита от двойного запуска
 $lockFile = ROOT_PATH . 'storage/cron_ping.lock';
@@ -22,7 +29,7 @@ if (!is_dir($lockDir)) mkdir($lockDir, 0755, true);
 
 if (file_exists($lockFile)) {
     $lockTime = (int)file_get_contents($lockFile);
-    if (time() - $lockTime < 600) { // 10 минут
+    if (time() - $lockTime < 600) {
         cronLog("SKIP: предыдущий запуск ещё не завершён (lock: " . date('H:i:s', $lockTime) . ")");
         exit(0);
     }
@@ -30,7 +37,7 @@ if (file_exists($lockFile)) {
 file_put_contents($lockFile, time());
 register_shutdown_function(function() use ($lockFile) { @unlink($lockFile); });
 
-// Логирование в файл
+// Логирование
 function cronLog(string $message): void
 {
     $logDir = ROOT_PATH . 'storage/logs/';
@@ -58,26 +65,18 @@ foreach ($servers as $server) {
     if ($result) {
         $online++;
 
-        // Обновляем данные сервера
         $stmt = $db->prepare('
             UPDATE servers SET 
-                is_online = 1,
-                players_online = ?,
-                players_max = ?,
-                motd = ?,
-                last_ping = ?,
-                consecutive_fails = 0
+                is_online = 1, players_online = ?, players_max = ?,
+                motd = ?, last_ping = ?, consecutive_fails = 0
             WHERE id = ?
         ');
         $stmt->execute([
-            $result['players'],
-            $result['max_players'],
-            mb_substr($result['motd'], 0, 255),
-            now(),
-            $server['id']
+            $result['players'], $result['max_players'],
+            mb_substr($result['motd'], 0, 255), now(), $server['id']
         ]);
 
-        // Сохраняем иконку если обновилась
+        // Иконка
         if (!empty($result['favicon'])) {
             $iconPath = saveServerIconCron($result['favicon'], $server['id']);
             if ($iconPath) {
@@ -85,12 +84,9 @@ foreach ($servers as $server) {
             }
         }
 
-        // Записываем статистику
-        $stmt = $db->prepare('
-            INSERT INTO server_stats (server_id, players_online, is_online, ping_ms, recorded_at)
-            VALUES (?, ?, 1, ?, ?)
-        ');
-        $stmt->execute([$server['id'], $result['players'], $result['ping_ms'], now()]);
+        // Статистика
+        $db->prepare('INSERT INTO server_stats (server_id, players_online, is_online, ping_ms, recorded_at) VALUES (?, ?, 1, ?, ?)')
+            ->execute([$server['id'], $result['players'], $result['ping_ms'], now()]);
 
         cronLog("  ✓ #{$server['id']} {$server['ip']}:{$server['port']} — {$result['players']}/{$result['max_players']} ({$result['ping_ms']}ms)");
 
@@ -98,24 +94,15 @@ foreach ($servers as $server) {
         $offline++;
         $fails = $server['consecutive_fails'] + 1;
 
-        // Обновляем сервер
         $updateFields = 'consecutive_fails = ?';
         $updateParams = [$fails];
-
         if ($fails >= MAX_CONSECUTIVE_FAILS) {
             $updateFields .= ', is_online = 0, players_online = 0';
         }
 
-        $stmt = $db->prepare("UPDATE servers SET {$updateFields} WHERE id = ?");
-        $updateParams[] = $server['id'];
-        $stmt->execute($updateParams);
-
-        // Записываем статистику (оффлайн)
-        $stmt = $db->prepare('
-            INSERT INTO server_stats (server_id, players_online, is_online, ping_ms, recorded_at)
-            VALUES (?, 0, 0, NULL, ?)
-        ');
-        $stmt->execute([$server['id'], now()]);
+        $db->prepare("UPDATE servers SET {$updateFields} WHERE id = ?")->execute(array_merge($updateParams, [$server['id']]));
+        $db->prepare('INSERT INTO server_stats (server_id, players_online, is_online, ping_ms, recorded_at) VALUES (?, 0, 0, NULL, ?)')
+            ->execute([$server['id'], now()]);
 
         cronLog("  ✗ #{$server['id']} {$server['ip']}:{$server['port']} — OFFLINE (fails: {$fails})");
     }
@@ -124,28 +111,20 @@ foreach ($servers as $server) {
 cronLog("Готово. Онлайн: {$online}, Оффлайн: {$offline}");
 
 /**
- * Сохранение иконки сервера (для cron)
+ * Сохранение иконки сервера
  */
 function saveServerIconCron(string $favicon, int $serverId): ?string
 {
-    if (!preg_match('/^data:image\/png;base64,(.+)$/', $favicon, $matches)) {
-        return null;
-    }
-
+    if (!preg_match('/^data:image\/png;base64,(.+)$/', $favicon, $matches)) return null;
     $imageData = base64_decode($matches[1]);
     if (!$imageData) return null;
 
     $dir = ROOT_PATH . 'assets/img/icons/';
-    if (!is_dir($dir)) {
-        mkdir($dir, 0755, true);
-    }
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
 
     $filename = 'server_' . $serverId . '.png';
-    $path = $dir . $filename;
-
-    if (file_put_contents($path, $imageData)) {
+    if (file_put_contents($dir . $filename, $imageData)) {
         return 'assets/img/icons/' . $filename;
     }
-
     return null;
 }

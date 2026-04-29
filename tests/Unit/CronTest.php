@@ -41,7 +41,7 @@ class CronTest extends TestCase
     {
         $content = file_get_contents(ROOT_PATH . 'cron/ping_servers.php');
         $this->assertStringContainsString('php_sapi_name', $content);
-        $this->assertStringContainsString('cli', $content);
+        $this->assertStringContainsString('CRON_SECRET_KEY', $content);
     }
 
     public function testPingHasLockFile(): void
@@ -94,6 +94,7 @@ class CronTest extends TestCase
     {
         $content = file_get_contents(ROOT_PATH . 'cron/reset_monthly.php');
         $this->assertStringContainsString('php_sapi_name', $content);
+        $this->assertStringContainsString('CRON_SECRET_KEY', $content);
     }
 
     public function testResetHasLogging(): void
@@ -116,6 +117,7 @@ class CronTest extends TestCase
     {
         $content = file_get_contents(ROOT_PATH . 'cron/cleanup_stats.php');
         $this->assertStringContainsString('php_sapi_name', $content);
+        $this->assertStringContainsString('CRON_SECRET_KEY', $content);
     }
 
     public function testCleanupHasLogging(): void
@@ -167,5 +169,38 @@ class CronTest extends TestCase
     {
         $content = file_get_contents(ROOT_PATH . 'cron/README.md');
         $this->assertStringContainsString('Ручной запуск', $content);
+    }
+
+    // ==========================================
+    // Авторизация по ключу
+    // ==========================================
+
+    public function testPingHasSecretKeyAuth(): void
+    {
+        $content = file_get_contents(ROOT_PATH . 'cron/ping_servers.php');
+        $this->assertStringContainsString("_GET['key']", $content);
+        $this->assertStringContainsString('403', $content);
+        $this->assertStringContainsString('Access denied', $content);
+    }
+
+    public function testResetHasSecretKeyAuth(): void
+    {
+        $content = file_get_contents(ROOT_PATH . 'cron/reset_monthly.php');
+        $this->assertStringContainsString("_GET['key']", $content);
+        $this->assertStringContainsString('403', $content);
+    }
+
+    public function testCleanupHasSecretKeyAuth(): void
+    {
+        $content = file_get_contents(ROOT_PATH . 'cron/cleanup_stats.php');
+        $this->assertStringContainsString("_GET['key']", $content);
+        $this->assertStringContainsString('403', $content);
+    }
+
+    public function testReadmeContainsWgetCommands(): void
+    {
+        $content = file_get_contents(ROOT_PATH . 'cron/README.md');
+        $this->assertStringContainsString('wget -qO-', $content);
+        $this->assertStringContainsString('?key=', $content);
     }
 }

@@ -1,22 +1,24 @@
 <?php
 /**
  * CraftRadar — Cron: Очистка старых записей
- * Запуск: 0 3 * * *  php /path/to/CraftRadar/cron/cleanup_stats.php
  * 
- * Выполняется ежедневно в 03:00.
- * Удаляет записи server_stats старше 30 дней.
- * Чистит старые файлы блокировки логинов.
- * Чистит старые cron-логи (старше 30 дней).
+ * Расписание: ежедневно в 03:00
+ * Хостинг:    wget -qO- "https://yourdomain.com/cron/cleanup_stats.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
+ * CLI:        php /path/to/CraftRadar/cron/cleanup_stats.php
  */
-
-if (php_sapi_name() !== 'cli') {
-    http_response_code(403);
-    die('CLI only');
-}
 
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
+
+// Авторизация
+if (php_sapi_name() !== 'cli') {
+    if (!isset($_GET['key']) || $_GET['key'] !== CRON_SECRET_KEY) {
+        http_response_code(403);
+        die('Access denied');
+    }
+    header('Content-Type: text/plain; charset=utf-8');
+}
 
 // Логирование
 function cronLog(string $message): void

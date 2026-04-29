@@ -1,20 +1,24 @@
 <?php
 /**
  * CraftRadar — Cron: Сброс месячных голосов
- * Запуск: 0 0 1 * *  php /path/to/CraftRadar/cron/reset_monthly.php
  * 
- * Выполняется 1-го числа каждого месяца в 00:00.
- * Обнуляет votes_month у всех серверов.
+ * Расписание: 1-е число каждого месяца в 00:00
+ * Хостинг:    wget -qO- "https://yourdomain.com/cron/reset_monthly.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
+ * CLI:        php /path/to/CraftRadar/cron/reset_monthly.php
  */
-
-if (php_sapi_name() !== 'cli') {
-    http_response_code(403);
-    die('CLI only');
-}
 
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
+
+// Авторизация
+if (php_sapi_name() !== 'cli') {
+    if (!isset($_GET['key']) || $_GET['key'] !== CRON_SECRET_KEY) {
+        http_response_code(403);
+        die('Access denied');
+    }
+    header('Content-Type: text/plain; charset=utf-8');
+}
 
 // Логирование
 function cronLog(string $message): void

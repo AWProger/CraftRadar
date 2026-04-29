@@ -58,6 +58,9 @@ define('MIN_PASSWORD_LENGTH', 6);
 // CSRF
 define('CSRF_TOKEN_NAME', 'csrf_token');
 
+// Cron — секретный ключ для запуска через HTTP (wget)
+define('CRON_SECRET_KEY', 'craftradar_cron_2026_secret');
+
 // Настройки ошибок
 if (DEBUG) {
     error_reporting(E_ALL);

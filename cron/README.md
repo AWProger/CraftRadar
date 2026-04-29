@@ -1,69 +1,60 @@
 # CraftRadar — Cron-задачи
 
-## Настройка на хостинге
+## Добавить в планировщик на хостинге
 
-Замените `/path/to/CraftRadar` на реальный путь к проекту на сервере.
-Замените `/usr/bin/php` на путь к PHP (узнать: `which php`).
+Замени `yourdomain.com` на свой домен.
 
-### Добавление в crontab
+### 3 задачи для cron:
 
-```bash
-crontab -e
+```
+# 1. Пинг серверов — каждые 10 минут
+wget -qO- "https://yourdomain.com/cron/ping_servers.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
+
+# 2. Сброс месячных голосов — 1-е число каждого месяца, 00:00
+wget -qO- "https://yourdomain.com/cron/reset_monthly.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
+
+# 3. Очистка старых записей — ежедневно в 03:00
+wget -qO- "https://yourdomain.com/cron/cleanup_stats.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
 ```
 
-Вставьте эти строки:
+### Таблица для панели хостинга
 
-```cron
-# === CraftRadar Cron Jobs ===
+| № | Задача | Команда | Расписание |
+|---|--------|---------|------------|
+| 1 | Пинг серверов | `wget -qO- "https://yourdomain.com/cron/ping_servers.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | Каждые 10 минут |
+| 2 | Сброс голосов | `wget -qO- "https://yourdomain.com/cron/reset_monthly.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | 1-е число месяца, 00:00 |
+| 3 | Очистка | `wget -qO- "https://yourdomain.com/cron/cleanup_stats.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | Ежедневно, 03:00 |
 
-# Пинг серверов — каждые 10 минут
-*/10 * * * *  /usr/bin/php /path/to/CraftRadar/cron/ping_servers.php >> /dev/null 2>&1
+### Секретный ключ
 
-# Сброс месячных голосов — 1-го числа каждого месяца в 00:00
-0 0 1 * *     /usr/bin/php /path/to/CraftRadar/cron/reset_monthly.php >> /dev/null 2>&1
+Ключ задаётся в `includes/config.php` → константа `CRON_SECRET_KEY`.
+По умолчанию: `craftradar_cron_2026_secret`
 
-# Очистка старых записей — ежедневно в 03:00
-0 3 * * *     /usr/bin/php /path/to/CraftRadar/cron/cleanup_stats.php >> /dev/null 2>&1
-```
+**Обязательно смени ключ на свой уникальный перед деплоем!**
 
-### Для панелей хостинга (ISPmanager, cPanel, и т.д.)
+Без правильного ключа скрипты возвращают HTTP 403.
 
-Если хостинг не даёт доступ к crontab напрямую, добавьте задачи через панель:
-
-| Задача | Команда | Расписание |
-|--------|---------|------------|
-| Пинг серверов | `/usr/bin/php /path/to/CraftRadar/cron/ping_servers.php` | Каждые 10 минут |
-| Сброс голосов | `/usr/bin/php /path/to/CraftRadar/cron/reset_monthly.php` | 1-е число месяца, 00:00 |
-| Очистка | `/usr/bin/php /path/to/CraftRadar/cron/cleanup_stats.php` | Ежедневно, 03:00 |
-
-### Проверка
+### Логи
 
 Логи cron-задач сохраняются в `storage/logs/`:
-- `cron_ping_YYYY-MM-DD.log` — логи пинга
-- `cron_monthly_YYYY-MM.log` — логи сброса голосов
-- `cron_cleanup_YYYY-MM-DD.log` — логи очистки
+- `cron_ping_YYYY-MM-DD.log` — пинг серверов
+- `cron_monthly_YYYY-MM.log` — сброс голосов
+- `cron_cleanup_YYYY-MM-DD.log` — очистка
 
-Ручной запуск для проверки:
-```bash
-php /path/to/CraftRadar/cron/ping_servers.php
-php /path/to/CraftRadar/cron/reset_monthly.php
-php /path/to/CraftRadar/cron/cleanup_stats.php
-```
+### Что делает каждая задача
 
-## Описание задач
-
-### ping_servers.php (каждые 10 минут)
-- Пингует все серверы со статусом `active`
+**ping_servers.php** (каждые 10 мин)
+- Пингует все active серверы по протоколу Minecraft SLP
 - Обновляет онлайн, игроков, MOTD, иконку
-- Записывает статистику в `server_stats`
-- После 3 неудачных пингов подряд — помечает сервер оффлайн
+- Записывает статистику для графиков
+- После 3 неудач подряд — помечает оффлайн
 - Защита от двойного запуска (lock-файл)
 
-### reset_monthly.php (1-е число месяца)
-- Обнуляет `votes_month` у всех серверов
+**reset_monthly.php** (1-е число месяца)
+- Обнуляет votes_month у всех серверов
 - Рейтинг строится по голосам за текущий месяц
 
-### cleanup_stats.php (ежедневно)
-- Удаляет записи `server_stats` старше 30 дней
-- Чистит файлы блокировки логинов (старше 1 дня)
-- Чистит старые cron-логи (старше 30 дней)
+**cleanup_stats.php** (ежедневно)
+- Удаляет статистику пингов старше 30 дней
+- Чистит файлы блокировки логинов
+- Чистит старые cron-логи
