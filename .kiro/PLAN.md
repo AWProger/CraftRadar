@@ -56,10 +56,10 @@
 - [x] 5.11 `assets/css/admin.css` + `assets/js/admin.js` — стили и JS админки
 
 ## Этап 6 — Полировка
-- [ ] 6.1 `api/search.php` — AJAX-поиск
-- [ ] 6.2 `api/server_status.php` — JSON API для виджетов
-- [ ] 6.3 Адаптив под мобильные (доработка CSS)
+- [x] 6.1 `api/search.php` — AJAX-поиск
+- [x] 6.2 `api/server_status.php` — JSON API для виджетов
+- [x] 6.3 Адаптив под мобильные (доработка CSS)
 - [ ] 6.4 Файловый кэш для главной и каталога
-- [ ] 6.5 SEO (title, description, OpenGraph)
+- [x] 6.5 SEO (title, description, OpenGraph)
 - [x] 6.6 `page.php` — статические страницы
-- [ ] 6.7 Страница 404
+- [x] 6.7 Страница 404
