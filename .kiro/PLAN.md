@@ -43,17 +43,17 @@
 - [x] 4.4 Уведомления в кабинете
 
 ## Этап 5 — Админ-панель
-- [ ] 5.1 `admin/includes/admin_header.php` + `admin_footer.php` + `admin_auth.php` — layout и проверка прав
-- [ ] 5.2 `admin/index.php` — дашборд со статистикой
-- [ ] 5.3 `admin/servers.php` + `admin/server_view.php` — управление серверами
-- [ ] 5.4 `admin/users.php` + `admin/user_view.php` — управление пользователями
-- [ ] 5.5 `admin/reports.php` + `admin/report_view.php` — управление жалобами
-- [ ] 5.6 `admin/reviews.php` — управление отзывами
-- [ ] 5.7 `admin/categories.php` — управление категориями
-- [ ] 5.8 `admin/settings.php` — настройки платформы
-- [ ] 5.9 `admin/pages.php` + `admin/page_edit.php` — статические страницы
-- [ ] 5.10 `admin/log.php` — лог действий
-- [ ] 5.11 `assets/css/admin.css` + `assets/js/admin.js` — стили и JS админки
+- [x] 5.1 `admin/includes/admin_header.php` + `admin_footer.php` + `admin_auth.php` — layout и проверка прав
+- [x] 5.2 `admin/index.php` — дашборд со статистикой
+- [x] 5.3 `admin/servers.php` + `admin/server_view.php` — управление серверами
+- [x] 5.4 `admin/users.php` + `admin/user_view.php` — управление пользователями
+- [x] 5.5 `admin/reports.php` + `admin/report_view.php` — управление жалобами
+- [x] 5.6 `admin/reviews.php` — управление отзывами
+- [x] 5.7 `admin/categories.php` — управление категориями
+- [x] 5.8 `admin/settings.php` — настройки платформы
+- [x] 5.9 `admin/pages.php` + `admin/page_edit.php` — статические страницы
+- [x] 5.10 `admin/log.php` — лог действий
+- [x] 5.11 `assets/css/admin.css` + `assets/js/admin.js` — стили и JS админки
 
 ## Этап 6 — Полировка
 - [ ] 6.1 `api/search.php` — AJAX-поиск
@@ -61,5 +61,5 @@
 - [ ] 6.3 Адаптив под мобильные (доработка CSS)
 - [ ] 6.4 Файловый кэш для главной и каталога
 - [ ] 6.5 SEO (title, description, OpenGraph)
-- [ ] 6.6 `page.php` — статические страницы
+- [x] 6.6 `page.php` — статические страницы
 - [ ] 6.7 Страница 404
