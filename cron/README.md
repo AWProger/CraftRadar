@@ -8,22 +8,22 @@
 
 ```
 # 1. Пинг серверов — каждые 10 минут
-wget -qO- "https://yourdomain.com/cron/ping_servers.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
+wget -qO- "https://craftradar.ru/cron/ping_servers.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
 
 # 2. Сброс месячных голосов — 1-е число каждого месяца, 00:00
-wget -qO- "https://yourdomain.com/cron/reset_monthly.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
+wget -qO- "https://craftradar.ru/cron/reset_monthly.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
 
 # 3. Очистка старых записей — ежедневно в 03:00
-wget -qO- "https://yourdomain.com/cron/cleanup_stats.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
+wget -qO- "https://craftradar.ru/cron/cleanup_stats.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
 ```
 
 ### Таблица для панели хостинга
 
 | № | Задача | Команда | Расписание |
 |---|--------|---------|------------|
-| 1 | Пинг серверов | `wget -qO- "https://yourdomain.com/cron/ping_servers.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | Каждые 10 минут |
-| 2 | Сброс голосов | `wget -qO- "https://yourdomain.com/cron/reset_monthly.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | 1-е число месяца, 00:00 |
-| 3 | Очистка | `wget -qO- "https://yourdomain.com/cron/cleanup_stats.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | Ежедневно, 03:00 |
+| 1 | Пинг серверов | `wget -qO- "https://craftradar.ru/cron/ping_servers.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | Каждые 10 минут |
+| 2 | Сброс голосов | `wget -qO- "https://craftradar.ru/cron/reset_monthly.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | 1-е число месяца, 00:00 |
+| 3 | Очистка | `wget -qO- "https://craftradar.ru/cron/cleanup_stats.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1` | Ежедневно, 03:00 |
 
 ### Секретный ключ
 

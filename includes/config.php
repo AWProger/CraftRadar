@@ -20,7 +20,7 @@ define('ASSETS_PATH', ROOT_PATH . 'assets/');
 define('UPLOADS_PATH', ROOT_PATH . 'assets/img/');
 
 // URL сайта (без слеша в конце)
-define('SITE_URL', 'http://localhost/CraftRadar');
+define('SITE_URL', 'https://craftradar.ru');
 define('SITE_NAME', 'CraftRadar');
 
 // Сессии
