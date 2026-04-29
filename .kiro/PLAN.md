@@ -37,10 +37,10 @@
 - [x] 3.7 `cron/cleanup_stats.php` — очистка старых записей
 
 ## Этап 4 — Личный кабинет
-- [ ] 4.1 `dashboard/edit.php` — редактирование сервера
-- [ ] 4.2 `dashboard/stats.php` — статистика сервера (графики)
-- [ ] 4.3 `dashboard/settings.php` — настройки профиля
-- [ ] 4.4 Уведомления в кабинете
+- [x] 4.1 `dashboard/edit.php` — редактирование сервера
+- [x] 4.2 `dashboard/stats.php` — статистика сервера (графики)
+- [x] 4.3 `dashboard/settings.php` — настройки профиля
+- [x] 4.4 Уведомления в кабинете
 
 ## Этап 5 — Админ-панель
 - [ ] 5.1 `admin/includes/admin_header.php` + `admin_footer.php` + `admin_auth.php` — layout и проверка прав
