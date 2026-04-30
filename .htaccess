@@ -1,0 +1,87 @@
+# CraftRadar — Apache конфигурация
+
+# Включаем mod_rewrite
+RewriteEngine On
+
+# Принудительный HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Убираем www
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+
+# Страница 404
+ErrorDocument 404 /404.php
+
+# === Безопасность ===
+
+# Запрет доступа к служебным файлам и папкам
+<FilesMatch "\.(env|log|lock|json|md|sql|xml|yml|yaml)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Разрешаем доступ к composer.json только для composer
+<Files "composer.json">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>
+
+# Запрет доступа к папкам
+<IfModule mod_rewrite.c>
+    RewriteRule ^\.kiro/ - [F,L]
+    RewriteRule ^storage/ - [F,L]
+    RewriteRule ^tests/ - [F,L]
+    RewriteRule ^vendor/ - [F,L]
+    RewriteRule ^install/ - [F,L]
+    RewriteRule ^includes/ - [F,L]
+</IfModule>
+
+# Запрет листинга директорий
+Options -Indexes
+
+# Запрет доступа к .htaccess
+<Files ".htaccess">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>
+
+# === Заголовки безопасности ===
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# === Кэширование статики ===
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 year"
+</IfModule>
+
+# === Сжатие ===
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json
+</IfModule>
+
+# PHP настройки
+<IfModule mod_php.c>
+    php_value upload_max_filesize 2M
+    php_value post_max_size 2M
+    php_value max_execution_time 30
+    php_flag display_errors off
+</IfModule>

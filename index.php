@@ -6,45 +6,54 @@
 $pageTitle = 'Мониторинг серверов Minecraft';
 $pageDescription = 'CraftRadar — каталог серверов Minecraft с рейтингом, статистикой и голосованием.';
 require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/includes/cache.php';
 
 $db = getDB();
 
-// Топ-10 по голосам за месяц
-$topVotes = $db->query("
-    SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month, rating
-    FROM servers WHERE status = 'active' 
-    ORDER BY is_promoted DESC, votes_month DESC, votes_total DESC 
-    LIMIT 10
-")->fetchAll();
+// Топ-10 по голосам за месяц (кэш 5 мин)
+$topVotes = cacheRemember('home_top_votes', 300, function() use ($db) {
+    return $db->query("
+        SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month, rating
+        FROM servers WHERE status = 'active' 
+        ORDER BY is_promoted DESC, votes_month DESC, votes_total DESC 
+        LIMIT 10
+    ")->fetchAll();
+});
 
-// Топ-10 по онлайну
-$topOnline = $db->query("
-    SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month
-    FROM servers WHERE status = 'active' AND is_online = 1
-    ORDER BY players_online DESC 
-    LIMIT 10
-")->fetchAll();
+// Топ-10 по онлайну (кэш 2 мин — обновляется чаще)
+$topOnline = cacheRemember('home_top_online', 120, function() use ($db) {
+    return $db->query("
+        SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month
+        FROM servers WHERE status = 'active' AND is_online = 1
+        ORDER BY players_online DESC 
+        LIMIT 10
+    ")->fetchAll();
+});
 
 // Новые серверы
-$newServers = $db->query("
+$newServers = cacheRemember('home_new_servers', 300, function() use ($db) {
+    return $db->query("
     SELECT id, name, ip, port, icon, is_online, players_online, votes_month, created_at
     FROM servers WHERE status = 'active' 
     ORDER BY created_at DESC 
     LIMIT 10
 ")->fetchAll();
+});
 
-// Общая статистика
-$stats = $db->query("
-    SELECT 
-        COUNT(*) as total_servers,
-        SUM(CASE WHEN is_online = 1 THEN players_online ELSE 0 END) as total_players,
-        SUM(CASE WHEN is_online = 1 THEN 1 ELSE 0 END) as online_servers
-    FROM servers WHERE status = 'active'
-")->fetch();
+// Общая статистика (кэш 2 мин)
+$stats = cacheRemember('home_stats', 120, function() use ($db) {
+    return $db->query("
+        SELECT 
+            COUNT(*) as total_servers,
+            SUM(CASE WHEN is_online = 1 THEN players_online ELSE 0 END) as total_players,
+            SUM(CASE WHEN is_online = 1 THEN 1 ELSE 0 END) as online_servers
+        FROM servers WHERE status = 'active'
+    ")->fetch();
+});
 
-$votesToday = $db->query("
-    SELECT COUNT(*) FROM votes WHERE DATE(voted_at) = CURDATE()
-")->fetchColumn();
+$votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
+    return (int)$db->query("SELECT COUNT(*) FROM votes WHERE DATE(voted_at) = CURDATE()")->fetchColumn();
+});
 ?>
 
 <!-- Hero -->

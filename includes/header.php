@@ -17,6 +17,18 @@ $pageTitle = isset($pageTitle) ? $pageTitle . ' — ' . SITE_NAME : SITE_NAME;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle) ?></title>
     <meta name="description" content="<?= e($pageDescription ?? 'Мониторинг серверов Minecraft — рейтинг, статистика, голосование') ?>">
+
+    <!-- OpenGraph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<?= e($pageTitle) ?>">
+    <meta property="og:description" content="<?= e($pageDescription ?? 'Мониторинг серверов Minecraft — рейтинг, статистика, голосование') ?>">
+    <meta property="og:url" content="<?= e(SITE_URL . ($_SERVER['REQUEST_URI'] ?? '/')) ?>">
+    <meta property="og:site_name" content="<?= SITE_NAME ?>">
+    <?php if (!empty($pageImage)): ?>
+        <meta property="og:image" content="<?= e($pageImage) ?>">
+    <?php endif; ?>
+
+    <link rel="canonical" href="<?= e(SITE_URL . ($_SERVER['REQUEST_URI'] ?? '/')) ?>">
     <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
 </head>
 <body>
