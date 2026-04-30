@@ -37,3 +37,9 @@ desktop.ini
 .phpunit.result.cache
 .phpunit.cache/
 /coverage/
+
+# === Composer ===
+composer.phar
+
+# === SQLite dev ===
+*.sqlite
