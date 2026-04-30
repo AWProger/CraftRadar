@@ -3,6 +3,8 @@
  * CraftRadar — Главная страница
  */
 
+require_once __DIR__ . '/includes/config.php';
+
 $pageTitle = SITE_DESCRIPTION;
 $pageDescription = SITE_NAME . ' — ' . SITE_TAGLINE;
 require_once __DIR__ . '/includes/header.php';
