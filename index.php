@@ -62,7 +62,7 @@ $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
     <p class="hero-subtitle">Мониторинг серверов Minecraft — рейтинг, статистика, голосование</p>
 
     <form class="search-form" action="<?= SITE_URL ?>/servers.php" method="GET">
-        <input type="text" name="q" placeholder="Поиск сервера по названию или IP..." class="search-input">
+        <input type="text" name="q" placeholder="Поиск сервера по названию или IP..." class="search-input" data-live-search="<?= SITE_URL ?>/api/search.php" autocomplete="off">
         <button type="submit" class="btn btn-primary">Найти</button>
     </form>
 </section>

@@ -80,16 +80,6 @@ $uptime = $uptimeData['total'] > 0
     ? round(($uptimeData['online_count'] / $uptimeData['total']) * 100, 1) 
     : 0;
 
-// Данные для графика (24 часа)
-$stmt = $db->prepare('
-    SELECT players_online, recorded_at 
-    FROM server_stats 
-    WHERE server_id = ? AND recorded_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
-    ORDER BY recorded_at ASC
-');
-$stmt->execute([$id]);
-$chartData = $stmt->fetchAll();
-
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -151,7 +141,14 @@ require_once __DIR__ . '/includes/header.php';
 
             <!-- График онлайна -->
             <div class="card" style="margin-top: 16px;">
-                <h2 class="section-title">График онлайна (24ч)</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h2 class="section-title" style="margin: 0;">График онлайна</h2>
+                    <div class="chart-tabs">
+                        <button class="chart-tab active" data-period="24h">24ч</button>
+                        <button class="chart-tab" data-period="7d">7 дней</button>
+                        <button class="chart-tab" data-period="30d">30 дней</button>
+                    </div>
+                </div>
                 <canvas id="onlineChart" height="200"></canvas>
             </div>
 
@@ -301,6 +298,22 @@ require_once __DIR__ . '/includes/header.php';
                         Подтвердите владение через MOTD и получите статус верифицированного владельца.
                     </p>
                     <a href="<?= SITE_URL ?>/dashboard/verify.php?id=<?= $id ?>" class="btn btn-sm btn-outline btn-block">Подтвердить владение</a>
+                </div>
+            <?php endif; ?>
+
+            <!-- Виджет для сайта -->
+            <?php if (isLoggedIn() && currentUserId() === $server['user_id']): ?>
+                <div class="card" style="margin-top: 12px;">
+                    <h3 style="margin-bottom: 8px; font-size: 0.9rem;">📋 Виджет для сайта</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px;">Вставьте код на свой сайт:</p>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.75rem;">JS-виджет</label>
+                        <input type="text" readonly value='<script src="<?= SITE_URL ?>/api/widget.php?id=<?= $id ?>"></script>' onclick="this.select()" style="font-size: 0.75rem; font-family: monospace;">
+                    </div>
+                    <div class="form-group" style="margin-top: 8px; margin-bottom: 0;">
+                        <label style="font-size: 0.75rem;">Iframe</label>
+                        <input type="text" readonly value='<iframe src="<?= SITE_URL ?>/api/widget.php?id=<?= $id ?>&format=html" width="468" height="60" frameborder="0"></iframe>' onclick="this.select()" style="font-size: 0.75rem; font-family: monospace;">
+                    </div>
                 </div>
             <?php endif; ?>
         </div>
@@ -474,42 +487,70 @@ require_once __DIR__ . '/includes/header.php';
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
 <script>
-// График онлайна
-const chartData = <?= json_encode(array_map(function($d) {
-    return ['time' => $d['recorded_at'], 'players' => $d['players_online']];
-}, $chartData)) ?>;
+// График онлайна с переключением периодов
+let onlineChart = null;
+const chartCanvas = document.getElementById('onlineChart');
 
-if (chartData.length > 0) {
-    const ctx = document.getElementById('onlineChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: chartData.map(d => {
-                const date = new Date(d.time);
-                return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
-            }),
-            datasets: [{
-                label: 'Игроков онлайн',
-                data: chartData.map(d => d.players),
-                borderColor: '#00ff80',
-                backgroundColor: 'rgba(0, 255, 128, 0.1)',
-                fill: true,
-                tension: 0.3,
-                pointRadius: 1,
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { color: '#8b949e', maxTicksLimit: 12 }, grid: { color: 'rgba(48,54,61,0.5)' } },
-                y: { beginAtZero: true, ticks: { color: '#8b949e' }, grid: { color: 'rgba(48,54,61,0.5)' } }
+function loadChart(period) {
+    fetch('<?= SITE_URL ?>/api/server_chart.php?id=<?= $id ?>&period=' + period)
+        .then(r => r.json())
+        .then(data => {
+            if (onlineChart) onlineChart.destroy();
+
+            if (!data.data || data.data.length === 0) {
+                chartCanvas.parentElement.querySelector('.no-chart-data')?.remove();
+                const p = document.createElement('p');
+                p.className = 'no-chart-data';
+                p.style.cssText = 'color: var(--text-muted); text-align: center; margin-top: 8px;';
+                p.textContent = 'Нет данных для графика';
+                chartCanvas.parentElement.appendChild(p);
+                return;
             }
-        }
-    });
-} else {
-    document.getElementById('onlineChart').parentElement.innerHTML += '<p style="color: var(--text-muted); text-align: center;">Нет данных для графика</p>';
+
+            chartCanvas.parentElement.querySelector('.no-chart-data')?.remove();
+
+            const labels = data.data.map(d => {
+                const date = new Date(d.time);
+                if (period === '30d') return date.toLocaleDateString('ru', {day:'2-digit', month:'2-digit'});
+                if (period === '7d') return date.toLocaleDateString('ru', {day:'2-digit', month:'2-digit'}) + ' ' + date.getHours().toString().padStart(2,'0') + ':00';
+                return date.getHours().toString().padStart(2,'0') + ':' + date.getMinutes().toString().padStart(2,'0');
+            });
+
+            onlineChart = new Chart(chartCanvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Игроков онлайн',
+                        data: data.data.map(d => d.players),
+                        borderColor: '#00ff80',
+                        backgroundColor: 'rgba(0, 255, 128, 0.1)',
+                        fill: true, tension: 0.3, pointRadius: period === '24h' ? 1 : 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#8b949e', maxTicksLimit: 12 }, grid: { color: 'rgba(48,54,61,0.5)' } },
+                        y: { beginAtZero: true, ticks: { color: '#8b949e' }, grid: { color: 'rgba(48,54,61,0.5)' } }
+                    }
+                }
+            });
+        });
 }
+
+// Переключение периодов
+document.querySelectorAll('.chart-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        loadChart(this.dataset.period);
+    });
+});
+
+// Загружаем 24ч по умолчанию
+loadChart('24h');
 
 // Голосование
 const voteBtn = document.getElementById('voteBtn');

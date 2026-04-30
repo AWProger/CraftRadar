@@ -7,8 +7,10 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/notifications.php';
 
 $pageTitle = isset($pageTitle) ? $pageTitle . ' — ' . SITE_NAME : SITE_NAME;
+$_notifCount = isLoggedIn() ? getUnreadCount(currentUserId()) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -47,6 +49,9 @@ $pageTitle = isset($pageTitle) ? $pageTitle . ' — ' . SITE_NAME : SITE_NAME;
 
                 <div class="header-actions">
                     <?php if (isLoggedIn()): ?>
+                        <a href="<?= SITE_URL ?>/dashboard/notifications.php" class="header-notif" title="Уведомления">
+                            🔔<?php if ($_notifCount > 0): ?><span class="header-notif-badge"><?= $_notifCount ?></span><?php endif; ?>
+                        </a>
                         <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-sm btn-outline">Кабинет</a>
                         <?php if (isModerator()): ?>
                             <a href="<?= SITE_URL ?>/admin/" class="btn btn-sm btn-outline">Админка</a>
