@@ -31,6 +31,8 @@ define('SESSION_NAME', 'craftradar_sid');
 
 // Серверы
 define('SERVERS_PER_PAGE', 20);
+define('ADMIN_PER_PAGE', 50);
+define('STATS_PERIOD_DAYS', 30);
 define('SERVERS_LIMIT_PER_USER', 5);
 define('PING_TIMEOUT', 5); // секунд
 define('PING_INTERVAL', 10); // минут

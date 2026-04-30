@@ -34,7 +34,7 @@ if (get('export') === 'csv' && isAdmin()) {
 $page = max(1, getInt('page', 1));
 $adminFilter = get('admin_id');
 $actionFilter = get('action');
-$perPage = 50;
+$perPage = ADMIN_PER_PAGE;
 
 $where = ['1=1'];
 $params = [];

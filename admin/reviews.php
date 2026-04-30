@@ -11,7 +11,7 @@ $db = getDB();
 $page = max(1, getInt('page', 1));
 $status = get('status');
 $search = get('q');
-$perPage = 50;
+$perPage = ADMIN_PER_PAGE;
 
 $where = ['1=1'];
 $params = [];

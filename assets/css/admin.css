@@ -1,5 +1,5 @@
 /* ============================================
-   CraftRadar — Стили админки
+   CraftRadar — Стили админки (Minecraft-стиль)
    ============================================ */
 
 .admin-body {
@@ -11,7 +11,7 @@
 .admin-sidebar {
     width: 260px;
     background: var(--bg-card);
-    border-right: 1px solid var(--border);
+    border-right: var(--pixel-border) var(--border);
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -20,11 +20,12 @@
     bottom: 0;
     z-index: 100;
     overflow-y: auto;
+    box-shadow: 4px 0 0 rgba(0, 0, 0, 0.3);
 }
 
 .admin-sidebar-header {
     padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: var(--pixel-border) var(--border);
 }
 
 .admin-nav {
@@ -36,21 +37,25 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 20px;
+    padding: 10px 20px;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: all var(--transition);
+    border-left: 3px solid transparent;
 }
 
-.admin-nav-link:hover,
-.admin-nav-link.active {
+.admin-nav-link:hover {
     color: var(--text);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 255, 128, 0.05);
+    border-left-color: var(--accent);
+    text-shadow: 0 0 6px rgba(0, 255, 128, 0.2);
 }
 
 .admin-nav-link.active {
-    border-right: 2px solid var(--accent);
     color: var(--accent);
+    background: rgba(0, 255, 128, 0.08);
+    border-left-color: var(--accent);
+    text-shadow: 0 0 8px rgba(0, 255, 128, 0.3);
 }
 
 .admin-nav-group {
@@ -60,15 +65,16 @@
 .admin-nav-group-title {
     display: block;
     padding: 8px 20px 4px;
-    font-size: 0.75rem;
+    font-family: var(--font-mc);
+    font-size: 0.5rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .admin-nav-group .admin-nav-link {
     padding-left: 36px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .admin-badge {
@@ -80,22 +86,22 @@
     padding: 0 6px;
     background: var(--danger);
     color: #fff;
-    border-radius: 10px;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
     margin-left: auto;
+    border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
 .admin-sidebar-footer {
     padding: 12px 20px;
-    border-top: 1px solid var(--border);
+    border-top: var(--pixel-border) var(--border);
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
 .admin-user {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
 }
 
@@ -114,10 +120,11 @@
     gap: 16px;
     padding: 16px 24px;
     background: var(--bg-card);
-    border-bottom: 1px solid var(--border);
+    border-bottom: var(--pixel-border) var(--border);
     position: sticky;
     top: 0;
     z-index: 50;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 .admin-topbar .burger {
@@ -125,8 +132,10 @@
 }
 
 .admin-topbar-title {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-family: var(--font-mc);
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .admin-content {
@@ -134,35 +143,42 @@
     padding: 24px;
 }
 
-/* --- Admin cards grid --- */
+/* --- Admin stats grid --- */
 .admin-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
     margin-bottom: 24px;
 }
 
 .admin-stat-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: var(--pixel-border) var(--border);
     padding: 16px;
     text-align: center;
+    box-shadow: var(--shadow);
+    transition: border-color var(--transition);
+}
+
+.admin-stat-card:hover {
+    border-color: var(--accent);
 }
 
 .admin-stat-value {
-    font-size: 1.8rem;
+    font-family: var(--font-mc);
+    font-size: 0.85rem;
     font-weight: 700;
     color: var(--accent);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .admin-stat-label {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
-    margin-top: 2px;
+    margin-top: 4px;
 }
 
-/* --- Admin tables --- */
+/* --- Admin filters --- */
 .admin-table-header {
     display: flex;
     justify-content: space-between;
@@ -184,13 +200,19 @@
 .admin-filters input {
     padding: 6px 12px;
     background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
     color: var(--text);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* --- Action buttons in tables --- */
+.admin-filters select:focus,
+.admin-filters input:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+/* --- Action buttons --- */
 .action-btns {
     display: flex;
     gap: 4px;
@@ -200,19 +222,19 @@
 /* --- Attention cards --- */
 .attention-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
     margin-bottom: 24px;
 }
 
 .attention-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: var(--pixel-border) var(--border);
     padding: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: var(--shadow);
 }
 
 .attention-card-info {
@@ -221,13 +243,15 @@
 }
 
 .attention-card-count {
-    font-size: 1.5rem;
+    font-family: var(--font-mc);
+    font-size: 1rem;
     font-weight: 700;
     color: var(--warning);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .attention-card-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
 }
 
@@ -235,26 +259,28 @@
 .activity-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
 }
 
 .activity-item {
     display: flex;
     gap: 12px;
     padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
+    border-bottom: 2px solid var(--border);
+    font-size: 0.8rem;
 }
 
 .activity-time {
     color: var(--text-muted);
     white-space: nowrap;
     min-width: 120px;
+    font-family: monospace;
+    font-size: 0.75rem;
 }
 
 .activity-user {
     color: var(--accent);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 /* --- Responsive --- */
@@ -278,5 +304,15 @@
 
     .admin-content {
         padding: 16px;
+    }
+
+    .admin-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-stats-grid {
+        grid-template-columns: 1fr;
     }
 }
