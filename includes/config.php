@@ -4,7 +4,7 @@
  */
 
 // Режим разработки (true = показывать ошибки)
-define('DEBUG', true);
+define('DEBUG', false);
 
 // Настройки базы данных
 define('DB_HOST', 'localhost');
