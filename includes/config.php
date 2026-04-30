@@ -20,7 +20,7 @@ define('ASSETS_PATH', ROOT_PATH . 'assets/');
 define('UPLOADS_PATH', ROOT_PATH . 'assets/img/');
 
 // URL сайта (без слеша в конце)
-define('SITE_URL', 'https://craftradar.ru');
+define('SITE_URL', 'http://localhost:8080');
 define('SITE_NAME', 'CraftRadar');
 define('SITE_DESCRIPTION', 'Мониторинг серверов Minecraft — рейтинг, статистика, голосование');
 define('SITE_TAGLINE', 'Каталог серверов Minecraft с рейтингом, статистикой и голосованием');
