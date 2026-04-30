@@ -138,8 +138,22 @@ $prices = PROMOTE_PRICES;
                 <li>Приоритет в результатах поиска</li>
                 <li>Если сервер уже продвигается — дни добавляются к текущему сроку</li>
             </ul>
-            <p style="color: var(--text-muted); margin-top: 12px; font-size: 0.85rem;">
-                Оплата через ЮMoney (банковская карта или кошелёк). Продвижение активируется автоматически после оплаты.
+
+            <h3 style="margin-top: 16px; margin-bottom: 8px;">Как это работает?</h3>
+            <ol style="color: var(--text-muted); line-height: 1.8; padding-left: 20px;">
+                <li>Выберите тариф и нажмите «Оплатить»</li>
+                <li>Вы будете перенаправлены на страницу оплаты ЮMoney</li>
+                <li>Оплатите банковской картой (Visa, MasterCard, МИР) или кошельком ЮMoney</li>
+                <li>Продвижение активируется автоматически в течение нескольких минут</li>
+            </ol>
+
+            <h3 style="margin-top: 16px; margin-bottom: 8px;">Способы оплаты</h3>
+            <p style="color: var(--text-muted);">Банковская карта (Visa, MasterCard, МИР), кошелёк ЮMoney.</p>
+
+            <p style="color: var(--text-muted); margin-top: 16px; font-size: 0.85rem;">
+                Нажимая «Оплатить», вы соглашаетесь с 
+                <a href="<?= SITE_URL ?>/page.php?slug=offer" target="_blank">публичной офертой</a>.
+                По вопросам оплаты — <a href="<?= SITE_URL ?>/page.php?slug=contacts">контакты</a>.
             </p>
         </div>
     <?php endif; ?>

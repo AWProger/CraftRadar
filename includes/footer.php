@@ -9,7 +9,10 @@
                 </div>
                 <div class="footer-links">
                     <a href="<?= SITE_URL ?>/page.php?slug=about">О проекте</a>
+                    <a href="<?= SITE_URL ?>/page.php?slug=services">Услуги</a>
                     <a href="<?= SITE_URL ?>/page.php?slug=rules">Правила</a>
+                    <a href="<?= SITE_URL ?>/page.php?slug=offer">Оферта</a>
+                    <a href="<?= SITE_URL ?>/page.php?slug=contacts">Контакты</a>
                     <a href="<?= SITE_URL ?>/page.php?slug=faq">FAQ</a>
                 </div>
             </div>
