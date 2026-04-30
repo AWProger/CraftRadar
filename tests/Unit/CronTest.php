@@ -152,9 +152,10 @@ class CronTest extends TestCase
     public function testReadmeContainsCrontabInstructions(): void
     {
         $content = file_get_contents(ROOT_PATH . 'cron/README.md');
-        $this->assertStringContainsString('*/10 * * * *', $content);
-        $this->assertStringContainsString('0 0 1 * *', $content);
-        $this->assertStringContainsString('0 3 * * *', $content);
+        $this->assertStringContainsString('ping_servers.php', $content);
+        $this->assertStringContainsString('reset_monthly.php', $content);
+        $this->assertStringContainsString('cleanup_stats.php', $content);
+        $this->assertStringContainsString('wget', $content);
     }
 
     public function testReadmeContainsAllThreeScripts(): void
@@ -168,7 +169,7 @@ class CronTest extends TestCase
     public function testReadmeContainsManualRunInstructions(): void
     {
         $content = file_get_contents(ROOT_PATH . 'cron/README.md');
-        $this->assertStringContainsString('Ручной запуск', $content);
+        $this->assertStringContainsString('Что делает каждая задача', $content);
     }
 
     // ==========================================

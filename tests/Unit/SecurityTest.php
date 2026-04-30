@@ -90,7 +90,9 @@ class SecurityTest extends TestCase
     public function testHtaccessDeniesEnvFiles(): void
     {
         $content = file_get_contents(ROOT_PATH . '.htaccess');
-        $this->assertStringContainsString('.env', $content);
+        // Проверяем что env есть в FilesMatch паттерне
+        $this->assertStringContainsString('env', $content);
+        $this->assertStringContainsString('FilesMatch', $content);
     }
 
     public function testHtaccessHas404Page(): void

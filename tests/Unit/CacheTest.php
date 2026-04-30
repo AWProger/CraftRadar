@@ -85,8 +85,8 @@ class CacheTest extends TestCase
     public function testCacheExpiredReturnsNull(): void
     {
         cacheSet('expired', 'data');
-        // TTL = 0 — сразу устарел
-        $this->assertNull(cacheGet('expired', 0));
+        // TTL = -1 — гарантированно устарел
+        $this->assertNull(cacheGet('expired', -1));
     }
 
     // ==========================================

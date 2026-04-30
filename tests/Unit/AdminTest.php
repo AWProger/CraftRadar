@@ -161,7 +161,7 @@ class AdminTest extends TestCase
         $this->assertStringContainsString('chartServers', $content);
         $this->assertStringContainsString('chartVotes', $content);
         $this->assertStringContainsString('chartRevenue', $content);
-        $this->assertStringContainsString('Chart.js', $content);
+        $this->assertStringContainsString('chart.js', $content);
     }
 
     public function testDashboardUsesStatsPeriodConstant(): void

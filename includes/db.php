@@ -5,6 +5,7 @@
 
 require_once __DIR__ . '/config.php';
 
+if (!function_exists('getDB')) {
 function getDB(): PDO
 {
     static $pdo = null;
@@ -31,3 +32,4 @@ function getDB(): PDO
 
     return $pdo;
 }
+} // end if !function_exists
