@@ -22,6 +22,8 @@ define('UPLOADS_PATH', ROOT_PATH . 'assets/img/');
 // URL сайта (без слеша в конце)
 define('SITE_URL', 'https://craftradar.ru');
 define('SITE_NAME', 'CraftRadar');
+define('SITE_DESCRIPTION', 'Мониторинг серверов Minecraft — рейтинг, статистика, голосование');
+define('SITE_TAGLINE', 'Каталог серверов Minecraft с рейтингом, статистикой и голосованием');
 
 // Сессии
 define('SESSION_LIFETIME', 86400 * 7); // 7 дней
@@ -76,6 +78,16 @@ define('PROMOTE_PRICES', [
     '14d' => 179,
     '30d' => 299,
 ]);
+
+// Стоимость выделения за баллы
+define('HIGHLIGHT_COSTS', [
+    '1h'  => ['points' => 5,  'hours' => 1],
+    '6h'  => ['points' => 25, 'hours' => 6],
+    '24h' => ['points' => 80, 'hours' => 24],
+]);
+
+// Баллы за действия
+define('POINTS_PER_VOTE', 1);
 
 // Настройки ошибок
 if (DEBUG) {

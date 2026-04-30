@@ -3,8 +3,8 @@
  * CraftRadar — Главная страница
  */
 
-$pageTitle = 'Мониторинг серверов Minecraft';
-$pageDescription = 'CraftRadar — каталог серверов Minecraft с рейтингом, статистикой и голосованием.';
+$pageTitle = SITE_DESCRIPTION;
+$pageDescription = SITE_NAME . ' — ' . SITE_TAGLINE;
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/cache.php';
 
@@ -59,7 +59,7 @@ $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
 <!-- Hero -->
 <section class="hero">
     <h1>📡 <?= SITE_NAME ?></h1>
-    <p class="hero-subtitle">Мониторинг серверов Minecraft — рейтинг, статистика, голосование</p>
+    <p class="hero-subtitle"><?= e(SITE_DESCRIPTION) ?></p>
 
     <form class="search-form" action="<?= SITE_URL ?>/servers.php" method="GET">
         <input type="text" name="q" placeholder="Поиск сервера по названию или IP..." class="search-input" data-live-search="<?= SITE_URL ?>/api/search.php" autocomplete="off">

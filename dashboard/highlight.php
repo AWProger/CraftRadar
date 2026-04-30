@@ -79,11 +79,17 @@ $history = getPointHistory($userId, 10);
     <!-- Тарифы -->
     <div class="promote-grid">
         <?php
-        $options = [
-            '1h'  => ['hours' => 1,  'cost' => 5,  'icon' => '⚡', 'label' => '1 час'],
-            '6h'  => ['hours' => 6,  'cost' => 25, 'icon' => '🔥', 'label' => '6 часов'],
-            '24h' => ['hours' => 24, 'cost' => 80, 'icon' => '💎', 'label' => '24 часа'],
-        ];
+        $options = [];
+        foreach (HIGHLIGHT_COSTS as $key => $c) {
+            $icons = ['1h' => '⚡', '6h' => '🔥', '24h' => '💎'];
+            $labels = ['1h' => '1 час', '6h' => '6 часов', '24h' => '24 часа'];
+            $options[$key] = [
+                'hours' => $c['hours'],
+                'cost'  => $c['points'],
+                'icon'  => $icons[$key] ?? '⚡',
+                'label' => $labels[$key] ?? $c['hours'] . 'ч',
+            ];
+        }
         ?>
         <?php foreach ($options as $key => $opt): ?>
             <div class="promote-card <?= $key === '6h' ? 'promote-card-popular' : '' ?>">

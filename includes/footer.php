@@ -5,7 +5,7 @@
         <div class="container">
             <div class="footer-inner">
                 <div class="footer-copy">
-                    &copy; <?= date('Y') ?> <?= SITE_NAME ?> — Мониторинг серверов Minecraft
+                    &copy; <?= date('Y') ?> <?= SITE_NAME ?> — <?= e(SITE_DESCRIPTION) ?>
                 </div>
                 <div class="footer-links">
                     <a href="<?= SITE_URL ?>/page.php?slug=about">О проекте</a>

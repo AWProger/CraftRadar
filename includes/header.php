@@ -19,12 +19,12 @@ $_notifCount = isLoggedIn() ? getUnreadCount(currentUserId()) : 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle) ?></title>
-    <meta name="description" content="<?= e($pageDescription ?? 'Мониторинг серверов Minecraft — рейтинг, статистика, голосование') ?>">
+    <meta name="description" content="<?= e($pageDescription ?? SITE_DESCRIPTION) ?>">
 
     <!-- OpenGraph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="<?= e($pageTitle) ?>">
-    <meta property="og:description" content="<?= e($pageDescription ?? 'Мониторинг серверов Minecraft — рейтинг, статистика, голосование') ?>">
+    <meta property="og:description" content="<?= e($pageDescription ?? SITE_DESCRIPTION) ?>">
     <meta property="og:url" content="<?= e(SITE_URL . ($_SERVER['REQUEST_URI'] ?? '/')) ?>">
     <meta property="og:site_name" content="<?= SITE_NAME ?>">
     <?php if (!empty($pageImage)): ?>

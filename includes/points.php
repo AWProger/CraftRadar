@@ -46,7 +46,7 @@ function addPoints(int $userId, int $amount, string $type, string $description =
  */
 function rewardVotePoints(int $userId): void
 {
-    addPoints($userId, 1, 'vote_reward', 'Бонус за голосование');
+    addPoints($userId, POINTS_PER_VOTE, 'vote_reward', 'Бонус за голосование');
 }
 
 /**
@@ -54,11 +54,7 @@ function rewardVotePoints(int $userId): void
  */
 function highlightServer(int $userId, int $serverId, string $duration): array
 {
-    $costs = [
-        '1h'  => ['points' => 5,  'hours' => 1],
-        '6h'  => ['points' => 25, 'hours' => 6],
-        '24h' => ['points' => 80, 'hours' => 24],
-    ];
+    $costs = HIGHLIGHT_COSTS;
 
     if (!isset($costs[$duration])) {
         return ['success' => false, 'error' => 'Неизвестная длительность.'];

@@ -114,7 +114,7 @@ class YooMoney
             'action'          => 'https://yoomoney.ru/quickpay/confirm',
             'receiver'        => $this->wallet,
             'quickpay-form'   => 'shop',
-            'targets'         => $comment ?: 'Продвижение сервера на CraftRadar',
+            'targets'         => $comment ?: 'Продвижение сервера на ' . SITE_NAME,
             'paymentType'     => 'AC', // AC = банковская карта, PC = кошелёк ЮMoney
             'sum'             => number_format($amount, 2, '.', ''),
             'label'           => $label,
