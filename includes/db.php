@@ -53,18 +53,19 @@ function getDB(): PDO
  */
 function registerSQLiteCompat(PDO $pdo): void
 {
-    // CURDATE() → DATE('now')
-    $pdo->sqliteCreateFunction('CURDATE', function() {
-        return date('Y-m-d');
-    }, 0);
+    // PHP 8.5+ использует Pdo\Sqlite::createFunction(), старые — PDO::sqliteCreateFunction()
+    $createFunc = function(string $name, callable $cb, int $args = -1) use ($pdo) {
+        if ($pdo instanceof \Pdo\Sqlite) {
+            $pdo->createFunction($name, $cb, $args);
+        } elseif (method_exists($pdo, 'sqliteCreateFunction')) {
+            @$pdo->sqliteCreateFunction($name, $cb, $args);
+        }
+    };
 
-    // NOW() → DATETIME('now')
-    $pdo->sqliteCreateFunction('NOW', function() {
-        return date('Y-m-d H:i:s');
-    }, 0);
+    $createFunc('CURDATE', function() { return date('Y-m-d'); }, 0);
+    $createFunc('NOW', function() { return date('Y-m-d H:i:s'); }, 0);
 
-    // DATE_FORMAT(date, format) — базовая совместимость
-    $pdo->sqliteCreateFunction('DATE_FORMAT', function($date, $format) {
+    $createFunc('DATE_FORMAT', function($date, $format) {
         if (!$date) return null;
         $phpFormat = str_replace(
             ['%Y', '%m', '%d', '%H', '%i', '%s', '%e'],
@@ -74,23 +75,15 @@ function registerSQLiteCompat(PDO $pdo): void
         return date($phpFormat, strtotime($date));
     }, 2);
 
-    // FIELD(val, v1, v2, ...) — возвращает позицию val в списке
-    $pdo->sqliteCreateFunction('FIELD', function() {
+    $createFunc('FIELD', function() {
         $args = func_get_args();
         $val = array_shift($args);
         $pos = array_search($val, $args);
         return $pos === false ? 0 : $pos + 1;
     });
 
-    // FLOOR
-    $pdo->sqliteCreateFunction('FLOOR', function($val) {
-        return (int)floor($val);
-    }, 1);
-
-    // HOUR
-    $pdo->sqliteCreateFunction('HOUR', function($date) {
-        return $date ? (int)date('G', strtotime($date)) : 0;
-    }, 1);
+    $createFunc('FLOOR', function($val) { return (int)floor($val); }, 1);
+    $createFunc('HOUR', function($date) { return $date ? (int)date('G', strtotime($date)) : 0; }, 1);
 
     // DATE_SUB: SQLite не поддерживает этот синтаксис.
     // Вместо DATE_SUB(NOW(), INTERVAL X DAY) используем PHP-вычисленные даты.
@@ -201,5 +194,11 @@ function initSQLiteTables(PDO $pdo): void
         ('about', 'О проекте', '<p>CraftRadar — мониторинг серверов Minecraft.</p>', 1, datetime('now')),
         ('rules', 'Правила', '<p>Правила использования платформы.</p>', 1, datetime('now')),
         ('faq', 'FAQ', '<p>Часто задаваемые вопросы.</p>', 1, datetime('now'));
+
+        INSERT OR IGNORE INTO users (id, username, email, password_hash, role, created_at) VALUES
+        (1, 'admin', 'admin@craftradar.ru', '$2y$12$placeholder', 'admin', datetime('now'));
+
+        INSERT OR IGNORE INTO servers (id, user_id, name, ip, port, description, game_mode, is_online, players_online, players_max, motd, votes_month, votes_total, status, is_verified, created_at) VALUES
+        (1, 1, 'McAWP - АНАРХИЯ', 'mc.mcawp.ru', 25560, '✦ McAWP - Анархия без правил! ВОЙС ЧАТ, Бесплатные Донаты, /code free. Версии 1.18 - 1.21.*', 'anarchy', 1, 0, 2026, '✦ McAWP - АНАРХИЯ БЕЗ ПРАВИЛ ✦', 15, 42, 'active', 1, datetime('now'));
     ");
 }
