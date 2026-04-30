@@ -137,14 +137,8 @@ function isLoggedIn(): bool
         return false;
     }
 
-    // Проверка привязки к IP и User-Agent
-    $ip = getUserIP();
+    // Проверка привязки к User-Agent (IP не проверяем — на хостингах с прокси он может меняться)
     $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
-
-    if (isset($_SESSION['user_ip']) && $_SESSION['user_ip'] !== $ip) {
-        logoutUser();
-        return false;
-    }
 
     if (isset($_SESSION['user_agent']) && $_SESSION['user_agent'] !== $ua) {
         logoutUser();
@@ -180,6 +174,19 @@ function currentUserId(): int
  */
 function currentUserRole(): string
 {
+    // Всегда читаем роль из БД чтобы изменения применялись без перелогина
+    if (!empty($_SESSION['user_id'])) {
+        try {
+            $db = getDB();
+            $stmt = $db->prepare('SELECT role FROM users WHERE id = ?');
+            $stmt->execute([$_SESSION['user_id']]);
+            $role = $stmt->fetchColumn();
+            if ($role) {
+                $_SESSION['role'] = $role;
+                return $role;
+            }
+        } catch (\Exception $e) {}
+    }
     return $_SESSION['role'] ?? 'user';
 }
 
