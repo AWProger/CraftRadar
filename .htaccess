@@ -3,8 +3,10 @@
 # Включаем mod_rewrite
 RewriteEngine On
 
-# Принудительный HTTPS
+# Принудительный HTTPS (совместимо с прокси/CloudFlare/хостингами)
 RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{HTTP:X-Forwarded-SSL} !on
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Убираем www
