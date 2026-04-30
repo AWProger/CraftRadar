@@ -12,12 +12,91 @@ class YooMoney
 {
     private string $wallet;
     private string $secret;
+    private string $clientId;
 
     public function __construct(string $wallet = '', string $secret = '')
     {
         $this->wallet = $wallet ?: YOOMONEY_WALLET;
         $this->secret = $secret ?: YOOMONEY_SECRET;
+        $this->clientId = YOOMONEY_CLIENT_ID;
     }
+
+    // ==========================================
+    // OAuth-авторизация (получение токена кошелька)
+    // ==========================================
+
+    /**
+     * Получить URL для OAuth-авторизации
+     * Пользователь переходит по этому URL, авторизуется в ЮMoney,
+     * и возвращается на redirect_uri с кодом авторизации.
+     */
+    public function getAuthUrl(): string
+    {
+        $params = [
+            'client_id'     => $this->clientId,
+            'response_type' => 'code',
+            'redirect_uri'  => YOOMONEY_REDIRECT_URI,
+            'scope'         => 'account-info operation-history operation-details incoming-transfers',
+        ];
+
+        return 'https://yoomoney.ru/oauth/authorize?' . http_build_query($params);
+    }
+
+    /**
+     * Обменять код авторизации на access_token
+     */
+    public function exchangeCodeForToken(string $code): ?string
+    {
+        $params = [
+            'code'         => $code,
+            'client_id'    => $this->clientId,
+            'grant_type'   => 'authorization_code',
+            'redirect_uri' => YOOMONEY_REDIRECT_URI,
+        ];
+
+        $ch = curl_init('https://yoomoney.ru/oauth/token');
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => http_build_query($params),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 10,
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$response) {
+            paymentLog('OAuth token exchange failed: HTTP ' . $httpCode . ' — ' . $response);
+            return null;
+        }
+
+        $data = json_decode($response, true);
+        return $data['access_token'] ?? null;
+    }
+
+    /**
+     * Получить информацию о кошельке (через access_token)
+     */
+    public function getAccountInfo(string $accessToken): ?array
+    {
+        $ch = curl_init('https://yoomoney.ru/api/account-info');
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $accessToken],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 10,
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return $response ? json_decode($response, true) : null;
+    }
+
+    // ==========================================
+    // Форма оплаты (quickpay)
+    // ==========================================
 
     /**
      * Генерация данных для формы оплаты

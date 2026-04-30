@@ -5,6 +5,7 @@
 
 $adminPageTitle = 'Настройки';
 require_once __DIR__ . '/includes/admin_header.php';
+require_once INCLUDES_PATH . 'yoomoney.php';
 requireAdmin();
 
 $db = getDB();
@@ -132,5 +133,80 @@ function settingVal(array $settings, string $key): string {
 
     <button type="submit" class="btn btn-primary">Сохранить настройки</button>
 </form>
+
+<!-- ЮMoney (вне основной формы) -->
+<div class="card" style="margin-top: 16px; border-color: var(--warning);">
+    <h3 style="margin-bottom: 12px;">💰 ЮMoney — платежи</h3>
+
+    <div class="info-list" style="margin-bottom: 16px;">
+        <div class="info-item">
+            <span class="info-label">Client ID</span>
+            <span style="font-size: 0.75rem; font-family: monospace; color: var(--text-muted);"><?= e(YOOMONEY_CLIENT_ID) ?></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Кошелёк</span>
+            <span><?= settingVal($settings, 'yoomoney_wallet') ? e(settingVal($settings, 'yoomoney_wallet')) : '<span style="color: var(--danger);">Не привязан</span>' ?></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Секрет уведомлений</span>
+            <span><?= settingVal($settings, 'yoomoney_secret') ? '✅ Задан' : '<span style="color: var(--danger);">Не задан</span>' ?></span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">URL уведомлений</span>
+            <span style="font-size: 0.8rem;"><?= e(YOOMONEY_NOTIFY_URL) ?></span>
+        </div>
+    </div>
+
+    <?php
+    $yoomoneyObj = new YooMoney();
+    $authUrl = $yoomoneyObj->getAuthUrl();
+    ?>
+    <a href="<?= e($authUrl) ?>" class="btn btn-sm btn-outline" style="margin-bottom: 12px;">
+        🔗 Привязать кошелёк через OAuth
+    </a>
+
+    <form method="POST">
+        <?= csrfField() ?>
+        <div class="form-group">
+            <label>Номер кошелька (вручную)</label>
+            <input type="text" name="yoomoney_wallet" value="<?= e(settingVal($settings, 'yoomoney_wallet')) ?>" placeholder="4100...">
+        </div>
+        <div class="form-group">
+            <label>Секрет для HTTP-уведомлений</label>
+            <input type="text" name="yoomoney_secret" value="<?= e(settingVal($settings, 'yoomoney_secret')) ?>" placeholder="Из настроек ЮMoney">
+            <small style="color: var(--text-muted);">ЮMoney → Настройки → HTTP-уведомления → Секрет</small>
+        </div>
+        <div class="form-group">
+            <label>Цена 7 дней (₽)</label>
+            <input type="number" name="promote_price_7d" value="<?= e(settingVal($settings, 'promote_price_7d')) ?>" min="1">
+        </div>
+        <div class="form-group">
+            <label>Цена 14 дней (₽)</label>
+            <input type="number" name="promote_price_14d" value="<?= e(settingVal($settings, 'promote_price_14d')) ?>" min="1">
+        </div>
+        <div class="form-group">
+            <label>Цена 30 дней (₽)</label>
+            <input type="number" name="promote_price_30d" value="<?= e(settingVal($settings, 'promote_price_30d')) ?>" min="1">
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Сохранить настройки ЮMoney</button>
+    </form>
+
+    <div style="margin-top: 16px; padding: 12px; background: var(--bg); border-radius: var(--radius);">
+        <strong>Инструкция:</strong>
+        <ol style="color: var(--text-muted); font-size: 0.85rem; padding-left: 20px; margin-top: 8px; line-height: 1.8;">
+            <li>Нажмите «Привязать кошелёк через OAuth» или введите номер вручную</li>
+            <li>В <a href="https://yoomoney.ru/transfer/myservices/http-notification" target="_blank">настройках ЮMoney</a> включите HTTP-уведомления</li>
+            <li>Укажите URL: <code><?= e(YOOMONEY_NOTIFY_URL) ?></code></li>
+            <li>Скопируйте секрет и вставьте в поле выше</li>
+        </ol>
+    </div>
+</div>
+
+<style>
+    .info-list { display: flex; flex-direction: column; gap: 8px; }
+    .info-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+    .info-label { color: var(--text-muted); }
+    code { background: var(--bg); border: 1px solid var(--border); padding: 1px 6px; border-radius: 3px; font-size: 0.8em; color: var(--accent); }
+</style>
 
 <?php require_once __DIR__ . '/includes/admin_footer.php'; ?>

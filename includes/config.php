@@ -62,8 +62,10 @@ define('CSRF_TOKEN_NAME', 'csrf_token');
 define('CRON_SECRET_KEY', 'craftradar_cron_2026_secret');
 
 // ЮMoney (YooMoney) — платежи
+define('YOOMONEY_CLIENT_ID', '4A0B3A4794FABC11AAF39E44B56441C03A42B4808A4D6933B768045AF5579153');
 define('YOOMONEY_WALLET', '');           // Номер кошелька (заполнить!)
 define('YOOMONEY_SECRET', '');           // Секрет для проверки уведомлений (заполнить!)
+define('YOOMONEY_REDIRECT_URI', SITE_URL . '/payment/callback.php');
 define('YOOMONEY_NOTIFY_URL', SITE_URL . '/payment/notify.php');
 define('YOOMONEY_SUCCESS_URL', SITE_URL . '/payment/success.php');
 define('YOOMONEY_FAIL_URL', SITE_URL . '/payment/fail.php');
