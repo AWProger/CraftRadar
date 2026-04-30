@@ -119,6 +119,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
+// === Hero Particles ===
+(function() {
+    var container = document.getElementById('heroParticles');
+    if (!container) return;
+
+    for (var i = 0; i < 30; i++) {
+        var particle = document.createElement('div');
+        particle.className = 'hero-particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDuration = (3 + Math.random() * 5) + 's';
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        particle.style.width = (2 + Math.random() * 4) + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.opacity = (0.1 + Math.random() * 0.3).toString();
+
+        // Разные цвета — как частицы Minecraft
+        var colors = ['#00ff80', '#5ce1e6', '#ffd700', '#ff6b81', '#70a1ff'];
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+        container.appendChild(particle);
+    }
+})();
+
 // === Sidebar Top Servers Carousel ===
 (function() {
     const carousel = document.getElementById('sidebarCarousel');

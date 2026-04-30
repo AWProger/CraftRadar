@@ -62,13 +62,28 @@ $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
 
 <!-- Hero -->
 <section class="hero">
-    <h1>📡 <?= SITE_NAME ?></h1>
-    <p class="hero-subtitle"><?= e(SITE_DESCRIPTION) ?></p>
+    <div class="hero-particles" id="heroParticles"></div>
+    <div class="hero-content">
+        <div class="hero-logo">⛏️</div>
+        <h1 class="hero-title"><?= SITE_NAME ?></h1>
+        <p class="hero-subtitle"><?= e(SITE_DESCRIPTION) ?></p>
 
-    <form class="search-form" action="<?= SITE_URL ?>/servers.php" method="GET">
-        <input type="text" name="q" placeholder="Поиск сервера по названию или IP..." class="search-input" data-live-search="<?= SITE_URL ?>/api/search.php" autocomplete="off">
-        <button type="submit" class="btn btn-primary">Найти</button>
-    </form>
+        <form class="search-form" action="<?= SITE_URL ?>/servers.php" method="GET">
+            <input type="text" name="q" placeholder="🔍 Найти сервер по названию или IP..." class="search-input" data-live-search="<?= SITE_URL ?>/api/search.php" autocomplete="off">
+            <button type="submit" class="btn btn-primary">⚡ Найти</button>
+        </form>
+
+        <div class="hero-quick-links">
+            <a href="<?= SITE_URL ?>/servers.php?sort=votes" class="hero-link">🏆 Топ серверов</a>
+            <a href="<?= SITE_URL ?>/servers.php?sort=online" class="hero-link">🟢 Онлайн сейчас</a>
+            <a href="<?= SITE_URL ?>/servers.php?sort=new" class="hero-link">🆕 Новые</a>
+            <?php if (!isLoggedIn()): ?>
+                <a href="<?= SITE_URL ?>/register.php" class="hero-link hero-link-accent">📡 Добавить сервер</a>
+            <?php else: ?>
+                <a href="<?= SITE_URL ?>/dashboard/add.php" class="hero-link hero-link-accent">📡 Добавить сервер</a>
+            <?php endif; ?>
+        </div>
+    </div>
 </section>
 
 <!-- Статистика -->
