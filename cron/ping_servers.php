@@ -59,6 +59,30 @@ $offline = 0;
 
 cronLog("Пинг серверов: {$total} шт.");
 
+// Диагностика (если передан debug)
+if (isset($_GET['debug'])) {
+    echo "PHP version: " . PHP_VERSION . "\n";
+    echo "fsockopen: " . (function_exists('fsockopen') ? 'YES' : 'NO') . "\n";
+    echo "allow_url_fopen: " . ini_get('allow_url_fopen') . "\n";
+    
+    foreach ($servers as $s) {
+        echo "\nTesting {$s['ip']}:{$s['port']}...\n";
+        $errno = 0; $errstr = '';
+        $sock = @fsockopen($s['ip'], $s['port'], $errno, $errstr, 5);
+        if ($sock) {
+            echo "  TCP connect: OK\n";
+            fclose($sock);
+        } else {
+            echo "  TCP connect: FAIL - {$errstr} ({$errno})\n";
+        }
+        
+        // DNS resolve
+        $ip = gethostbyname($s['ip']);
+        echo "  DNS: {$s['ip']} -> {$ip}\n";
+    }
+    echo "\n";
+}
+
 foreach ($servers as $server) {
     $result = pingMinecraftServer($server['ip'], $server['port'], PING_TIMEOUT);
 
