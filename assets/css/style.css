@@ -854,49 +854,238 @@ tr:hover td {
 }
 
 /* ============================================
-   Responsive
+   ПОЛНАЯ МОБИЛЬНАЯ АДАПТАЦИЯ
    ============================================ */
+
+/* === Планшет (до 1024px) === */
+@media (max-width: 1024px) {
+    .server-content {
+        grid-template-columns: 1fr !important;
+    }
+    .server-sidebar {
+        order: -1;
+    }
+    .promote-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    }
+}
+
+/* === Мобильные (до 768px) === */
 @media (max-width: 768px) {
-    .header-actions,
-    .nav {
-        display: none;
-    }
+    html { font-size: 15px; }
 
-    .burger {
+    .container { padding: 0 12px; }
+
+    /* Header */
+    .header-inner { height: 56px; gap: 10px; }
+    .header-actions, .nav { display: none; }
+    .burger { display: flex; }
+    .logo { font-size: 0.65rem; }
+    .logo-icon { font-size: 1.2rem; }
+
+    /* Mobile menu */
+    body.menu-open .nav {
         display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--bg-card);
+        border-bottom: var(--pixel-border) var(--border);
+        padding: 16px;
+        gap: 4px;
+        z-index: 99;
+        overflow-y: auto;
     }
-
-    body.menu-open .nav,
     body.menu-open .header-actions {
         display: flex;
         flex-direction: column;
-        position: absolute;
-        top: 64px;
+        position: fixed;
+        top: auto;
+        bottom: 0;
         left: 0;
         right: 0;
         background: var(--bg-card);
-        border-bottom: var(--pixel-border) var(--border);
-        padding: 16px 20px;
+        border-top: var(--pixel-border) var(--border);
+        padding: 12px 16px;
         gap: 8px;
         z-index: 99;
     }
-
-    .server-card {
-        flex-direction: column;
-        align-items: flex-start;
+    body.menu-open .nav .nav-link {
+        padding: 12px 16px;
+        font-size: 1rem;
+        border: 2px solid var(--border);
     }
 
+    /* Hero */
+    .hero { padding: 30px 0 20px; }
+    .hero-logo { font-size: 2rem; }
+    .hero-title { font-size: 0.8rem; letter-spacing: 1px; }
+    .hero-subtitle { font-size: 0.85rem; margin-bottom: 20px; }
+    .search-form { flex-direction: column; gap: 8px; }
+    .search-form .btn { width: 100%; border-left: var(--pixel-border) var(--border); }
+    .search-input { font-size: 1rem; padding: 12px 14px; }
+    .hero-quick-links { gap: 6px; }
+    .hero-link { font-size: 0.7rem; padding: 5px 10px; }
+
+    /* Stats */
+    .home-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .home-stat-item { padding: 12px 8px; }
+    .home-stat-value { font-size: 0.75rem; }
+    .home-stat-label { font-size: 0.6rem; }
+
+    /* Server cards */
+    .server-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px;
+    }
+    .server-card-icon { width: 40px; height: 40px; }
+    .server-card-name { font-size: 0.9rem; }
     .server-card-stats {
+        width: 100%;
+        justify-content: space-around;
+        padding-top: 10px;
+        border-top: 2px solid var(--border);
+    }
+    .server-rank { font-size: 0.6rem; min-width: 24px; }
+
+    /* Section */
+    .section-title { font-size: 0.6rem; }
+    .section-header { flex-direction: column; gap: 8px; align-items: flex-start; }
+
+    /* Server page */
+    .server-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px;
+        padding: 16px;
+    }
+    .server-header-left { gap: 10px; }
+    .server-page-icon { width: 48px !important; height: 48px !important; }
+    .server-page-name { font-size: 1.1rem !important; }
+    .server-header-right { 
         width: 100%;
         justify-content: space-around;
         padding-top: 12px;
         border-top: 2px solid var(--border);
     }
+    .server-content {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    .copy-ip { font-size: 0.7rem; padding: 3px 8px; }
 
+    /* Tables */
+    th, td { padding: 8px 10px; font-size: 0.8rem; }
+    th { font-size: 0.6rem; }
+
+    /* Auth */
+    .auth-card { padding: 20px 16px; }
+    .auth-title { font-size: 0.75rem; }
+
+    /* Cards */
+    .card { padding: 14px; }
+
+    /* Buttons */
+    .btn { padding: 8px 14px; font-size: 0.8rem; }
+    .btn-sm { padding: 5px 10px; font-size: 0.7rem; }
+
+    /* Footer */
     .footer-inner {
         flex-direction: column;
         text-align: center;
+        gap: 12px;
     }
+    .footer-links { justify-content: center; gap: 10px; }
+    .footer-links a { font-size: 0.75rem; }
+
+    /* Pagination */
+    .page-link { min-width: 32px; height: 32px; font-size: 0.75rem; }
+
+    /* Alerts */
+    .alert { font-size: 0.8rem; padding: 10px 12px; }
+
+    /* Forms */
+    .form-group input, .form-group select, .form-group textarea {
+        font-size: 1rem; /* Предотвращает зум на iOS */
+        padding: 12px 14px;
+    }
+
+    /* Dashboard */
+    .dashboard-header {
+        flex-direction: column !important;
+        gap: 8px !important;
+        align-items: flex-start !important;
+    }
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+    /* Promote cards */
+    .promote-grid { grid-template-columns: 1fr !important; }
+
+    /* Verify */
+    .verify-step { flex-direction: column; gap: 10px; }
+    .verify-code { font-size: 1.3rem; letter-spacing: 2px; }
+
+    /* Notifications */
+    .notif-item { padding: 10px 12px; }
+    .notif-title { font-size: 0.85rem; }
+
+    /* Modal */
+    .modal-content { width: 95% !important; padding: 16px !important; }
+
+    /* Chart tabs */
+    .chart-tabs { flex-wrap: wrap; }
+    .chart-tab { font-size: 0.65rem; padding: 3px 8px; }
+
+    /* Info list */
+    .info-item { flex-direction: column; align-items: flex-start; gap: 2px; }
+
+    /* Review */
+    .review-header { flex-direction: column; gap: 4px; }
+    .star-rating .star { font-size: 1.8rem; }
+
+    /* Catalog filters */
+    .filters-row { flex-direction: column; }
+    .filter-search { min-width: 100% !important; }
+    .sort-tabs { flex-wrap: wrap; }
+    .sort-tab { font-size: 0.75rem; padding: 5px 10px; }
+}
+
+/* === Маленькие мобильные (до 480px) === */
+@media (max-width: 480px) {
+    html { font-size: 14px; }
+
+    .home-stats { grid-template-columns: repeat(2, 1fr); }
+    .home-stat-item { padding: 10px 6px; }
+    .home-stat-value { font-size: 0.7rem; }
+
+    .hero-title { font-size: 0.65rem; }
+    .hero-quick-links { flex-direction: column; align-items: center; }
+    .hero-link { width: 100%; text-align: center; }
+
+    .server-card-meta { font-size: 0.7rem; }
+    .stat-value { font-size: 0.7rem; }
+
+    .btn { font-size: 0.75rem; padding: 7px 12px; }
+
+    .section-title { font-size: 0.55rem; }
+
+    .server-header-stat .stat-value { font-size: 0.7rem; }
+    .server-header-stat .stat-label { font-size: 0.5rem; }
+}
+
+/* === Sidebar скрывается на мобильных === */
+@media (max-width: 1200px) {
+    .sidebar-top { display: none; }
+}
+
+/* === Широкие экраны — отступ для сайдбара === */
+@media (min-width: 1500px) {
+    .main .container { margin-right: 310px; }
 }
 
 /* ============================================
@@ -1120,20 +1309,6 @@ tr:hover td {
     text-align: center;
     color: var(--text-muted);
     font-size: 0.8rem;
-}
-
-/* Adjust main content when sidebar is visible */
-@media (min-width: 1500px) {
-    .main .container {
-        margin-right: 310px;
-    }
-}
-
-/* Hide sidebar on small screens */
-@media (max-width: 1200px) {
-    .sidebar-top {
-        display: none;
-    }
 }
 
 /* ============================================

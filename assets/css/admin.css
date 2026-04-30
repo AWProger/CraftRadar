@@ -303,11 +303,47 @@
     }
 
     .admin-content {
-        padding: 16px;
+        padding: 12px;
     }
 
     .admin-stats-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .admin-stat-value { font-size: 0.75rem; }
+    .admin-stat-label { font-size: 0.6rem; }
+
+    .attention-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-filters select,
+    .admin-filters input {
+        width: 100%;
+        font-size: 1rem;
+        padding: 10px 12px;
+    }
+
+    .admin-topbar-title { font-size: 0.6rem; }
+
+    /* Таблицы — горизонтальный скролл */
+    .table-wrap { margin: 0 -12px; padding: 0 12px; }
+
+    th, td { padding: 6px 8px; font-size: 0.75rem; white-space: nowrap; }
+    th { font-size: 0.55rem; }
+
+    /* Графики в 1 колонку */
+    div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+    div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
     }
 }
 
