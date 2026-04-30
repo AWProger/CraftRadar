@@ -17,13 +17,13 @@ if (!$id) {
 }
 
 // Получаем сервер
-$stmt = $db->prepare('
+$stmt = $db->prepare("
     SELECT s.*, u.username as owner_name 
     FROM servers s 
     JOIN users u ON s.user_id = u.id 
-    WHERE s.id = ? AND s.status = ?
-');
-$stmt->execute([$id, 'active']);
+    WHERE s.id = ? AND s.status IN ('active', 'pending')
+");
+$stmt->execute([$id]);
 $server = $stmt->fetch();
 
 if (!$server) {

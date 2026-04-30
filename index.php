@@ -16,7 +16,7 @@ $db = getDB();
 $topVotes = cacheRemember('home_top_votes', 300, function() use ($db) {
     return $db->query("
         SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month, rating, is_verified
-        FROM servers WHERE status = 'active' 
+        FROM servers WHERE status IN ('active', 'pending') 
         ORDER BY is_promoted DESC, votes_month DESC, votes_total DESC 
         LIMIT 10
     ")->fetchAll();
@@ -26,7 +26,7 @@ $topVotes = cacheRemember('home_top_votes', 300, function() use ($db) {
 $topOnline = cacheRemember('home_top_online', 120, function() use ($db) {
     return $db->query("
         SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month, is_verified
-        FROM servers WHERE status = 'active' AND is_online = 1
+        FROM servers WHERE status IN ('active', 'pending') AND is_online = 1
         ORDER BY players_online DESC 
         LIMIT 10
     ")->fetchAll();
@@ -36,7 +36,7 @@ $topOnline = cacheRemember('home_top_online', 120, function() use ($db) {
 $newServers = cacheRemember('home_new_servers', 300, function() use ($db) {
     return $db->query("
     SELECT id, name, ip, port, icon, is_online, players_online, votes_month, is_verified, created_at
-    FROM servers WHERE status = 'active' 
+    FROM servers WHERE status IN ('active', 'pending') 
     ORDER BY created_at DESC 
     LIMIT 10
 ")->fetchAll();
@@ -49,7 +49,7 @@ $stats = cacheRemember('home_stats', 120, function() use ($db) {
             COUNT(*) as total_servers,
             SUM(CASE WHEN is_online = 1 THEN players_online ELSE 0 END) as total_players,
             SUM(CASE WHEN is_online = 1 THEN 1 ELSE 0 END) as online_servers
-        FROM servers WHERE status = 'active'
+        FROM servers WHERE status IN ('active', 'pending')
     ")->fetch();
 });
 

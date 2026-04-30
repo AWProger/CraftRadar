@@ -51,7 +51,7 @@ function cronLog(string $message): void
 $db = getDB();
 
 // Выбираем все активные серверы
-$servers = $db->query("SELECT id, ip, port, consecutive_fails FROM servers WHERE status = 'active'")->fetchAll();
+$servers = $db->query("SELECT id, ip, port, consecutive_fails FROM servers WHERE status IN ('active', 'pending')")->fetchAll();
 
 $total = count($servers);
 $online = 0;

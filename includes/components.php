@@ -52,7 +52,8 @@ function serverCard(array $s, int $rank = 0): string
     $html .= $icon;
     $html .= '<div class="server-card-info">';
     $html .= '<div class="server-card-name">' . $promoted . $name . ' ' . $verified . '</div>';
-    $html .= '<div class="server-card-meta"><span>' . $ip . '</span>' . $badge . '</div>';
+    $pendingBadge = (!empty($s['status']) && $s['status'] === 'pending') ? ' <span class="badge badge-pending">На модерации</span>' : '';
+    $html .= '<div class="server-card-meta"><span>' . $ip . '</span>' . $badge . $pendingBadge . '</div>';
     $html .= '</div>';
 
     $html .= '<div class="server-card-stats">';

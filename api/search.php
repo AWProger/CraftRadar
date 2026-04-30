@@ -19,7 +19,7 @@ $db = getDB();
 $stmt = $db->prepare("
     SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month
     FROM servers 
-    WHERE status = 'active' AND (name LIKE ? OR ip LIKE ?)
+    WHERE status IN ('active', 'pending') AND (name LIKE ? OR ip LIKE ?)
     ORDER BY votes_month DESC
     LIMIT 10
 ");

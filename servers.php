@@ -18,7 +18,7 @@ $mode = get('mode');
 $onlineOnly = get('online') === '1';
 
 // Построение запроса
-$where = ["s.status = 'active'"];
+$where = ["s.status IN ('active', 'pending')"];
 $params = [];
 
 if ($search) {

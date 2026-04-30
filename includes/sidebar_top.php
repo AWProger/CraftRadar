@@ -15,7 +15,7 @@ $sidebarServers = cacheRemember('sidebar_top_initial', SIDEBAR_ROTATE_SECONDS, f
         SELECT id, name, ip, port, icon, motd, is_online, players_online, players_max,
                votes_month, is_verified, is_promoted,
                (highlighted_until > NOW()) as is_highlighted
-        FROM servers WHERE status = 'active'
+        FROM servers WHERE status IN ('active', 'pending')
         ORDER BY is_promoted DESC, (highlighted_until > NOW()) DESC, votes_month DESC
         LIMIT ?
     ");

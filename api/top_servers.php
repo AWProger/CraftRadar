@@ -21,7 +21,7 @@ $data = cacheRemember('top_servers_' . $limit, SIDEBAR_ROTATE_SECONDS, function(
                votes_month, rating, is_verified, is_promoted,
                (highlighted_until > NOW()) as is_highlighted
         FROM servers 
-        WHERE status = 'active'
+        WHERE status IN ('active', 'pending')
         ORDER BY is_promoted DESC, (highlighted_until > NOW()) DESC, votes_month DESC, votes_total DESC
         LIMIT ?
     ");
