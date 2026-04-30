@@ -33,6 +33,7 @@ if (!$server) {
 
 $pageTitle = $server['name'];
 $pageDescription = truncate(strip_tags($server['description'] ?? ''), 160);
+$pageImage = $server['icon'] ? SITE_URL . '/' . $server['icon'] : null;
 
 // Проверка: может ли текущий пользователь голосовать
 $canVote = false;
@@ -102,7 +103,13 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="server-page-icon server-page-icon-placeholder">📡</div>
             <?php endif; ?>
             <div>
-                <h1 class="server-page-name"><?= e($server['name']) ?></h1>
+                <h1 class="server-page-name">
+                    <?php if ($server['is_promoted']): ?><span style="color: var(--warning);">⭐</span><?php endif; ?>
+                    <?= e($server['name']) ?>
+                    <?php if ($server['is_verified']): ?>
+                        <span class="badge badge-online" style="font-size: 0.7rem; vertical-align: middle; margin-left: 6px;">✓ Владелец подтверждён</span>
+                    <?php endif; ?>
+                </h1>
                 <div class="server-page-meta">
                     <span class="copy-ip" data-ip="<?= e($server['ip'] . ':' . $server['port']) ?>">
                         <?= e($server['ip'] . ':' . $server['port']) ?> 📋
@@ -283,6 +290,17 @@ require_once __DIR__ . '/includes/header.php';
                     <button class="btn btn-ghost btn-sm" onclick="document.getElementById('reportModal').style.display='flex'">
                         ⚠️ Пожаловаться
                     </button>
+                </div>
+            <?php endif; ?>
+
+            <!-- Верификация -->
+            <?php if (isLoggedIn() && !$server['is_verified']): ?>
+                <div class="card" style="margin-top: 12px; border-color: var(--info);">
+                    <h3 style="margin-bottom: 8px; font-size: 0.9rem;">🔐 Это ваш сервер?</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px;">
+                        Подтвердите владение через MOTD и получите статус верифицированного владельца.
+                    </p>
+                    <a href="<?= SITE_URL ?>/dashboard/verify.php?id=<?= $id ?>" class="btn btn-sm btn-outline btn-block">Подтвердить владение</a>
                 </div>
             <?php endif; ?>
         </div>

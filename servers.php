@@ -143,6 +143,7 @@ if ($onlineOnly) $baseUrl .= '&online=1';
                         <div class="server-card-name">
                             <?php if ($s['is_promoted']): ?><span style="color: var(--warning);">⭐</span><?php endif; ?>
                             <?= e($s['name']) ?>
+                            <?php if ($s['is_verified']): ?><span style="color: var(--success); font-size: 0.75rem;" title="Владелец подтверждён">✓</span><?php endif; ?>
                         </div>
                         <div class="server-card-meta">
                             <span><?= e($s['ip'] . ':' . $s['port']) ?></span>
