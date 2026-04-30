@@ -30,6 +30,36 @@ $totalVotes = (int)$db->query("SELECT COUNT(*) FROM votes")->fetchColumn();
 $newReports = (int)$db->query("SELECT COUNT(*) FROM reports WHERE status = 'new'")->fetchColumn();
 $offlineLong = (int)$db->query("SELECT COUNT(*) FROM servers WHERE status = 'active' AND is_online = 0 AND last_ping < DATE_SUB(NOW(), INTERVAL 7 DAY)")->fetchColumn();
 
+// Доходы
+$revenueToday = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND DATE(paid_at) = CURDATE()")->fetchColumn();
+$revenueMonth = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND paid_at >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
+$revenueTotal = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed'")->fetchColumn();
+
+// Графики за 30 дней
+$registrationsByDay = $db->query("
+    SELECT DATE(created_at) as day, COUNT(*) as cnt 
+    FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+    GROUP BY day ORDER BY day
+")->fetchAll();
+
+$serversByDay = $db->query("
+    SELECT DATE(created_at) as day, COUNT(*) as cnt 
+    FROM servers WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+    GROUP BY day ORDER BY day
+")->fetchAll();
+
+$votesByDay = $db->query("
+    SELECT DATE(voted_at) as day, COUNT(*) as cnt 
+    FROM votes WHERE voted_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+    GROUP BY day ORDER BY day
+")->fetchAll();
+
+$revenueByDay = $db->query("
+    SELECT DATE(paid_at) as day, SUM(amount) as total 
+    FROM payments WHERE status = 'completed' AND paid_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+    GROUP BY day ORDER BY day
+")->fetchAll();
+
 // Последние действия
 $recentLog = $db->query("
     SELECT al.*, u.username 
@@ -89,6 +119,44 @@ $recentLog = $db->query("
     </div>
 </div>
 
+<!-- 💰 Доходы -->
+<h2 class="section-title">💰 Доходы</h2>
+<div class="admin-stats-grid">
+    <div class="admin-stat-card">
+        <div class="admin-stat-value" style="color: var(--warning);"><?= number_format($revenueToday, 0, '.', ' ') ?> ₽</div>
+        <div class="admin-stat-label">Сегодня</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-value" style="color: var(--warning);"><?= number_format($revenueMonth, 0, '.', ' ') ?> ₽</div>
+        <div class="admin-stat-label">За месяц</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-value" style="color: var(--warning);"><?= number_format($revenueTotal, 0, '.', ' ') ?> ₽</div>
+        <div class="admin-stat-label">Всего</div>
+    </div>
+</div>
+
+<!-- 📊 Графики за 30 дней -->
+<h2 class="section-title">📊 Графики (30 дней)</h2>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+    <div class="card">
+        <h3 style="margin-bottom: 8px; font-size: 0.9rem;">Регистрации</h3>
+        <canvas id="chartRegistrations" height="180"></canvas>
+    </div>
+    <div class="card">
+        <h3 style="margin-bottom: 8px; font-size: 0.9rem;">Серверы</h3>
+        <canvas id="chartServers" height="180"></canvas>
+    </div>
+    <div class="card">
+        <h3 style="margin-bottom: 8px; font-size: 0.9rem;">Голоса</h3>
+        <canvas id="chartVotes" height="180"></canvas>
+    </div>
+    <div class="card">
+        <h3 style="margin-bottom: 8px; font-size: 0.9rem;">Доходы (₽)</h3>
+        <canvas id="chartRevenue" height="180"></canvas>
+    </div>
+</div>
+
 <!-- Требует внимания -->
 <h2 class="section-title">⚠️ Требует внимания</h2>
 <div class="attention-grid">
@@ -134,3 +202,37 @@ $recentLog = $db->query("
 </div>
 
 <?php require_once __DIR__ . '/includes/admin_footer.php'; ?>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
+<script>
+const chartOpts = {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+        x: { ticks: { color: '#8b949e', maxTicksLimit: 10 }, grid: { color: 'rgba(48,54,61,0.5)' } },
+        y: { beginAtZero: true, ticks: { color: '#8b949e' }, grid: { color: 'rgba(48,54,61,0.5)' } }
+    }
+};
+
+function makeChart(id, data, color) {
+    if (!data.length) return;
+    new Chart(document.getElementById(id).getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: data.map(d => d.day.slice(5)),
+            datasets: [{
+                data: data.map(d => d.cnt || d.total),
+                borderColor: color,
+                backgroundColor: color.replace(')', ',0.1)').replace('rgb', 'rgba'),
+                fill: true, tension: 0.3, pointRadius: 2
+            }]
+        },
+        options: chartOpts
+    });
+}
+
+makeChart('chartRegistrations', <?= json_encode(array_map(fn($d) => ['day' => $d['day'], 'cnt' => (int)$d['cnt']], $registrationsByDay)) ?>, 'rgb(88,166,255)');
+makeChart('chartServers', <?= json_encode(array_map(fn($d) => ['day' => $d['day'], 'cnt' => (int)$d['cnt']], $serversByDay)) ?>, 'rgb(63,185,80)');
+makeChart('chartVotes', <?= json_encode(array_map(fn($d) => ['day' => $d['day'], 'cnt' => (int)$d['cnt']], $votesByDay)) ?>, 'rgb(210,153,34)');
+makeChart('chartRevenue', <?= json_encode(array_map(fn($d) => ['day' => $d['day'], 'total' => (float)$d['total']], $revenueByDay)) ?>, 'rgb(248,81,73)');
+</script>

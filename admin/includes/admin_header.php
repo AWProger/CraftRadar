@@ -66,6 +66,10 @@ $newReportsCount = (int)$db->query("SELECT COUNT(*) FROM reports WHERE status = 
                 💬 Отзывы
             </a>
 
+            <a href="<?= SITE_URL ?>/admin/payments.php" class="admin-nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'payments.php' ? 'active' : '' ?>">
+                💰 Платежи
+            </a>
+
             <?php if (isAdmin()): ?>
                 <a href="<?= SITE_URL ?>/admin/categories.php" class="admin-nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'categories.php' ? 'active' : '' ?>">
                     🏷️ Категории

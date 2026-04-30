@@ -8,6 +8,29 @@ require_once __DIR__ . '/includes/admin_header.php';
 
 $db = getDB();
 
+// Экспорт CSV
+if (get('export') === 'csv' && isAdmin()) {
+    $allLogs = $db->query("
+        SELECT al.created_at, u.username, al.action, al.target_type, al.target_id, al.ip_address, al.details
+        FROM admin_log al JOIN users u ON al.admin_id = u.id 
+        ORDER BY al.created_at DESC
+    ")->fetchAll();
+
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=admin_log_' . date('Y-m-d') . '.csv');
+    $out = fopen('php://output', 'w');
+    fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM для Excel
+    fputcsv($out, ['Дата', 'Администратор', 'Действие', 'Тип объекта', 'ID объекта', 'IP', 'Детали'], ';');
+    foreach ($allLogs as $log) {
+        fputcsv($out, [
+            $log['created_at'], $log['username'], $log['action'],
+            $log['target_type'], $log['target_id'], $log['ip_address'], $log['details']
+        ], ';');
+    }
+    fclose($out);
+    exit;
+}
+
 $page = max(1, getInt('page', 1));
 $adminFilter = get('admin_id');
 $actionFilter = get('action');
@@ -61,6 +84,9 @@ if ($actionFilter) $baseUrl .= '&action=' . urlencode($actionFilter);
     <?php endif; ?>
     <input type="text" name="action" value="<?= e($actionFilter) ?>" placeholder="Тип действия...">
     <button type="submit" class="btn btn-sm btn-primary">Фильтр</button>
+    <?php if (isAdmin()): ?>
+        <a href="<?= SITE_URL ?>/admin/log.php?export=csv" class="btn btn-sm btn-outline">📥 Экспорт CSV</a>
+    <?php endif; ?>
 </form>
 
 <div class="table-wrap">

@@ -104,6 +104,9 @@ foreach ($servers as $s) {
                             <td>
                                 <a href="<?= SITE_URL ?>/dashboard/edit.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline">Редактировать</a>
                                 <a href="<?= SITE_URL ?>/dashboard/stats.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-ghost">Статистика</a>
+                                <?php if ($s['status'] === 'active'): ?>
+                                    <a href="<?= SITE_URL ?>/dashboard/promote.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-ghost" style="color: var(--warning);">⭐ Продвинуть</a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

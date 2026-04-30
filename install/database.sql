@@ -226,3 +226,36 @@ INSERT INTO pages (slug, title, content, is_published, updated_at) VALUES
 ('about', 'О проекте', '<p>CraftRadar — мониторинг серверов Minecraft.</p>', 1, NOW()),
 ('rules', 'Правила', '<p>Правила использования платформы.</p>', 1, NOW()),
 ('faq', 'FAQ', '<p>Часто задаваемые вопросы.</p>', 1, NOW());
+
+-- ============================================
+-- Платежи (ЮMoney)
+-- ============================================
+CREATE TABLE IF NOT EXISTS payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    server_id INT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'RUB',
+    type ENUM('promote_7d', 'promote_14d', 'promote_30d', 'custom') NOT NULL,
+    status ENUM('pending', 'completed', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
+    payment_id VARCHAR(100) NULL COMMENT 'ID операции в ЮMoney',
+    yoomoney_operation_id VARCHAR(100) NULL,
+    label VARCHAR(100) NULL COMMENT 'Метка платежа для идентификации',
+    description VARCHAR(255) NULL,
+    paid_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE SET NULL,
+    INDEX idx_user (user_id),
+    INDEX idx_status (status),
+    INDEX idx_label (label),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB;
+
+-- Настройки ЮMoney
+INSERT INTO settings (`key`, `value`, description) VALUES
+('yoomoney_wallet', '', 'Номер кошелька ЮMoney'),
+('yoomoney_secret', '', 'Секретный ключ для уведомлений ЮMoney'),
+('promote_price_7d', '99', 'Цена продвижения на 7 дней (руб.)'),
+('promote_price_14d', '179', 'Цена продвижения на 14 дней (руб.)'),
+('promote_price_30d', '299', 'Цена продвижения на 30 дней (руб.)');

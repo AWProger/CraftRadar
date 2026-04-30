@@ -61,6 +61,20 @@ define('CSRF_TOKEN_NAME', 'csrf_token');
 // Cron — секретный ключ для запуска через HTTP (wget)
 define('CRON_SECRET_KEY', 'craftradar_cron_2026_secret');
 
+// ЮMoney (YooMoney) — платежи
+define('YOOMONEY_WALLET', '');           // Номер кошелька (заполнить!)
+define('YOOMONEY_SECRET', '');           // Секрет для проверки уведомлений (заполнить!)
+define('YOOMONEY_NOTIFY_URL', SITE_URL . '/payment/notify.php');
+define('YOOMONEY_SUCCESS_URL', SITE_URL . '/payment/success.php');
+define('YOOMONEY_FAIL_URL', SITE_URL . '/payment/fail.php');
+
+// Тарифы продвижения (руб.)
+define('PROMOTE_PRICES', [
+    '7d'  => 99,
+    '14d' => 179,
+    '30d' => 299,
+]);
+
 // Настройки ошибок
 if (DEBUG) {
     error_reporting(E_ALL);
