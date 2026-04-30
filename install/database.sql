@@ -1,11 +1,6 @@
--- CraftRadar — Создание базы данных и таблиц
+-- CraftRadar — Создание таблиц
 -- MySQL 8 / MariaDB 10.6+
-
-CREATE DATABASE IF NOT EXISTS craftradar
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
-
-USE craftradar;
+-- База данных уже создана через панель хостинга, выберите её в phpMyAdmin перед импортом
 
 -- ============================================
 -- Пользователи
