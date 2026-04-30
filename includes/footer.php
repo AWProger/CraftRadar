@@ -1,6 +1,13 @@
         </div>
     </main>
 
+    <?php
+    // Боковой виджет топ-серверов (не показываем в админке)
+    if (!isset($adminPageTitle)) {
+        require_once __DIR__ . '/sidebar_top.php';
+    }
+    ?>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-inner">
@@ -20,5 +27,6 @@
     </footer>
 
     <script src="<?= SITE_URL ?>/assets/js/app.js"></script>
+    <script>document.body.dataset.siteUrl = '<?= SITE_URL ?>'; document.body.dataset.sidebarInterval = '<?= SIDEBAR_SLIDE_INTERVAL ?>';</script>
 </body>
 </html>

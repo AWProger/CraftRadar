@@ -898,3 +898,240 @@ tr:hover td {
         text-align: center;
     }
 }
+
+/* ============================================
+   Sidebar Top Servers — карусель
+   ============================================ */
+.sidebar-top {
+    position: fixed;
+    right: 16px;
+    top: 80px;
+    width: 280px;
+    background: var(--bg-card);
+    border: var(--pixel-border) var(--border);
+    box-shadow: var(--shadow);
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 100px);
+}
+
+.sidebar-top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--border);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-top-title {
+    font-family: var(--font-mc);
+    font-size: 0.5rem;
+    color: var(--gold);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+}
+
+.sidebar-top-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.sidebar-btn {
+    width: 24px;
+    height: 24px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+}
+
+.sidebar-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Carousel */
+.sidebar-top-carousel {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar-top-track {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s ease;
+}
+
+/* Server card in sidebar */
+.sidebar-server {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    transition: all var(--transition);
+    min-height: 56px;
+}
+
+.sidebar-server:hover {
+    background: rgba(0, 255, 128, 0.05);
+}
+
+.sidebar-server:last-child {
+    border-bottom: none;
+}
+
+.sidebar-server-promoted {
+    background: rgba(255, 215, 0, 0.05);
+    border-left: 3px solid var(--gold);
+}
+
+.sidebar-server-highlighted {
+    background: rgba(92, 225, 230, 0.05);
+    border-left: 3px solid var(--diamond);
+}
+
+.sidebar-server-rank {
+    font-family: var(--font-mc);
+    font-size: 0.45rem;
+    color: var(--text-muted);
+    min-width: 20px;
+    text-align: center;
+}
+
+.sidebar-server-icon-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.sidebar-server-icon {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border);
+    image-rendering: pixelated;
+    object-fit: cover;
+}
+
+.sidebar-server-icon-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    font-size: 1rem;
+}
+
+.sidebar-online-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border: 2px solid var(--bg-card);
+}
+
+.sidebar-server-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.sidebar-server-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.sidebar-server-motd {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.sidebar-server-stats {
+    display: flex;
+    gap: 8px;
+    font-size: 0.6rem;
+    margin-top: 2px;
+}
+
+.sidebar-players {
+    color: var(--success);
+}
+
+.sidebar-offline {
+    color: var(--danger);
+}
+
+.sidebar-votes {
+    color: var(--text-muted);
+}
+
+/* Footer */
+.sidebar-top-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-top: 2px solid var(--border);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.sidebar-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--border);
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.sidebar-dot.active {
+    background: var(--accent);
+}
+
+.sidebar-all-link {
+    font-size: 0.65rem;
+    color: var(--accent);
+}
+
+.sidebar-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Adjust main content when sidebar is visible */
+@media (min-width: 1500px) {
+    .main .container {
+        margin-right: 310px;
+    }
+}
+
+/* Hide sidebar on small screens */
+@media (max-width: 1200px) {
+    .sidebar-top {
+        display: none;
+    }
+}

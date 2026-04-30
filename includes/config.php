@@ -91,6 +91,11 @@ define('HIGHLIGHT_COSTS', [
 // Баллы за действия
 define('POINTS_PER_VOTE', 1);
 
+// Боковой виджет топ-серверов
+define('SIDEBAR_TOP_COUNT', 20);
+define('SIDEBAR_ROTATE_SECONDS', 120); // Интервал обновления данных (сек)
+define('SIDEBAR_SLIDE_INTERVAL', 5000); // Интервал прокрутки карусели (мс)
+
 // Настройки ошибок
 if (DEBUG) {
     error_reporting(E_ALL);

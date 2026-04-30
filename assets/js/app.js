@@ -118,3 +118,120 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+
+// === Sidebar Top Servers Carousel ===
+(function() {
+    const carousel = document.getElementById('sidebarCarousel');
+    const track = document.getElementById('sidebarTrack');
+    const dotsContainer = document.getElementById('sidebarDots');
+    const prevBtn = document.getElementById('sidebarPrev');
+    const nextBtn = document.getElementById('sidebarNext');
+
+    if (!carousel || !track) return;
+
+    const VISIBLE_COUNT = 5; // Сколько серверов видно одновременно
+    const SLIDE_INTERVAL = parseInt(document.body.dataset.sidebarInterval || '5000');
+    const items = track.querySelectorAll('.sidebar-server');
+    const totalItems = items.length;
+    const totalPages = Math.ceil(totalItems / VISIBLE_COUNT);
+    let currentPage = 0;
+    let autoSlideTimer = null;
+
+    // Рассчитываем высоту одного элемента
+    function getItemHeight() {
+        if (items.length === 0) return 56;
+        return items[0].offsetHeight;
+    }
+
+    // Создаём точки
+    function createDots() {
+        if (!dotsContainer || totalPages <= 1) return;
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalPages; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'sidebar-dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', function() { goToPage(i); });
+            dotsContainer.appendChild(dot);
+        }
+    }
+
+    // Переход к странице
+    function goToPage(page) {
+        currentPage = page;
+        if (currentPage >= totalPages) currentPage = 0;
+        if (currentPage < 0) currentPage = totalPages - 1;
+
+        const offset = currentPage * VISIBLE_COUNT * getItemHeight();
+        track.style.transform = 'translateY(-' + offset + 'px)';
+
+        // Обновляем точки
+        if (dotsContainer) {
+            dotsContainer.querySelectorAll('.sidebar-dot').forEach(function(dot, i) {
+                dot.classList.toggle('active', i === currentPage);
+            });
+        }
+
+        resetAutoSlide();
+    }
+
+    // Автопрокрутка
+    function startAutoSlide() {
+        if (totalPages <= 1) return;
+        autoSlideTimer = setInterval(function() {
+            goToPage(currentPage + 1);
+        }, SLIDE_INTERVAL);
+    }
+
+    function resetAutoSlide() {
+        clearInterval(autoSlideTimer);
+        startAutoSlide();
+    }
+
+    // Кнопки
+    if (prevBtn) prevBtn.addEventListener('click', function() { goToPage(currentPage - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { goToPage(currentPage + 1); });
+
+    // Пауза при наведении
+    carousel.addEventListener('mouseenter', function() { clearInterval(autoSlideTimer); });
+    carousel.addEventListener('mouseleave', function() { startAutoSlide(); });
+
+    // Установка высоты карусели
+    function setCarouselHeight() {
+        var h = getItemHeight() * Math.min(VISIBLE_COUNT, totalItems);
+        carousel.style.height = h + 'px';
+    }
+
+    // Инициализация
+    createDots();
+    setCarouselHeight();
+    startAutoSlide();
+
+    // Обновление данных через API
+    function refreshSidebarData() {
+        var apiUrl = (document.body.dataset.siteUrl || '') + '/api/top_servers.php?limit=' + totalItems;
+        fetch(apiUrl)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data.servers) return;
+                data.servers.forEach(function(srv, i) {
+                    if (!items[i]) return;
+                    var nameEl = items[i].querySelector('.sidebar-server-name');
+                    var motdEl = items[i].querySelector('.sidebar-server-motd');
+                    var statsEl = items[i].querySelector('.sidebar-server-stats');
+                    if (nameEl) {
+                        nameEl.textContent = (srv.is_promoted ? '⭐' : '') + (srv.is_verified ? '✓' : '') + srv.name;
+                    }
+                    if (motdEl) motdEl.textContent = srv.motd || srv.ip;
+                    if (statsEl) {
+                        statsEl.innerHTML = srv.is_online
+                            ? '<span class="sidebar-players">👥 ' + srv.players_online + '/' + srv.players_max + '</span><span class="sidebar-votes">👍 ' + srv.votes_month + '</span>'
+                            : '<span class="sidebar-offline">● Оффлайн</span><span class="sidebar-votes">👍 ' + srv.votes_month + '</span>';
+                    }
+                });
+            })
+            .catch(function() {}); // Тихо игнорируем ошибки
+    }
+
+    // Обновляем данные каждые 2 минуты
+    setInterval(refreshSidebarData, 120000);
+})();
