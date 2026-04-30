@@ -246,9 +246,61 @@ class MinecraftPing
 
 /**
  * Быстрая функция пинга сервера
+ * Сначала пробует прямой TCP (SLP), при неудаче — внешний API mcsrvstat.us
  */
 function pingMinecraftServer(string $host, int $port = 25565, int $timeout = 5): array|false
 {
+    // Попытка 1: прямой TCP пинг (работает если порт открыт)
     $ping = new MinecraftPing($host, $port, $timeout);
-    return $ping->ping();
+    $result = $ping->ping();
+    if ($result) return $result;
+
+    // Попытка 2: через внешний API (обходит блокировку портов на shared-хостингах)
+    return pingViaApi($host, $port);
+}
+
+/**
+ * Пинг через внешний API mcsrvstat.us (fallback)
+ */
+function pingViaApi(string $host, int $port): array|false
+{
+    if (!function_exists('curl_init')) return false;
+
+    $url = "https://api.mcsrvstat.us/2/{$host}:{$port}";
+
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL            => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 10,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_USERAGENT      => 'CraftRadar/1.0',
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode !== 200 || !$response) return false;
+
+    $data = json_decode($response, true);
+    if (!$data || empty($data['online'])) return false;
+
+    // Парсим MOTD
+    $motd = '';
+    if (!empty($data['motd']['clean'])) {
+        $motd = implode(' ', $data['motd']['clean']);
+    }
+
+    return [
+        'online'      => true,
+        'players'     => (int)($data['players']['online'] ?? 0),
+        'max_players' => (int)($data['players']['max'] ?? 0),
+        'version'     => $data['version'] ?? 'Unknown',
+        'protocol'    => (int)($data['protocol']['version'] ?? 0),
+        'motd'        => $motd,
+        'favicon'     => !empty($data['icon']) ? $data['icon'] : null,
+        'ping_ms'     => 0, // API не возвращает пинг
+    ];
 }
