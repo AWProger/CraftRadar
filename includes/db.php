@@ -199,7 +199,7 @@ function initSQLiteTables(PDO $pdo): void
         ('contacts', 'Контакты', '<h2>Контакты</h2><p>Email: admin@craftradar.ru</p>', 1, datetime('now'));
 
         INSERT OR IGNORE INTO users (id, username, email, password_hash, role, created_at) VALUES
-        (1, 'admin', 'admin@craftradar.ru', '\$2y\$12\$dummyhashfordevonly000000000000000000000000000000', 'admin', datetime('now'));
+        (1, 'admin', 'admin@craftradar.ru', '\$2y\$12\$Vd5JLXbCyOLrxbM5T4qU8eN2BoO5wwnrqT14p0nSEj8pyBqFMlCpm', 'admin', datetime('now'));
 
         INSERT OR IGNORE INTO servers (id, user_id, name, ip, port, description, game_mode, is_online, players_online, players_max, motd, votes_month, votes_total, status, is_verified, created_at) VALUES
         (1, 1, 'McAWP - АНАРХИЯ', 'mc.mcawp.ru', 25560, '✦ McAWP - Анархия без правил! ВОЙС ЧАТ, Бесплатные Донаты, /code free. Версии 1.18 - 1.21.*', 'anarchy', 1, 0, 2026, '✦ McAWP - АНАРХИЯ БЕЗ ПРАВИЛ ✦', 15, 42, 'active', 1, datetime('now'));
