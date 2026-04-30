@@ -8,6 +8,7 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/notifications.php';
+require_once __DIR__ . '/points.php';
 
 $pageTitle = isset($pageTitle) ? $pageTitle . ' — ' . SITE_NAME : SITE_NAME;
 $_notifCount = isLoggedIn() ? getUnreadCount(currentUserId()) : 0;
@@ -57,6 +58,7 @@ $_notifCount = isLoggedIn() ? getUnreadCount(currentUserId()) : 0;
                             <a href="<?= SITE_URL ?>/admin/" class="btn btn-sm btn-outline">Админка</a>
                         <?php endif; ?>
                         <span class="header-user"><?= e($_SESSION['username'] ?? '') ?></span>
+                        <span class="points-display" title="Ваши баллы"><span class="points-icon">💎</span> <?= getUserPoints(currentUserId()) ?></span>
                         <a href="<?= SITE_URL ?>/logout.php" class="btn btn-sm btn-ghost">Выйти</a>
                     <?php else: ?>
                         <a href="<?= SITE_URL ?>/login.php" class="btn btn-sm btn-outline">Войти</a>

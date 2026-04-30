@@ -1,6 +1,10 @@
 /* ============================================
-   CraftRadar — Основные стили (тёмная тема)
+   CraftRadar — Minecraft-стиль
+   Блочный дизайн, пиксельные элементы, тёмная тема
    ============================================ */
+
+/* --- Minecraft Font --- */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 /* --- Reset & Base --- */
 *, *::before, *::after {
@@ -10,25 +14,34 @@
 }
 
 :root {
-    --bg: #0d1117;
-    --bg-card: #161b22;
-    --bg-input: #0d1117;
-    --border: #30363d;
-    --text: #e6edf3;
-    --text-muted: #8b949e;
+    --bg: #1a1a2e;
+    --bg-card: #16213e;
+    --bg-input: #0f3460;
+    --border: #533483;
+    --border-light: #7b2d8e;
+    --text: #e6e6e6;
+    --text-muted: #8892b0;
     --accent: #00ff80;
     --accent-hover: #00cc66;
-    --accent-bg: rgba(0, 255, 128, 0.1);
-    --danger: #f85149;
-    --danger-hover: #da3633;
-    --warning: #d29922;
-    --success: #3fb950;
-    --info: #58a6ff;
-    --radius: 8px;
-    --radius-sm: 4px;
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --transition: 0.2s ease;
+    --accent-bg: rgba(0, 255, 128, 0.08);
+    --danger: #ff4757;
+    --danger-hover: #ff6b81;
+    --warning: #ffa502;
+    --success: #2ed573;
+    --info: #70a1ff;
+    --gold: #ffd700;
+    --diamond: #5ce1e6;
+    --emerald: #00ff80;
+    --redstone: #ff4757;
+    --radius: 0px;  /* Блочный стиль — без скруглений */
+    --radius-sm: 0px;
+    --shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 4px 4px 0px rgba(0, 255, 128, 0.3);
+    --transition: 0.15s ease;
     --container: 1200px;
+    --font-mc: 'Press Start 2P', monospace;
+    --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --pixel-border: 3px solid;
 }
 
 html {
@@ -37,8 +50,11 @@ html {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    font-family: var(--font-main);
     background: var(--bg);
+    background-image:
+        radial-gradient(circle at 20% 50%, rgba(83, 52, 131, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(15, 52, 96, 0.2) 0%, transparent 50%);
     color: var(--text);
     line-height: 1.6;
     min-height: 100vh;
@@ -54,11 +70,13 @@ a {
 
 a:hover {
     color: var(--accent-hover);
+    text-shadow: 0 0 8px rgba(0, 255, 128, 0.4);
 }
 
 img {
     max-width: 100%;
     height: auto;
+    image-rendering: pixelated;
 }
 
 /* --- Container --- */
@@ -71,32 +89,35 @@ img {
 /* --- Header --- */
 .header {
     background: var(--bg-card);
-    border-bottom: 1px solid var(--border);
+    border-bottom: var(--pixel-border) var(--border);
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
 }
 
 .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 60px;
+    height: 64px;
     gap: 20px;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text);
+    gap: 10px;
+    font-family: var(--font-mc);
+    font-size: 0.75rem;
+    color: var(--accent);
     white-space: nowrap;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .logo:hover {
-    color: var(--accent);
+    color: var(--gold);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
 .logo-icon {
@@ -105,21 +126,24 @@ img {
 
 .nav {
     display: flex;
-    gap: 8px;
+    gap: 4px;
 }
 
 .nav-link {
     color: var(--text-muted);
-    padding: 6px 12px;
-    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
     transition: all var(--transition);
-    font-size: 0.9rem;
+    border: 2px solid transparent;
 }
 
 .nav-link:hover,
 .nav-link.active {
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent);
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    text-shadow: 0 0 6px rgba(0, 255, 128, 0.3);
 }
 
 .header-actions {
@@ -130,14 +154,14 @@ img {
 
 .header-user {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 /* Burger */
 .burger {
     display: none;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
     background: none;
     border: none;
     cursor: pointer;
@@ -146,10 +170,9 @@ img {
 
 .burger span {
     display: block;
-    width: 22px;
-    height: 2px;
-    background: var(--text);
-    border-radius: 2px;
+    width: 24px;
+    height: 3px;
+    background: var(--accent);
     transition: all var(--transition);
 }
 
@@ -162,7 +185,7 @@ img {
 /* --- Footer --- */
 .footer {
     background: var(--bg-card);
-    border-top: 1px solid var(--border);
+    border-top: var(--pixel-border) var(--border);
     padding: 20px 0;
     margin-top: auto;
 }
@@ -177,44 +200,61 @@ img {
 
 .footer-copy {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .footer-links {
     display: flex;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .footer-links a {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .footer-links a:hover {
     color: var(--accent);
 }
 
-/* --- Buttons --- */
+/* ============================================
+   Buttons — Minecraft блочный стиль
+   ============================================ */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
     padding: 10px 20px;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    font-weight: 500;
+    border: var(--pixel-border) var(--border);
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all var(--transition);
     text-decoration: none;
     white-space: nowrap;
     line-height: 1.4;
+    box-shadow: var(--shadow);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
+}
+
+.btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .btn-sm {
     padding: 6px 12px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .btn-block {
@@ -222,15 +262,17 @@ img {
 }
 
 .btn-primary {
-    background: var(--accent);
+    background: linear-gradient(180deg, #2ed573 0%, #00b894 100%);
     color: #000;
-    border-color: var(--accent);
+    border-color: #00ff80;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:hover {
-    background: var(--accent-hover);
-    border-color: var(--accent-hover);
+    background: linear-gradient(180deg, #00ff80 0%, #2ed573 100%);
     color: #000;
+    border-color: #00ff80;
+    box-shadow: 6px 6px 0 rgba(0, 255, 128, 0.2);
 }
 
 .btn-outline {
@@ -241,31 +283,47 @@ img {
 
 .btn-outline:hover {
     background: var(--accent-bg);
+    box-shadow: 6px 6px 0 rgba(0, 255, 128, 0.1);
 }
 
 .btn-ghost {
     background: transparent;
     color: var(--text-muted);
     border-color: transparent;
+    box-shadow: none;
 }
 
 .btn-ghost:hover {
     color: var(--text);
     background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border);
 }
 
 .btn-danger {
-    background: var(--danger);
+    background: linear-gradient(180deg, #ff6b81 0%, #ff4757 100%);
     color: #fff;
     border-color: var(--danger);
 }
 
 .btn-danger:hover {
-    background: var(--danger-hover);
-    border-color: var(--danger-hover);
+    background: linear-gradient(180deg, #ff4757 0%, #c0392b 100%);
 }
 
-/* --- Forms --- */
+.btn-gold {
+    background: linear-gradient(180deg, #ffd700 0%, #f0a500 100%);
+    color: #000;
+    border-color: var(--gold);
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-gold:hover {
+    background: linear-gradient(180deg, #ffe44d 0%, #ffd700 100%);
+    box-shadow: 6px 6px 0 rgba(255, 215, 0, 0.2);
+}
+
+/* ============================================
+   Forms — блочный стиль
+   ============================================ */
 .form-group {
     margin-bottom: 16px;
 }
@@ -273,9 +331,11 @@ img {
 .form-group label {
     display: block;
     margin-bottom: 6px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-group input,
@@ -284,12 +344,12 @@ img {
     width: 100%;
     padding: 10px 14px;
     background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: var(--pixel-border) var(--border);
     color: var(--text);
     font-size: 0.9rem;
     transition: border-color var(--transition);
     font-family: inherit;
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
 .form-group input:focus,
@@ -297,6 +357,7 @@ img {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--accent);
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3), 0 0 8px rgba(0, 255, 128, 0.2);
 }
 
 .form-group textarea {
@@ -307,43 +368,47 @@ img {
 .form-group input::placeholder,
 .form-group textarea::placeholder {
     color: var(--text-muted);
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
-/* --- Alerts --- */
+/* ============================================
+   Alerts — блочный стиль
+   ============================================ */
 .alert {
     padding: 12px 16px;
-    border-radius: var(--radius);
     margin-bottom: 20px;
-    font-size: 0.9rem;
-    border: 1px solid;
+    font-size: 0.85rem;
+    border: var(--pixel-border);
+    box-shadow: var(--shadow);
 }
 
 .alert-success {
-    background: rgba(63, 185, 80, 0.1);
-    border-color: rgba(63, 185, 80, 0.3);
+    background: rgba(46, 213, 115, 0.1);
+    border-color: var(--success);
     color: var(--success);
 }
 
 .alert-error {
-    background: rgba(248, 81, 73, 0.1);
-    border-color: rgba(248, 81, 73, 0.3);
+    background: rgba(255, 71, 87, 0.1);
+    border-color: var(--danger);
     color: var(--danger);
 }
 
 .alert-warning {
-    background: rgba(210, 153, 34, 0.1);
-    border-color: rgba(210, 153, 34, 0.3);
+    background: rgba(255, 165, 2, 0.1);
+    border-color: var(--warning);
     color: var(--warning);
 }
 
 .alert-info {
-    background: rgba(88, 166, 255, 0.1);
-    border-color: rgba(88, 166, 255, 0.3);
+    background: rgba(112, 161, 255, 0.1);
+    border-color: var(--info);
     color: var(--info);
 }
 
-/* --- Auth Pages --- */
+/* ============================================
+   Auth Pages
+   ============================================ */
 .auth-page {
     display: flex;
     justify-content: center;
@@ -352,35 +417,47 @@ img {
 
 .auth-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: var(--pixel-border) var(--border);
     padding: 32px;
     width: 100%;
     max-width: 420px;
+    box-shadow: var(--shadow);
 }
 
 .auth-title {
-    font-size: 1.5rem;
+    font-family: var(--font-mc);
+    font-size: 0.9rem;
     margin-bottom: 24px;
     text-align: center;
+    color: var(--accent);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .auth-link {
     text-align: center;
     margin-top: 16px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
 }
 
-/* --- Cards --- */
+/* ============================================
+   Cards — блочный стиль
+   ============================================ */
 .card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border: var(--pixel-border) var(--border);
     padding: 20px;
+    box-shadow: var(--shadow);
+    transition: border-color var(--transition);
 }
 
-/* --- Tables --- */
+.card:hover {
+    border-color: var(--border-light);
+}
+
+/* ============================================
+   Tables
+   ============================================ */
 .table-wrap {
     overflow-x: auto;
 }
@@ -393,23 +470,26 @@ table {
 th, td {
     padding: 10px 14px;
     text-align: left;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
+    border-bottom: 2px solid var(--border);
+    font-size: 0.85rem;
 }
 
 th {
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    font-family: var(--font-mc);
 }
 
 tr:hover td {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(0, 255, 128, 0.02);
 }
 
-/* --- Pagination --- */
+/* ============================================
+   Pagination
+   ============================================ */
 .pagination {
     display: flex;
     justify-content: center;
@@ -424,11 +504,11 @@ tr:hover td {
     min-width: 36px;
     height: 36px;
     padding: 0 8px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     transition: all var(--transition);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
 .page-link:hover,
@@ -436,6 +516,7 @@ tr:hover td {
     background: var(--accent);
     border-color: var(--accent);
     color: #000;
+    box-shadow: 2px 2px 0 rgba(0, 255, 128, 0.3);
 }
 
 .page-dots {
@@ -445,35 +526,56 @@ tr:hover td {
     color: var(--text-muted);
 }
 
-/* --- Status badges --- */
+/* ============================================
+   Status badges — Minecraft стиль
+   ============================================ */
 .badge {
     display: inline-block;
     padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid;
 }
 
 .badge-online {
-    background: rgba(63, 185, 80, 0.15);
+    background: rgba(46, 213, 115, 0.15);
+    border-color: var(--success);
     color: var(--success);
 }
 
 .badge-offline {
-    background: rgba(248, 81, 73, 0.15);
+    background: rgba(255, 71, 87, 0.15);
+    border-color: var(--danger);
     color: var(--danger);
 }
 
 .badge-pending {
-    background: rgba(210, 153, 34, 0.15);
+    background: rgba(255, 165, 2, 0.15);
+    border-color: var(--warning);
     color: var(--warning);
 }
 
-/* --- Server card (каталог) --- */
+.badge-diamond {
+    background: rgba(92, 225, 230, 0.15);
+    border-color: var(--diamond);
+    color: var(--diamond);
+}
+
+.badge-gold {
+    background: rgba(255, 215, 0, 0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+/* ============================================
+   Server cards — Minecraft блочный стиль
+   ============================================ */
 .server-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .server-card {
@@ -481,23 +583,44 @@ tr:hover td {
     align-items: center;
     gap: 16px;
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    transition: border-color var(--transition);
+    border: var(--pixel-border) var(--border);
+    padding: 14px 16px;
+    transition: all var(--transition);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: var(--text);
 }
 
 .server-card:hover {
     border-color: var(--accent);
+    box-shadow: var(--shadow-hover);
+    transform: translate(-2px, -2px);
+}
+
+.server-card-promoted {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 215, 0, 0.05) 100%);
+    box-shadow: 4px 4px 0 rgba(255, 215, 0, 0.2);
+}
+
+.server-card-promoted:hover {
+    box-shadow: 6px 6px 0 rgba(255, 215, 0, 0.3);
+}
+
+.server-card-highlighted {
+    border-color: var(--diamond);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(92, 225, 230, 0.05) 100%);
+    box-shadow: 4px 4px 0 rgba(92, 225, 230, 0.2);
 }
 
 .server-card-icon {
     width: 48px;
     height: 48px;
-    border-radius: var(--radius-sm);
     object-fit: cover;
     flex-shrink: 0;
     background: var(--bg);
+    border: 2px solid var(--border);
+    image-rendering: pixelated;
 }
 
 .server-card-info {
@@ -506,8 +629,8 @@ tr:hover td {
 }
 
 .server-card-name {
-    font-weight: 600;
-    font-size: 1rem;
+    font-weight: 700;
+    font-size: 0.95rem;
     color: var(--text);
 }
 
@@ -516,14 +639,14 @@ tr:hover td {
     gap: 12px;
     flex-wrap: wrap;
     margin-top: 4px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
 }
 
 .server-card-stats {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     flex-shrink: 0;
     text-align: center;
 }
@@ -535,29 +658,37 @@ tr:hover td {
 }
 
 .stat-value {
+    font-family: var(--font-mc);
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 0.8rem;
     color: var(--accent);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .stat-label {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     color: var(--text-muted);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* --- Section titles --- */
 .section-title {
-    font-size: 1.3rem;
+    font-family: var(--font-mc);
+    font-size: 0.75rem;
     font-weight: 700;
     margin-bottom: 16px;
+    color: var(--accent);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
 }
 
 /* --- Stars (рейтинг) --- */
 .stars {
-    color: var(--warning);
+    color: var(--gold);
     font-size: 1rem;
     letter-spacing: 2px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 /* --- Copy IP --- */
@@ -567,79 +698,56 @@ tr:hover td {
     gap: 6px;
     padding: 4px 10px;
     background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
+    font-family: monospace;
     transition: all var(--transition);
 }
 
 .copy-ip:hover {
     border-color: var(--accent);
     color: var(--accent);
+    box-shadow: 0 0 8px rgba(0, 255, 128, 0.2);
 }
 
-/* --- Responsive --- */
-@media (max-width: 768px) {
-    .header-actions,
-    .nav {
-        display: none;
-    }
-
-    .burger {
-        display: flex;
-    }
-
-    /* Mobile menu */
-    body.menu-open .nav,
-    body.menu-open .header-actions {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: var(--bg-card);
-        border-bottom: 1px solid var(--border);
-        padding: 16px 20px;
-        gap: 8px;
-        z-index: 99;
-    }
-
-    body.menu-open .header-actions {
-        top: auto;
-    }
-
-    .server-card {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .server-card-stats {
-        width: 100%;
-        justify-content: space-around;
-        padding-top: 12px;
-        border-top: 1px solid var(--border);
-    }
-
-    .footer-inner {
-        flex-direction: column;
-        text-align: center;
-    }
+/* --- Server rank number --- */
+.server-rank {
+    font-family: var(--font-mc);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    min-width: 30px;
+    text-align: center;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
-/* --- Notifications bell --- */
+/* --- Tags --- */
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   Notifications bell
+   ============================================ */
 .header-notif {
     position: relative;
     font-size: 1.2rem;
     text-decoration: none;
     padding: 4px;
-    transition: opacity var(--transition);
+    transition: all var(--transition);
 }
 
 .header-notif:hover {
-    opacity: 0.8;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
 }
 
 .header-notif-badge {
@@ -648,28 +756,20 @@ tr:hover td {
     right: -8px;
     background: var(--danger);
     color: #fff;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
     min-width: 16px;
     height: 16px;
-    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 4px;
+    border: 2px solid var(--bg-card);
 }
 
-/* --- Verified badge --- */
-.verified-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--success);
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-/* --- Live search dropdown --- */
+/* ============================================
+   Live search dropdown
+   ============================================ */
 .search-dropdown {
     display: none;
     position: absolute;
@@ -677,9 +777,8 @@ tr:hover td {
     left: 0;
     right: 0;
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 0 0 var(--radius) var(--radius);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border: var(--pixel-border) var(--border);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
     z-index: 50;
     max-height: 400px;
     overflow-y: auto;
@@ -693,75 +792,41 @@ tr:hover td {
     color: var(--text);
     text-decoration: none;
     transition: background var(--transition);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
 }
 
-.search-dropdown-item:last-child {
-    border-bottom: none;
-}
-
-.search-dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-}
+.search-dropdown-item:last-child { border-bottom: none; }
+.search-dropdown-item:hover { background: rgba(0, 255, 128, 0.05); }
 
 .search-dropdown-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    object-fit: cover;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 32px; height: 32px;
+    object-fit: cover; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
     font-size: 1.2rem;
+    image-rendering: pixelated;
+    border: 2px solid var(--border);
 }
 
-.search-dropdown-info {
-    flex: 1;
-    min-width: 0;
-}
+.search-dropdown-info { flex: 1; min-width: 0; }
+.search-dropdown-name { font-weight: 700; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-dropdown-meta { font-size: 0.7rem; color: var(--text-muted); }
+.search-dropdown-votes { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+.search-dropdown-empty { padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem; }
 
-.search-dropdown-name {
-    font-weight: 600;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.search-dropdown-meta {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
-.search-dropdown-votes {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-}
-
-.search-dropdown-empty {
-    padding: 16px;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-}
-
-/* --- Chart period tabs --- */
-.chart-tabs {
-    display: flex;
-    gap: 4px;
-}
+/* ============================================
+   Chart period tabs
+   ============================================ */
+.chart-tabs { display: flex; gap: 4px; }
 
 .chart-tab {
     padding: 4px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     background: none;
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     cursor: pointer;
     transition: all var(--transition);
+    text-transform: uppercase;
 }
 
 .chart-tab:hover,
@@ -769,4 +834,67 @@ tr:hover td {
     background: var(--accent-bg);
     color: var(--accent);
     border-color: var(--accent);
+}
+
+/* ============================================
+   Points system
+   ============================================ */
+.points-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mc);
+    font-size: 0.65rem;
+    color: var(--gold);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.points-icon {
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+    .header-actions,
+    .nav {
+        display: none;
+    }
+
+    .burger {
+        display: flex;
+    }
+
+    body.menu-open .nav,
+    body.menu-open .header-actions {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        border-bottom: var(--pixel-border) var(--border);
+        padding: 16px 20px;
+        gap: 8px;
+        z-index: 99;
+    }
+
+    .server-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .server-card-stats {
+        width: 100%;
+        justify-content: space-around;
+        padding-top: 12px;
+        border-top: 2px solid var(--border);
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        text-align: center;
+    }
 }

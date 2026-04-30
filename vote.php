@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/points.php';
 
 header('Content-Type: application/json');
 
@@ -74,6 +75,9 @@ $stmt->execute([$serverId, $userId, getUserIP(), now()]);
 // Обновляем счётчики сервера
 $stmt = $db->prepare('UPDATE servers SET votes_total = votes_total + 1, votes_month = votes_month + 1 WHERE id = ?');
 $stmt->execute([$serverId]);
+
+// Начисляем баллы за голосование
+rewardVotePoints($userId);
 
 echo json_encode([
     'success' => true,

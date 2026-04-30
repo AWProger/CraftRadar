@@ -52,8 +52,8 @@ $orderMap = [
 ];
 $orderSQL = $orderMap[$sort] ?? $orderMap['votes'];
 
-// Promoted серверы всегда вверху
-$orderSQL = 's.is_promoted DESC, ' . $orderSQL;
+// Promoted серверы вверху, затем highlighted
+$orderSQL = 's.is_promoted DESC, (s.highlighted_until > NOW()) DESC, ' . $orderSQL;
 
 // Подсчёт
 $stmt = $db->prepare("SELECT COUNT(*) FROM servers s WHERE {$whereSQL}");
@@ -132,7 +132,12 @@ if ($onlineOnly) $baseUrl .= '&online=1';
     <?php else: ?>
         <div class="server-list">
             <?php foreach ($servers as $s): ?>
-                <a href="<?= SITE_URL ?>/server.php?id=<?= $s['id'] ?>" class="server-card">
+                <?php
+                $cardClass = 'server-card';
+                if ($s['is_promoted']) $cardClass .= ' server-card-promoted';
+                elseif (!empty($s['highlighted_until']) && strtotime($s['highlighted_until']) > time()) $cardClass .= ' server-card-highlighted';
+                ?>
+                <a href="<?= SITE_URL ?>/server.php?id=<?= $s['id'] ?>" class="<?= $cardClass ?>">
                     <?php if ($s['icon']): ?>
                         <img src="<?= SITE_URL . '/' . e($s['icon']) ?>" alt="" class="server-card-icon">
                     <?php else: ?>

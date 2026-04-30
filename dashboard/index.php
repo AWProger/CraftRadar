@@ -13,7 +13,7 @@ $userId = currentUserId();
 
 // Мои серверы
 $stmt = $db->prepare('
-    SELECT id, name, ip, port, status, is_online, players_online, players_max, votes_month, votes_total, is_verified, created_at
+    SELECT id, name, ip, port, status, is_online, players_online, players_max, votes_month, votes_total, is_verified, highlighted_until, created_at
     FROM servers 
     WHERE user_id = ? 
     ORDER BY created_at DESC
@@ -111,6 +111,9 @@ foreach ($servers as $s) {
                                     <a href="<?= SITE_URL ?>/dashboard/verify.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-ghost" style="color: var(--info);">🔐 Верифицировать</a>
                                 <?php else: ?>
                                     <span class="badge badge-online" style="margin-left: 4px;">✓ Владелец</span>
+                                <?php endif; ?>
+                                <?php if ($s['status'] === 'active'): ?>
+                                    <a href="<?= SITE_URL ?>/dashboard/highlight.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-ghost" style="color: var(--diamond);">⚡ Выделить</a>
                                 <?php endif; ?>
                             </td>
                         </tr>

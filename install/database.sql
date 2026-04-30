@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS servers (
     verify_code VARCHAR(10) NULL COMMENT 'Код верификации для MOTD',
     verified_at DATETIME NULL,
     verified_by INT NULL COMMENT 'Кто подтвердил владение',
+    highlighted_until DATETIME NULL COMMENT 'Выделение за баллы до',
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_status (status),
     INDEX idx_votes_month (votes_month),
@@ -366,3 +367,29 @@ CREATE TABLE IF NOT EXISTS notifications (
     INDEX idx_user_read (user_id, is_read),
     INDEX idx_created (created_at)
 ) ENGINE=InnoDB;
+
+-- ============================================
+-- Система баллов
+-- ============================================
+ALTER TABLE users ADD COLUMN IF NOT EXISTS points INT NOT NULL DEFAULT 0 COMMENT 'Баллы пользователя';
+
+CREATE TABLE IF NOT EXISTS point_transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    amount INT NOT NULL COMMENT 'Положительное = начисление, отрицательное = списание',
+    type VARCHAR(50) NOT NULL COMMENT 'vote_reward, highlight_spend, admin_grant, daily_bonus',
+    description VARCHAR(255) NULL,
+    server_id INT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user (user_id),
+    INDEX idx_type (type),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB;
+
+-- Настройки баллов
+INSERT INTO settings (`key`, `value`, description) VALUES
+('points_per_vote', '1', 'Баллов за голосование'),
+('highlight_cost_1h', '5', 'Стоимость выделения на 1 час (баллы)'),
+('highlight_cost_6h', '25', 'Стоимость выделения на 6 часов (баллы)'),
+('highlight_cost_24h', '80', 'Стоимость выделения на 24 часа (баллы)');
