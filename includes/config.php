@@ -8,9 +8,9 @@ define('DEBUG', true);
 
 // Настройки базы данных
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'craftradar');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_NAME', 'u181799_craftradar');
+define('DB_USER', 'u181799_craftradar');
+define('DB_PASS', 'gG9aW5mO1l');
 define('DB_CHARSET', 'utf8mb4');
 
 // Пути
