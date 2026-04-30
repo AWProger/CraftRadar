@@ -31,7 +31,8 @@ if ($search) {
 }
 
 if (get('offline_long') === '1') {
-    $where[] = "s.status = 'active' AND s.is_online = 0 AND s.last_ping < DATE_SUB(NOW(), INTERVAL 7 DAY)";
+    $where[] = "s.status = 'active' AND s.is_online = 0 AND s.last_ping < ?";
+    $params[] = dateAgo(7, 'day');
 }
 
 $whereSQL = implode(' AND ', $where);

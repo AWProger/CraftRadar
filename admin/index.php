@@ -44,15 +44,23 @@ $totalReviews = (int)$db->query("SELECT COUNT(*) FROM reviews WHERE status = 'ac
 $verifiedServers = (int)$db->query("SELECT COUNT(*) FROM servers WHERE is_verified = 1")->fetchColumn();
 
 // === Доходы ===
-$revenueToday = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND DATE(paid_at) = CURDATE()")->fetchColumn();
-$revenueMonth = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND paid_at >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
+$stmt = $db->prepare("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND DATE(paid_at) = ?");
+$stmt->execute([date('Y-m-d')]);
+$revenueToday = (float)$stmt->fetchColumn();
+$stmt = $db->prepare("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND paid_at >= ?");
+$stmt->execute([date('Y-m-01')]);
+$revenueMonth = (float)$stmt->fetchColumn();
 $revenueTotal = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed'")->fetchColumn();
 $avgCheck = (float)$db->query("SELECT COALESCE(AVG(amount), 0) FROM payments WHERE status = 'completed'")->fetchColumn();
 
 // === Требует внимания ===
 $newReports = (int)$db->query("SELECT COUNT(*) FROM reports WHERE status = 'new'")->fetchColumn();
-$offlineLong = (int)$db->query("SELECT COUNT(*) FROM servers WHERE status = 'active' AND is_online = 0 AND last_ping < DATE_SUB(NOW(), INTERVAL 7 DAY)")->fetchColumn();
-$pendingPayments = (int)$db->query("SELECT COUNT(*) FROM payments WHERE status = 'pending' AND created_at < DATE_SUB(NOW(), INTERVAL 1 HOUR)")->fetchColumn();
+$stmt = $db->prepare("SELECT COUNT(*) FROM servers WHERE status = 'active' AND is_online = 0 AND last_ping < ?");
+$stmt->execute([dateAgo(7, 'day')]);
+$offlineLong = (int)$stmt->fetchColumn();
+$stmt = $db->prepare("SELECT COUNT(*) FROM payments WHERE status = 'pending' AND created_at < ?");
+$stmt->execute([dateAgo(1, 'hour')]);
+$pendingPayments = (int)$stmt->fetchColumn();
 
 // === Топ-5 серверов ===
 $topServers = $db->query("
@@ -80,34 +88,34 @@ $ratingDistribution = $db->query("
 // === Графики за N дней ===
 $stmt = $db->prepare("
     SELECT DATE(created_at) as day, COUNT(*) as cnt 
-    FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY) 
+    FROM users WHERE created_at >= ?
     GROUP BY day ORDER BY day
 ");
-$stmt->execute([$statsDays]);
+$stmt->execute([dateAgo($statsDays, 'day')]);
 $registrationsByDay = $stmt->fetchAll();
 
 $stmt = $db->prepare("
     SELECT DATE(created_at) as day, COUNT(*) as cnt 
-    FROM servers WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY) 
+    FROM servers WHERE created_at >= ?
     GROUP BY day ORDER BY day
 ");
-$stmt->execute([$statsDays]);
+$stmt->execute([dateAgo($statsDays, 'day')]);
 $serversByDay = $stmt->fetchAll();
 
 $stmt = $db->prepare("
     SELECT DATE(voted_at) as day, COUNT(*) as cnt 
-    FROM votes WHERE voted_at >= DATE_SUB(NOW(), INTERVAL ? DAY) 
+    FROM votes WHERE voted_at >= ?
     GROUP BY day ORDER BY day
 ");
-$stmt->execute([$statsDays]);
+$stmt->execute([dateAgo($statsDays, 'day')]);
 $votesByDay = $stmt->fetchAll();
 
 $stmt = $db->prepare("
     SELECT DATE(paid_at) as day, SUM(amount) as total 
-    FROM payments WHERE status = 'completed' AND paid_at >= DATE_SUB(NOW(), INTERVAL ? DAY) 
+    FROM payments WHERE status = 'completed' AND paid_at >= ?
     GROUP BY day ORDER BY day
 ");
-$stmt->execute([$statsDays]);
+$stmt->execute([dateAgo($statsDays, 'day')]);
 $revenueByDay = $stmt->fetchAll();
 
 // === Последние действия ===

@@ -24,57 +24,69 @@ if (!$server) {
 
 $period = get('period', '24h');
 
+// Формат даты для группировки (совместимость MySQL/SQLite)
+$dateGroupExpr = isSQLite()
+    ? "STRFTIME('%Y-%m-%d %H:00', recorded_at)"
+    : "DATE_FORMAT(recorded_at, '%Y-%m-%d %H:00')";
+
 // Данные для графика онлайна
 switch ($period) {
     case '7d':
-        $stmt = $db->prepare('
-            SELECT DATE_FORMAT(recorded_at, "%Y-%m-%d %H:00") as time_group,
+        $stmt = $db->prepare("
+            SELECT {$dateGroupExpr} as time_group,
                    ROUND(AVG(players_online)) as players,
                    MAX(is_online) as is_online
             FROM server_stats 
-            WHERE server_id = ? AND recorded_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+            WHERE server_id = ? AND recorded_at >= ?
             GROUP BY time_group ORDER BY time_group
-        ');
+        ");
+        $stmt->execute([$id, dateAgo(7, 'day')]);
         break;
     case '30d':
-        $stmt = $db->prepare('
-            SELECT DATE_FORMAT(recorded_at, "%Y-%m-%d %H:00") as time_group,
+        if (isSQLite()) {
+            $groupBy = "STRFTIME('%Y-%m-%d', recorded_at), CAST(STRFTIME('%H', recorded_at) AS INTEGER) / 3";
+        } else {
+            $groupBy = "DATE(recorded_at), FLOOR(HOUR(recorded_at)/3)";
+        }
+        $stmt = $db->prepare("
+            SELECT {$dateGroupExpr} as time_group,
                    ROUND(AVG(players_online)) as players,
                    MAX(is_online) as is_online
             FROM server_stats 
-            WHERE server_id = ? AND recorded_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-            GROUP BY DATE(recorded_at), FLOOR(HOUR(recorded_at)/3) ORDER BY time_group
-        ');
+            WHERE server_id = ? AND recorded_at >= ?
+            GROUP BY {$groupBy} ORDER BY time_group
+        ");
+        $stmt->execute([$id, dateAgo(30, 'day')]);
         break;
     default: // 24h
         $stmt = $db->prepare('
             SELECT recorded_at as time_group, players_online as players, is_online
             FROM server_stats 
-            WHERE server_id = ? AND recorded_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+            WHERE server_id = ? AND recorded_at >= ?
             ORDER BY recorded_at
         ');
+        $stmt->execute([$id, dateAgo(24, 'hour')]);
         break;
 }
-$stmt->execute([$id]);
 $onlineData = $stmt->fetchAll();
 
 // Голоса по дням (30 дней)
 $stmt = $db->prepare('
     SELECT DATE(voted_at) as day, COUNT(*) as cnt
     FROM votes 
-    WHERE server_id = ? AND voted_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    WHERE server_id = ? AND voted_at >= ?
     GROUP BY day ORDER BY day
 ');
-$stmt->execute([$id]);
+$stmt->execute([$id, dateAgo(30, 'day')]);
 $votesData = $stmt->fetchAll();
 
 // Uptime за 30 дней
 $stmt = $db->prepare('
     SELECT COUNT(*) as total, SUM(is_online) as online_count
     FROM server_stats 
-    WHERE server_id = ? AND recorded_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    WHERE server_id = ? AND recorded_at >= ?
 ');
-$stmt->execute([$id]);
+$stmt->execute([$id, dateAgo(30, 'day')]);
 $uptimeData = $stmt->fetch();
 $uptime = $uptimeData['total'] > 0 ? round(($uptimeData['online_count'] / $uptimeData['total']) * 100, 1) : 0;
 
@@ -82,9 +94,9 @@ $uptime = $uptimeData['total'] > 0 ? round(($uptimeData['online_count'] / $uptim
 $stmt = $db->prepare('
     SELECT MAX(players_online) as peak, ROUND(AVG(players_online)) as avg_online
     FROM server_stats 
-    WHERE server_id = ? AND recorded_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND is_online = 1
+    WHERE server_id = ? AND recorded_at >= ? AND is_online = 1
 ');
-$stmt->execute([$id]);
+$stmt->execute([$id, dateAgo(30, 'day')]);
 $peakData = $stmt->fetch();
 ?>
 

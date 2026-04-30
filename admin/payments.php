@@ -44,17 +44,24 @@ $payments = $stmt->fetchAll();
 
 // Статистика доходов
 $totalRevenue = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed'")->fetchColumn();
-$monthRevenue = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND paid_at >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
-$todayRevenue = (float)$db->query("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND DATE(paid_at) = CURDATE()")->fetchColumn();
+$monthStart = date('Y-m-01');
+$stmt = $db->prepare("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND paid_at >= ?");
+$stmt->execute([$monthStart]);
+$monthRevenue = (float)$stmt->fetchColumn();
+$stmt = $db->prepare("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND DATE(paid_at) = ?");
+$stmt->execute([date('Y-m-d')]);
+$todayRevenue = (float)$stmt->fetchColumn();
 $pendingCount = (int)$db->query("SELECT COUNT(*) FROM payments WHERE status = 'pending'")->fetchColumn();
 
 // Доходы по дням (30 дней) для графика
-$revenueByDay = $db->query("
+$stmtRevenue = $db->prepare("
     SELECT DATE(paid_at) as day, SUM(amount) as total, COUNT(*) as cnt
     FROM payments 
-    WHERE status = 'completed' AND paid_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    WHERE status = 'completed' AND paid_at >= ?
     GROUP BY day ORDER BY day
-")->fetchAll();
+");
+$stmtRevenue->execute([dateAgo(30, 'day')]);
+$revenueByDay = $stmtRevenue->fetchAll();
 
 $baseUrl = SITE_URL . '/admin/payments.php?x=1';
 if ($status) $baseUrl .= '&status=' . urlencode($status);

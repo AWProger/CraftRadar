@@ -32,6 +32,7 @@ function getDB(): PDO
                     $pdo = new PDO('sqlite:' . $sqliteFile);
                     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+                    registerSQLiteCompat($pdo);
                     initSQLiteTables($pdo);
                     return $pdo;
                 } catch (PDOException $e2) {
@@ -46,6 +47,55 @@ function getDB(): PDO
     return $pdo;
 }
 } // end if !function_exists
+
+/**
+ * Регистрация MySQL-совместимых функций в SQLite
+ */
+function registerSQLiteCompat(PDO $pdo): void
+{
+    // CURDATE() → DATE('now')
+    $pdo->sqliteCreateFunction('CURDATE', function() {
+        return date('Y-m-d');
+    }, 0);
+
+    // NOW() → DATETIME('now')
+    $pdo->sqliteCreateFunction('NOW', function() {
+        return date('Y-m-d H:i:s');
+    }, 0);
+
+    // DATE_FORMAT(date, format) — базовая совместимость
+    $pdo->sqliteCreateFunction('DATE_FORMAT', function($date, $format) {
+        if (!$date) return null;
+        $phpFormat = str_replace(
+            ['%Y', '%m', '%d', '%H', '%i', '%s', '%e'],
+            ['Y', 'm', 'd', 'H', 'i', 's', 'j'],
+            $format
+        );
+        return date($phpFormat, strtotime($date));
+    }, 2);
+
+    // FIELD(val, v1, v2, ...) — возвращает позицию val в списке
+    $pdo->sqliteCreateFunction('FIELD', function() {
+        $args = func_get_args();
+        $val = array_shift($args);
+        $pos = array_search($val, $args);
+        return $pos === false ? 0 : $pos + 1;
+    });
+
+    // FLOOR
+    $pdo->sqliteCreateFunction('FLOOR', function($val) {
+        return (int)floor($val);
+    }, 1);
+
+    // HOUR
+    $pdo->sqliteCreateFunction('HOUR', function($date) {
+        return $date ? (int)date('G', strtotime($date)) : 0;
+    }, 1);
+
+    // DATE_SUB: SQLite не поддерживает этот синтаксис.
+    // Вместо DATE_SUB(NOW(), INTERVAL X DAY) используем PHP-вычисленные даты.
+    // Хелпер sqlDateAgo() в functions.php генерирует дату для подстановки.
+}
 
 /**
  * Инициализация таблиц SQLite для локальной разработки

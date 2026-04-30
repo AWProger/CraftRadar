@@ -72,9 +72,9 @@ $stmt = $db->prepare('
         COUNT(*) as total,
         SUM(is_online) as online_count
     FROM server_stats 
-    WHERE server_id = ? AND recorded_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    WHERE server_id = ? AND recorded_at >= ?
 ');
-$stmt->execute([$id]);
+$stmt->execute([$id, dateAgo(30, 'day')]);
 $uptimeData = $stmt->fetch();
 $uptime = $uptimeData['total'] > 0 
     ? round(($uptimeData['online_count'] / $uptimeData['total']) * 100, 1) 

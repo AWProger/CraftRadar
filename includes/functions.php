@@ -4,6 +4,76 @@
  */
 
 /**
+ * Проверка: используется ли SQLite (для совместимости SQL-запросов)
+ */
+function isSQLite(): bool
+{
+    static $result = null;
+    if ($result === null) {
+        try {
+            $result = getDB()->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite';
+        } catch (\Exception $e) {
+            $result = false;
+        }
+    }
+    return $result;
+}
+
+/**
+ * SQL-выражение для текущей даты (совместимо с MySQL и SQLite)
+ */
+function sqlCurDate(): string
+{
+    return isSQLite() ? "DATE('now')" : 'CURDATE()';
+}
+
+/**
+ * SQL-выражение для NOW() (совместимо с MySQL и SQLite)
+ */
+function sqlNow(): string
+{
+    return isSQLite() ? "DATETIME('now')" : 'NOW()';
+}
+
+/**
+ * SQL-выражение для DATE_SUB (совместимо с MySQL и SQLite)
+ * Возвращает строку условия: column >= дата_в_прошлом
+ */
+function sqlDateSub(string $column, int $value, string $unit = 'DAY'): string
+{
+    if (isSQLite()) {
+        $phpDate = date('Y-m-d H:i:s', strtotime("-{$value} {$unit}"));
+        return "{$column} >= '{$phpDate}'";
+    }
+    return "{$column} >= DATE_SUB(NOW(), INTERVAL {$value} {$unit})";
+}
+
+/**
+ * Дата N единиц назад (для подстановки в SQL через prepared statements)
+ */
+function dateAgo(int $value, string $unit = 'day'): string
+{
+    return date('Y-m-d H:i:s', strtotime("-{$value} {$unit}"));
+}
+
+/**
+ * SQL-выражение для DATE_FORMAT (совместимо с MySQL и SQLite)
+ */
+function sqlDateFormat(string $column, string $mysqlFormat): string
+{
+    if (isSQLite()) {
+        // Конвертируем MySQL формат в SQLite strftime
+        $sqliteFormat = str_replace(
+            ['%Y', '%m', '%d', '%H', '%i', '%s'],
+            ['%Y', '%m', '%d', '%H', '%M', '%S'],
+            $mysqlFormat
+        );
+        return "STRFTIME('{$sqliteFormat}', {$column})";
+    }
+    return "DATE_FORMAT({$column}, '{$mysqlFormat}')";
+}
+
+/**
  * Экранирование вывода (защита от XSS)
  */
 function e(string $str): string

@@ -54,7 +54,9 @@ $stats = cacheRemember('home_stats', 120, function() use ($db) {
 });
 
 $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
-    return (int)$db->query("SELECT COUNT(*) FROM votes WHERE DATE(voted_at) = CURDATE()")->fetchColumn();
+    $stmt = $db->prepare("SELECT COUNT(*) FROM votes WHERE DATE(voted_at) = ?");
+    $stmt->execute([date('Y-m-d')]);
+    return (int)$stmt->fetchColumn();
 });
 ?>
 

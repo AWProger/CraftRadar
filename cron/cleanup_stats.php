@@ -34,7 +34,8 @@ function cronLog(string $message): void
 $db = getDB();
 
 // 1. Очистка старой статистики пингов
-$stmt = $db->query('DELETE FROM server_stats WHERE recorded_at < DATE_SUB(NOW(), INTERVAL 30 DAY)');
+$stmt = $db->prepare('DELETE FROM server_stats WHERE recorded_at < ?');
+$stmt->execute([dateAgo(30, 'day')]);
 $deleted = $stmt->rowCount();
 cronLog("Очистка server_stats: удалено {$deleted} записей старше 30 дней");
 
