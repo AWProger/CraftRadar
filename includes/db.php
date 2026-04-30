@@ -193,7 +193,10 @@ function initSQLiteTables(PDO $pdo): void
         INSERT OR IGNORE INTO pages (slug, title, content, is_published, updated_at) VALUES
         ('about', 'О проекте', '<p>CraftRadar — мониторинг серверов Minecraft.</p>', 1, datetime('now')),
         ('rules', 'Правила', '<p>Правила использования платформы.</p>', 1, datetime('now')),
-        ('faq', 'FAQ', '<p>Часто задаваемые вопросы.</p>', 1, datetime('now'));
+        ('faq', 'FAQ', '<p>Часто задаваемые вопросы.</p>', 1, datetime('now')),
+        ('services', 'Услуги', '<h2>Платные услуги CraftRadar</h2><p>Продвижение сервера — закрепление в топе каталога.</p>', 1, datetime('now')),
+        ('offer', 'Публичная оферта', '<h2>Публичная оферта</h2><p>Условия оказания услуг по продвижению серверов.</p>', 1, datetime('now')),
+        ('contacts', 'Контакты', '<h2>Контакты</h2><p>Email: admin@craftradar.ru</p>', 1, datetime('now'));
 
         INSERT OR IGNORE INTO users (id, username, email, password_hash, role, created_at) VALUES
         (1, 'admin', 'admin@craftradar.ru', '\$2y\$12\$dummyhashfordevonly000000000000000000000000000000', 'admin', datetime('now'));
