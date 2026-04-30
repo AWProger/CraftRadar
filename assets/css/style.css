@@ -1421,3 +1421,13 @@ tr:hover td {
     background-size: 400px 100%;
     animation: shimmer 1.5s infinite;
 }
+
+/* --- Server icon placeholder --- */
+.server-card-icon-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    font-size: 1.5rem;
+}

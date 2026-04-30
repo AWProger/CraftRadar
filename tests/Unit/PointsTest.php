@@ -107,7 +107,8 @@ class PointsTest extends TestCase
 
     public function testCatalogHasHighlightedClass(): void
     {
-        $content = file_get_contents(ROOT_PATH . 'servers.php');
+        // Карточки теперь рендерятся через components.php
+        $content = file_get_contents(ROOT_PATH . 'includes/components.php');
         $this->assertStringContainsString('server-card-highlighted', $content);
         $this->assertStringContainsString('highlighted_until', $content);
     }

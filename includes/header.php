@@ -9,6 +9,7 @@ require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/notifications.php';
 require_once __DIR__ . '/points.php';
+require_once __DIR__ . '/components.php';
 
 $pageTitle = isset($pageTitle) ? $pageTitle . ' — ' . SITE_NAME : SITE_NAME;
 $_notifCount = isLoggedIn() ? getUnreadCount(currentUserId()) : 0;

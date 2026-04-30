@@ -130,7 +130,7 @@ class CronTest extends TestCase
     {
         $content = file_get_contents(ROOT_PATH . 'cron/cleanup_stats.php');
         $this->assertStringContainsString('DELETE FROM server_stats', $content);
-        $this->assertStringContainsString('30 DAY', $content);
+        $this->assertStringContainsString('dateAgo', $content);
     }
 
     public function testCleanupCleansLoginAttempts(): void

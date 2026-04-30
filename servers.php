@@ -130,57 +130,7 @@ if ($onlineOnly) $baseUrl .= '&online=1';
             <p style="color: var(--text-muted);">Серверы не найдены. Попробуйте изменить фильтры.</p>
         </div>
     <?php else: ?>
-        <div class="server-list">
-            <?php foreach ($servers as $s): ?>
-                <?php
-                $cardClass = 'server-card';
-                if ($s['is_promoted']) $cardClass .= ' server-card-promoted';
-                elseif (!empty($s['highlighted_until']) && strtotime($s['highlighted_until']) > time()) $cardClass .= ' server-card-highlighted';
-                ?>
-                <a href="<?= SITE_URL ?>/server.php?id=<?= $s['id'] ?>" class="<?= $cardClass ?>">
-                    <?php if ($s['icon']): ?>
-                        <img src="<?= SITE_URL . '/' . e($s['icon']) ?>" alt="" class="server-card-icon">
-                    <?php else: ?>
-                        <div class="server-card-icon" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.5rem;">📡</div>
-                    <?php endif; ?>
-
-                    <div class="server-card-info">
-                        <div class="server-card-name">
-                            <?php if ($s['is_promoted']): ?><span style="color: var(--warning);">⭐</span><?php endif; ?>
-                            <?= e($s['name']) ?>
-                            <?php if ($s['is_verified']): ?><span style="color: var(--success); font-size: 0.75rem;" title="Владелец подтверждён">✓</span><?php endif; ?>
-                        </div>
-                        <div class="server-card-meta">
-                            <span><?= e($s['ip'] . ':' . $s['port']) ?></span>
-                            <?php if ($s['version']): ?><span>v<?= e($s['version']) ?></span><?php endif; ?>
-                            <?php if ($s['game_mode']): ?><span><?= e($s['game_mode']) ?></span><?php endif; ?>
-                            <?php if ($s['is_online']): ?>
-                                <span class="badge badge-online">Онлайн</span>
-                            <?php else: ?>
-                                <span class="badge badge-offline">Оффлайн</span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <div class="server-card-stats">
-                        <div class="stat-item">
-                            <span class="stat-value"><?= $s['players_online'] ?></span>
-                            <span class="stat-label">Игроков</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value"><?= $s['votes_month'] ?></span>
-                            <span class="stat-label">Голосов</span>
-                        </div>
-                        <?php if ($s['rating'] > 0): ?>
-                            <div class="stat-item">
-                                <span class="stat-value"><?= number_format($s['rating'], 1) ?></span>
-                                <span class="stat-label">Рейтинг</span>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </a>
-            <?php endforeach; ?>
-        </div>
+        <?= serverList($servers) ?>
 
         <?= paginate($total, SERVERS_PER_PAGE, $page, $baseUrl) ?>
     <?php endif; ?>

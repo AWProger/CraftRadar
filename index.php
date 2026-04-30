@@ -113,106 +113,27 @@ $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
         <h2 class="section-title">🏆 Топ по голосам</h2>
         <a href="<?= SITE_URL ?>/servers.php?sort=votes" class="btn btn-ghost btn-sm">Все серверы →</a>
     </div>
-    <div class="server-list">
-        <?php foreach ($topVotes as $i => $s): ?>
-            <a href="<?= SITE_URL ?>/server.php?id=<?= $s['id'] ?>" class="server-card">
-                <div class="server-rank">#<?= $i + 1 ?></div>
-                <?php if ($s['icon']): ?>
-                    <img src="<?= SITE_URL . '/' . e($s['icon']) ?>" alt="" class="server-card-icon">
-                <?php else: ?>
-                    <div class="server-card-icon" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.5rem;">📡</div>
-                <?php endif; ?>
-                <div class="server-card-info">
-                    <div class="server-card-name"><?= e($s['name']) ?></div>
-                    <div class="server-card-meta">
-                        <span><?= e($s['ip'] . ':' . $s['port']) ?></span>
-                        <?php if ($s['is_online']): ?>
-                            <span class="badge badge-online"><?= $s['players_online'] ?>/<?= $s['players_max'] ?></span>
-                        <?php else: ?>
-                            <span class="badge badge-offline">Оффлайн</span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <div class="server-card-stats">
-                    <div class="stat-item">
-                        <span class="stat-value"><?= $s['votes_month'] ?></span>
-                        <span class="stat-label">Голосов</span>
-                    </div>
-                </div>
-            </a>
-        <?php endforeach; ?>
-    </div>
+    <?= serverList($topVotes, true) ?>
 </section>
 <?php endif; ?>
 
-<!-- Топ по онлайну -->
 <?php if (!empty($topOnline)): ?>
 <section class="section">
     <div class="section-header">
         <h2 class="section-title">🟢 Топ по онлайну</h2>
         <a href="<?= SITE_URL ?>/servers.php?sort=online" class="btn btn-ghost btn-sm">Все серверы →</a>
     </div>
-    <div class="server-list">
-        <?php foreach ($topOnline as $s): ?>
-            <a href="<?= SITE_URL ?>/server.php?id=<?= $s['id'] ?>" class="server-card">
-                <?php if ($s['icon']): ?>
-                    <img src="<?= SITE_URL . '/' . e($s['icon']) ?>" alt="" class="server-card-icon">
-                <?php else: ?>
-                    <div class="server-card-icon" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.5rem;">📡</div>
-                <?php endif; ?>
-                <div class="server-card-info">
-                    <div class="server-card-name"><?= e($s['name']) ?></div>
-                    <div class="server-card-meta">
-                        <span><?= e($s['ip'] . ':' . $s['port']) ?></span>
-                    </div>
-                </div>
-                <div class="server-card-stats">
-                    <div class="stat-item">
-                        <span class="stat-value"><?= $s['players_online'] ?>/<?= $s['players_max'] ?></span>
-                        <span class="stat-label">Игроков</span>
-                    </div>
-                </div>
-            </a>
-        <?php endforeach; ?>
-    </div>
+    <?= serverList($topOnline) ?>
 </section>
 <?php endif; ?>
 
-<!-- Новые серверы -->
 <?php if (!empty($newServers)): ?>
 <section class="section">
     <div class="section-header">
         <h2 class="section-title">🆕 Новые серверы</h2>
         <a href="<?= SITE_URL ?>/servers.php?sort=new" class="btn btn-ghost btn-sm">Все серверы →</a>
     </div>
-    <div class="server-list">
-        <?php foreach ($newServers as $s): ?>
-            <a href="<?= SITE_URL ?>/server.php?id=<?= $s['id'] ?>" class="server-card">
-                <?php if ($s['icon']): ?>
-                    <img src="<?= SITE_URL . '/' . e($s['icon']) ?>" alt="" class="server-card-icon">
-                <?php else: ?>
-                    <div class="server-card-icon" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.5rem;">📡</div>
-                <?php endif; ?>
-                <div class="server-card-info">
-                    <div class="server-card-name"><?= e($s['name']) ?></div>
-                    <div class="server-card-meta">
-                        <span><?= e($s['ip'] . ':' . $s['port']) ?></span>
-                        <?php if ($s['is_online']): ?>
-                            <span class="badge badge-online">Онлайн</span>
-                        <?php else: ?>
-                            <span class="badge badge-offline">Оффлайн</span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <div class="server-card-stats">
-                    <div class="stat-item">
-                        <span class="stat-value"><?= $s['votes_month'] ?></span>
-                        <span class="stat-label">Голосов</span>
-                    </div>
-                </div>
-            </a>
-        <?php endforeach; ?>
-    </div>
+    <?= serverList($newServers) ?>
 </section>
 <?php endif; ?>
 
@@ -226,79 +147,5 @@ $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
     <?php endif; ?>
 </section>
 <?php endif; ?>
-
-<style>
-    .hero {
-        text-align: center;
-        padding: 60px 0 40px;
-    }
-    .hero h1 {
-        font-size: 2.2rem;
-        margin-bottom: 8px;
-    }
-    .hero-subtitle {
-        color: var(--text-muted);
-        font-size: 1.1rem;
-        margin-bottom: 30px;
-    }
-    .search-form {
-        display: flex;
-        max-width: 600px;
-        margin: 0 auto;
-        gap: 8px;
-    }
-    .search-input {
-        flex: 1;
-        padding: 12px 16px;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        color: var(--text);
-        font-size: 1rem;
-    }
-    .search-input:focus {
-        outline: none;
-        border-color: var(--accent);
-    }
-    .home-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 12px;
-        margin-bottom: 30px;
-    }
-    .home-stat-item {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 20px;
-        text-align: center;
-    }
-    .home-stat-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: var(--accent);
-    }
-    .home-stat-label {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-top: 4px;
-    }
-    .section {
-        margin-top: 36px;
-    }
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-    .server-rank {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        min-width: 36px;
-        text-align: center;
-    }
-</style>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -95,7 +95,8 @@ class VerificationTest extends TestCase
 
     public function testCatalogShowsVerifiedMark(): void
     {
-        $content = file_get_contents(ROOT_PATH . 'servers.php');
+        // Карточки теперь рендерятся через components.php
+        $content = file_get_contents(ROOT_PATH . 'includes/components.php');
         $this->assertStringContainsString('is_verified', $content);
     }
 

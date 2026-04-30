@@ -119,7 +119,11 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div class="server-header-stat">
                 <div class="stat-value"><?= $server['votes_month'] ?></div>
-                <div class="stat-label">Голосов</div>
+                <div class="stat-label">За месяц</div>
+            </div>
+            <div class="server-header-stat">
+                <div class="stat-value"><?= $server['votes_total'] ?></div>
+                <div class="stat-label">Всего</div>
             </div>
             <div class="server-header-stat">
                 <div class="stat-value"><?= $uptime ?>%</div>
