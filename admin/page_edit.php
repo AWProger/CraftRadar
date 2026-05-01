@@ -23,8 +23,20 @@ if (isPost()) {
     if (verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
         $title = post('title');
         $slug = post('slug');
-        $content = $_POST['content'] ?? ''; // Не trim, чтобы сохранить HTML
+        $content = $_POST['content'] ?? '';
         $isPublished = (int)post('is_published');
+
+        // Санитизация HTML — убираем опасные теги (script, iframe, on*)
+        $content = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $content);
+        $content = preg_replace('/<iframe\b[^>]*>.*?<\/iframe>/is', '', $content);
+        $content = preg_replace('/\bon\w+\s*=\s*["\'][^"\']*["\']/i', '', $content);
+        $content = preg_replace('/javascript\s*:/i', '', $content);
+
+        // Валидация slug
+        if (!preg_match('/^[a-z0-9\-]+$/', $slug)) {
+            setFlash('error', 'Slug может содержать только латинские буквы, цифры и дефис.');
+            redirect(SITE_URL . '/admin/page_edit.php?id=' . $id);
+        }
 
         $db->prepare('UPDATE pages SET title = ?, slug = ?, content = ?, is_published = ?, updated_at = ?, updated_by = ? WHERE id = ?')
             ->execute([$title, $slug, $content, $isPublished, now(), currentUserId(), $id]);

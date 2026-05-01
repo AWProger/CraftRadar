@@ -160,7 +160,10 @@ $reports = $reports->fetchAll();
 
     <div class="table-wrap" style="margin-top: 16px;">
         <table>
-            <tr><td style="color: var(--text-muted);">Владелец</td><td><a href="<?= SITE_URL ?>/admin/user_view.php?id=<?= $server['user_id'] ?>"><?= e($server['owner_name']) ?></a></td></tr>
+            <tr><td style="color: var(--text-muted);">Владелец</td><td>
+                <a href="<?= SITE_URL ?>/admin/user_view.php?id=<?= $server['user_id'] ?>"><?= e($server['owner_name']) ?></a>
+                <span style="color: var(--text-muted); font-size: 0.75rem;"> · 💎 <?= (int)($server['owner_points'] ?? 0) ?></span>
+            </td></tr>
             <tr><td style="color: var(--text-muted);">Версия</td><td><?= e($server['version'] ?? '—') ?></td></tr>
             <tr><td style="color: var(--text-muted);">Режим</td><td><?= e($server['game_mode'] ?? '—') ?></td></tr>
             <tr><td style="color: var(--text-muted);">MOTD</td><td><?= e($server['motd'] ?? '—') ?></td></tr>
@@ -169,6 +172,15 @@ $reports = $reports->fetchAll();
             <tr><td style="color: var(--text-muted);">Добавлен</td><td><?= formatDate($server['created_at']) ?></td></tr>
             <tr><td style="color: var(--text-muted);">Последний пинг</td><td><?= $server['last_ping'] ? formatDate($server['last_ping']) : '—' ?></td></tr>
             <tr><td style="color: var(--text-muted);">Неудачных пингов подряд</td><td><?= $server['consecutive_fails'] ?></td></tr>
+            <?php if ($server['is_promoted']): ?>
+                <tr><td style="color: var(--gold);">⭐ Продвижение до</td><td><?= $server['promoted_until'] ? formatDate($server['promoted_until']) : '—' ?></td></tr>
+            <?php endif; ?>
+            <?php if (!empty($server['highlighted_until']) && strtotime($server['highlighted_until']) > time()): ?>
+                <tr><td style="color: var(--diamond);">⚡ Выделение до</td><td><?= formatDate($server['highlighted_until']) ?></td></tr>
+            <?php endif; ?>
+            <?php if ($server['is_verified']): ?>
+                <tr><td style="color: var(--success);">✓ Верифицирован</td><td><?= $server['verified_at'] ? formatDate($server['verified_at']) : 'Да' ?></td></tr>
+            <?php endif; ?>
             <?php if ($server['reject_reason']): ?>
                 <tr><td style="color: var(--danger);">Причина отклонения/бана</td><td><?= e($server['reject_reason']) ?></td></tr>
             <?php endif; ?>

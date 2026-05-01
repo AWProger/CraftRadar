@@ -127,7 +127,7 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
 ?>
 
 <div class="admin-table-header">
-    <div>Всего: <?= $total ?></div>
+    <div>Всего: <strong><?= $total ?></strong> <?= $status ? '(фильтр: ' . e($status) . ')' : '' ?></div>
 </div>
 
 <!-- Фильтры -->
@@ -227,6 +227,19 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                                         <input type="hidden" name="bulk_action" value="approve">
                                         <input type="hidden" name="ids[]" value="<?= $s['id'] ?>">
                                         <button class="btn btn-sm btn-primary" title="Одобрить">✅</button>
+                                    </form>
+                                    <form method="POST" style="display:inline;">
+                                        <?= csrfField() ?>
+                                        <input type="hidden" name="bulk_action" value="reject">
+                                        <input type="hidden" name="ids[]" value="<?= $s['id'] ?>">
+                                        <button class="btn btn-sm btn-ghost" title="Отклонить">❌</button>
+                                    </form>
+                                <?php elseif ($s['status'] === 'active'): ?>
+                                    <form method="POST" style="display:inline;">
+                                        <?= csrfField() ?>
+                                        <input type="hidden" name="bulk_action" value="ban">
+                                        <input type="hidden" name="ids[]" value="<?= $s['id'] ?>">
+                                        <button class="btn btn-sm btn-ghost" title="Забанить" data-confirm="Забанить сервер?">🚫</button>
                                     </form>
                                 <?php endif; ?>
                             </div>

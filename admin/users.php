@@ -82,7 +82,7 @@ if ($banned) $baseUrl .= '&banned=' . urlencode($banned);
 ?>
 
 <div class="admin-table-header">
-    <div>Всего: <?= $total ?></div>
+    <div>Всего: <strong><?= $total ?></strong> пользователей</div>
 </div>
 
 <form method="GET" class="admin-filters">
