@@ -30,6 +30,14 @@ if (isPost()) {
             case 'approve':
                 $db->prepare("UPDATE servers SET status = 'active' WHERE id = ?")->execute([$id]);
                 adminLog('approve_server', 'server', $id);
+                // Уведомление владельцу
+                try {
+                    require_once INCLUDES_PATH . 'notifications.php';
+                    createNotification($server['user_id'], 'server_approved',
+                        '✅ Сервер «' . $server['name'] . '» одобрен!',
+                        'Ваш сервер прошёл модерацию и теперь доступен в каталоге.',
+                        SITE_URL . '/server.php?id=' . $id);
+                } catch (\Exception $e) {}
                 setFlash('success', 'Сервер одобрен.');
                 break;
 
@@ -37,6 +45,13 @@ if (isPost()) {
                 $reason = post('reason');
                 $db->prepare("UPDATE servers SET status = 'rejected', reject_reason = ? WHERE id = ?")->execute([$reason, $id]);
                 adminLog('reject_server', 'server', $id, json_encode(['reason' => $reason]));
+                try {
+                    require_once INCLUDES_PATH . 'notifications.php';
+                    createNotification($server['user_id'], 'server_rejected',
+                        '❌ Сервер «' . $server['name'] . '» отклонён',
+                        $reason ? 'Причина: ' . $reason : 'Сервер не прошёл модерацию.',
+                        SITE_URL . '/dashboard/');
+                } catch (\Exception $e) {}
                 setFlash('success', 'Сервер отклонён.');
                 break;
 

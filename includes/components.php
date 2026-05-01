@@ -122,3 +122,27 @@ function reviewItem(array $review, bool $showServer = false): string
     $html .= '</div>';
     return $html;
 }
+
+
+/**
+ * Навигация кабинета
+ */
+function dashboardNav(string $active = ''): string
+{
+    $links = [
+        'profile' => ['url' => SITE_URL . '/dashboard/profile.php', 'icon' => '👤', 'label' => 'Профиль'],
+        'servers' => ['url' => SITE_URL . '/dashboard/', 'icon' => '📡', 'label' => 'Серверы'],
+        'points'  => ['url' => SITE_URL . '/dashboard/points.php', 'icon' => '💎', 'label' => 'Баллы'],
+        'coins'   => ['url' => SITE_URL . '/dashboard/buy_coins.php', 'icon' => '💰', 'label' => 'Монеты'],
+        'notif'   => ['url' => SITE_URL . '/dashboard/notifications.php', 'icon' => '🔔', 'label' => 'Уведомления'],
+        'settings'=> ['url' => SITE_URL . '/dashboard/settings.php', 'icon' => '⚙️', 'label' => 'Настройки'],
+    ];
+
+    $html = '<div style="display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;">';
+    foreach ($links as $key => $link) {
+        $cls = $key === $active ? 'btn-primary' : 'btn-ghost';
+        $html .= '<a href="' . $link['url'] . '" class="btn btn-sm ' . $cls . '">' . $link['icon'] . ' ' . $link['label'] . '</a>';
+    }
+    $html .= '</div>';
+    return $html;
+}

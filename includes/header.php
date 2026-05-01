@@ -57,6 +57,7 @@ if (isLoggedIn()) {
                 <nav class="nav">
                     <a href="<?= SITE_URL ?>/" class="nav-link">Главная</a>
                     <a href="<?= SITE_URL ?>/servers.php" class="nav-link">Серверы</a>
+                    <a href="<?= SITE_URL ?>/top_players.php" class="nav-link">Игроки</a>
                 </nav>
 
                 <div class="header-actions">

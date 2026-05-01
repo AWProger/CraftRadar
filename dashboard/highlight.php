@@ -129,7 +129,11 @@ $history = getPointHistory($userId, 10);
                     <input type="hidden" name="duration" value="<?= $key ?>">
                     <button type="submit" class="btn <?= $userPoints >= $opt['cost'] ? 'btn-gold' : 'btn-ghost' ?> btn-block"
                             <?= $userPoints < $opt['cost'] ? 'disabled' : '' ?>>
-                        <?= $userPoints >= $opt['cost'] ? "Выделить за {$opt['cost']} 💎" : "Нужно {$opt['cost']} 💎" ?>
+                        <?php if ($userPoints >= $opt['cost']): ?>
+                            Выделить за <?= $opt['cost'] ?> 💎
+                        <?php else: ?>
+                            Нужно ещё <?= $opt['cost'] - $userPoints ?> 💎
+                        <?php endif; ?>
                     </button>
                 </form>
             </div>
