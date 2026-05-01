@@ -38,6 +38,17 @@ define('PING_TIMEOUT', 5); // секунд
 define('PING_INTERVAL', 10); // минут
 define('MAX_CONSECUTIVE_FAILS', 3);
 
+// Статусы серверов
+define('SERVER_STATUS_ACTIVE', 'active');
+define('SERVER_STATUS_PENDING', 'pending');
+define('SERVER_STATUS_REJECTED', 'rejected');
+define('SERVER_STATUS_BANNED', 'banned');
+
+// Роли пользователей
+define('ROLE_USER', 'user');
+define('ROLE_MODERATOR', 'moderator');
+define('ROLE_ADMIN', 'admin');
+
 // Голосование
 define('VOTE_COOLDOWN', 24); // часов
 

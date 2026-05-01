@@ -5,6 +5,7 @@
 
 $adminPageTitle = 'Дашборд';
 require_once __DIR__ . '/includes/admin_header.php';
+require_once INCLUDES_PATH . 'cache.php';
 
 $db = getDB();
 $today = date('Y-m-d');

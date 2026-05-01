@@ -8,6 +8,19 @@ require_once __DIR__ . '/includes/admin_header.php';
 
 $db = getDB();
 
+// Экспорт CSV
+if (get('export') === 'csv' && isAdmin()) {
+    $all = $db->query("SELECT s.id, s.name, s.ip, s.port, s.status, s.is_online, s.players_online, s.players_max, s.votes_month, s.votes_total, s.is_verified, u.username as owner, s.created_at FROM servers s JOIN users u ON s.user_id = u.id ORDER BY s.id")->fetchAll();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=servers_' . date('Y-m-d') . '.csv');
+    $out = fopen('php://output', 'w');
+    fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    fputcsv($out, ['ID', 'Название', 'IP', 'Порт', 'Статус', 'Онлайн', 'Игроков', 'Макс', 'Голоса мес', 'Голоса всего', 'Верифицирован', 'Владелец', 'Создан'], ';');
+    foreach ($all as $r) fputcsv($out, array_values($r), ';');
+    fclose($out);
+    exit;
+}
+
 // Параметры
 $page = max(1, getInt('page', 1));
 $status = get('status');
@@ -54,7 +67,13 @@ $stmt = $db->prepare("
     FROM servers s 
     JOIN users u ON s.user_id = u.id 
     WHERE {$whereSQL} 
-    ORDER BY s.created_at DESC 
+    ORDER BY " . match(get('sort', 'date')) {
+        'name' => 's.name ASC',
+        'votes' => 's.votes_month DESC',
+        'online' => 's.players_online DESC',
+        'status' => 's.status ASC',
+        default => 's.created_at DESC',
+    } . "
     LIMIT {$perPage} OFFSET {$offset}
 ");
 $stmt->execute($params);
@@ -118,6 +137,7 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
     </select>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Поиск по названию, IP, ID...">
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>
+    <a href="<?= SITE_URL ?>/admin/servers.php?export=csv" class="btn btn-sm btn-outline">📥 CSV</a>
 </form>
 
 <!-- Таблица -->
@@ -142,12 +162,12 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                 <tr>
                     <?php if (isAdmin()): ?><th><input type="checkbox" id="selectAll"></th><?php endif; ?>
                     <th>ID</th>
-                    <th>Название</th>
+                    <th><a href="?sort=name<?= $status ? '&status=' . e($status) : '' ?>" style="color:inherit;">Название ↕</a></th>
                     <th>IP:Порт</th>
                     <th>Владелец</th>
-                    <th>Статус</th>
-                    <th>Онлайн</th>
-                    <th>Голоса</th>
+                    <th><a href="?sort=status<?= $status ? '&status=' . e($status) : '' ?>" style="color:inherit;">Статус ↕</a></th>
+                    <th><a href="?sort=online<?= $status ? '&status=' . e($status) : '' ?>" style="color:inherit;">Онлайн ↕</a></th>
+                    <th><a href="?sort=votes<?= $status ? '&status=' . e($status) : '' ?>" style="color:inherit;">Голоса ↕</a></th>
                     <th>Пинг</th>
                     <th>Дата</th>
                     <th>Действия</th>

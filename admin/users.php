@@ -8,6 +8,19 @@ require_once __DIR__ . '/includes/admin_header.php';
 
 $db = getDB();
 
+// Экспорт CSV
+if (get('export') === 'csv' && isAdmin()) {
+    $all = $db->query("SELECT id, username, email, role, is_banned, points, created_at, last_login FROM users ORDER BY id")->fetchAll();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=users_' . date('Y-m-d') . '.csv');
+    $out = fopen('php://output', 'w');
+    fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    fputcsv($out, ['ID', 'Логин', 'Email', 'Роль', 'Бан', 'Баллы', 'Регистрация', 'Последний вход'], ';');
+    foreach ($all as $r) fputcsv($out, array_values($r), ';');
+    fclose($out);
+    exit;
+}
+
 $page = max(1, getInt('page', 1));
 $search = get('q');
 $role = get('role');
@@ -75,6 +88,7 @@ if ($banned) $baseUrl .= '&banned=' . urlencode($banned);
     </label>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Поиск по логину, email, IP, ID...">
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>
+    <a href="<?= SITE_URL ?>/admin/users.php?export=csv" class="btn btn-sm btn-outline">📥 CSV</a>
 </form>
 
 <?php
