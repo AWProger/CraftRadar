@@ -128,7 +128,7 @@ function initSQLiteTables(PDO $pdo): void
         );
         CREATE TABLE IF NOT EXISTS votes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            server_id INTEGER, user_id INTEGER, ip_address TEXT, voted_at TEXT
+            server_id INTEGER, user_id INTEGER, minecraft_nick TEXT, ip_address TEXT, voted_at TEXT
         );
         CREATE TABLE IF NOT EXISTS server_stats (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

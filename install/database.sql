@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS votes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     server_id INT NOT NULL,
     user_id INT NOT NULL,
+    minecraft_nick VARCHAR(32) NULL COMMENT 'Ник игрока в Minecraft',
     ip_address VARCHAR(45) NOT NULL,
     voted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE,

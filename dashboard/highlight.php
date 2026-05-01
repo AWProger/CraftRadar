@@ -64,6 +64,25 @@ $history = getPointHistory($userId, 10);
             <span class="points-icon">💎</span>
             <span>Ваши баллы: <?= $userPoints ?></span>
         </div>
+        <?php
+        // Прогресс до следующего тарифа
+        $nextCost = 0;
+        foreach (HIGHLIGHT_COSTS as $c) {
+            if ($c['points'] > $userPoints) { $nextCost = $c['points']; break; }
+        }
+        if ($nextCost > 0):
+            $progress = min(100, round(($userPoints / $nextCost) * 100));
+        ?>
+        <div style="margin-top: 8px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px;">
+                <span><?= $userPoints ?> 💎</span>
+                <span><?= $nextCost ?> 💎 (следующий тариф)</span>
+            </div>
+            <div style="height: 8px; background: var(--bg); border: 2px solid var(--border);">
+                <div style="height: 100%; width: <?= $progress ?>%; background: var(--diamond); transition: width 0.3s;"></div>
+            </div>
+        </div>
+        <?php endif; ?>
         <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">
             Баллы начисляются за голосование за серверы (1 балл за голос)
         </p>

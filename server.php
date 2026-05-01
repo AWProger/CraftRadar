@@ -232,6 +232,11 @@ require_once __DIR__ . '/includes/header.php';
                 <h3 style="margin-bottom: 12px;">Голосование</h3>
                 <?php if (isLoggedIn()): ?>
                     <?php if ($canVote): ?>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <input type="text" id="voteNick" placeholder="Ваш ник в Minecraft" 
+                                   pattern="[a-zA-Z0-9_]{3,16}" maxlength="16"
+                                   style="font-size: 0.85rem; text-align: center;">
+                        </div>
                         <button class="btn btn-primary btn-block" id="voteBtn" data-server="<?= $id ?>">
                             👍 Голосовать
                         </button>
@@ -583,10 +588,11 @@ loadChart('24h');
 const voteBtn = document.getElementById('voteBtn');
 if (voteBtn) {
     voteBtn.addEventListener('click', function() {
+        const nick = document.getElementById('voteNick') ? document.getElementById('voteNick').value.trim() : '';
         fetch('<?= SITE_URL ?>/vote.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'server_id=<?= $id ?>&<?= CSRF_TOKEN_NAME ?>=<?= generateCsrfToken() ?>'
+            body: 'server_id=<?= $id ?>&minecraft_nick=' + encodeURIComponent(nick) + '&<?= CSRF_TOKEN_NAME ?>=<?= generateCsrfToken() ?>'
         })
         .then(r => r.json())
         .then(data => {

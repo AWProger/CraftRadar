@@ -35,6 +35,11 @@ if (get('offline_long') === '1') {
     $params[] = dateAgo(7, 'day');
 }
 
+if (get('verified') !== '') {
+    $where[] = 's.is_verified = ?';
+    $params[] = (int)get('verified');
+}
+
 $whereSQL = implode(' AND ', $where);
 
 // Подсчёт
@@ -105,6 +110,11 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
         <option value="pending" <?= $status === 'pending' ? 'selected' : '' ?>>Pending</option>
         <option value="rejected" <?= $status === 'rejected' ? 'selected' : '' ?>>Rejected</option>
         <option value="banned" <?= $status === 'banned' ? 'selected' : '' ?>>Banned</option>
+    </select>
+    <select name="verified">
+        <option value="">Верификация</option>
+        <option value="1" <?= get('verified') === '1' ? 'selected' : '' ?>>✓ Верифицированные</option>
+        <option value="0" <?= get('verified') === '0' ? 'selected' : '' ?>>Не верифицированные</option>
     </select>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Поиск по названию, IP, ID...">
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>

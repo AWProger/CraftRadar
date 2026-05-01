@@ -64,8 +64,9 @@ $prices = PROMOTE_PRICES;
     <?php endif; ?>
 
     <?php if ($server['is_promoted']): ?>
+        <?php $daysLeft = max(0, (int)ceil((strtotime($server['promoted_until']) - time()) / 86400)); ?>
         <div class="alert alert-info">
-            ⭐ Сервер уже продвигается до <?= formatDate($server['promoted_until']) ?>.
+            ⭐ Сервер уже продвигается до <?= formatDate($server['promoted_until']) ?> (осталось <?= $daysLeft ?> дн.).
             Вы можете продлить — дни добавятся к текущему сроку.
         </div>
     <?php endif; ?>

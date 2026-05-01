@@ -87,6 +87,7 @@ if ($banned) $baseUrl .= '&banned=' . urlencode($banned);
                 <th>Роль</th>
                 <th>Серверов</th>
                 <th>Голосов</th>
+                <th>💎</th>
                 <th>Регистрация</th>
                 <th>Последний вход</th>
                 <th>Статус</th>
@@ -111,6 +112,7 @@ if ($banned) $baseUrl .= '&banned=' . urlencode($banned);
                     </td>
                     <td><?= $u['server_count'] ?></td>
                     <td><?= $u['vote_count'] ?></td>
+                    <td style="color: var(--gold);"><?= $u['points'] ?? 0 ?></td>
                     <td><?= formatDate($u['created_at']) ?></td>
                     <td><?= $u['last_login'] ? formatDate($u['last_login']) : '—' ?></td>
                     <td>

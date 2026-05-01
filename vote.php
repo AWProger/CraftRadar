@@ -68,9 +68,16 @@ if ($lastVote && (time() - strtotime($lastVote)) < VOTE_COOLDOWN * 3600) {
     exit;
 }
 
+// Minecraft ник
+$minecraftNick = post('minecraft_nick');
+if ($minecraftNick && !preg_match('/^[a-zA-Z0-9_]{3,16}$/', $minecraftNick)) {
+    echo json_encode(['success' => false, 'error' => 'Некорректный ник (3-16 символов, латиница, цифры, _).']);
+    exit;
+}
+
 // Записываем голос
-$stmt = $db->prepare('INSERT INTO votes (server_id, user_id, ip_address, voted_at) VALUES (?, ?, ?, ?)');
-$stmt->execute([$serverId, $userId, getUserIP(), now()]);
+$stmt = $db->prepare('INSERT INTO votes (server_id, user_id, minecraft_nick, ip_address, voted_at) VALUES (?, ?, ?, ?, ?)');
+$stmt->execute([$serverId, $userId, $minecraftNick ?: null, getUserIP(), now()]);
 
 // Обновляем счётчики сервера
 $stmt = $db->prepare('UPDATE servers SET votes_total = votes_total + 1, votes_month = votes_month + 1 WHERE id = ?');
