@@ -22,6 +22,11 @@ if ($search) {
     $params[] = "%{$search}%"; $params[] = "%{$search}%"; $params[] = "%{$search}%";
 }
 
+if (get('rating')) {
+    $where[] = 'r.rating = ?';
+    $params[] = (int)get('rating');
+}
+
 $whereSQL = implode(' AND ', $where);
 
 $stmt = $db->prepare("SELECT COUNT(*) FROM reviews r JOIN users u ON r.user_id = u.id JOIN servers s ON r.server_id = s.id WHERE {$whereSQL}");
@@ -97,18 +102,49 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
         <option value="active" <?= $status === 'active' ? 'selected' : '' ?>>Active</option>
         <option value="hidden" <?= $status === 'hidden' ? 'selected' : '' ?>>Hidden</option>
     </select>
+    <select name="rating">
+        <option value="">Все оценки</option>
+        <?php for ($i = 1; $i <= 5; $i++): ?>
+            <option value="<?= $i ?>" <?= get('rating') === (string)$i ? 'selected' : '' ?>><?= $i ?>★</option>
+        <?php endfor; ?>
+    </select>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Поиск по тексту, автору, серверу...">
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>
 </form>
 
+<?php
+// Массовое скрытие
+if (isPost() && post('bulk_action') === 'hide_all') {
+    if (verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
+        $ids = array_map('intval', $_POST['ids'] ?? []);
+        if (!empty($ids)) {
+            $ph = implode(',', array_fill(0, count($ids), '?'));
+            $db->prepare("UPDATE reviews SET status = 'hidden', hidden_by = ?, hidden_reason = 'Массовое скрытие' WHERE id IN ({$ph})")
+                ->execute(array_merge([currentUserId()], $ids));
+            foreach ($ids as $rid) adminLog('hide_review', 'review', $rid, 'Массовое скрытие');
+            setFlash('success', count($ids) . ' отзывов скрыто.');
+            redirect($_SERVER['REQUEST_URI']);
+        }
+    }
+}
+?>
+
+<form method="POST">
+<?= csrfField() ?>
+<div style="margin-bottom: 12px; display: flex; gap: 8px; align-items: center;">
+    <input type="hidden" name="bulk_action" value="hide_all">
+    <button type="submit" class="btn btn-sm btn-outline" data-confirm="Скрыть выбранные отзывы?">🙈 Скрыть выбранные</button>
+</div>
+
 <div class="table-wrap">
     <table>
         <thead>
-            <tr><th>ID</th><th>Сервер</th><th>Автор</th><th>⭐</th><th>Текст</th><th>Статус</th><th>Дата</th><th>Действия</th></tr>
+            <tr><th><input type="checkbox" id="selectAll"></th><th>ID</th><th>Сервер</th><th>Автор</th><th>⭐</th><th>Текст</th><th>Статус</th><th>Дата</th><th>Действия</th></tr>
         </thead>
         <tbody>
             <?php foreach ($reviews as $r): ?>
                 <tr>
+                    <td><input type="checkbox" name="ids[]" value="<?= $r['id'] ?>" class="row-checkbox"></td>
                     <td><?= $r['id'] ?></td>
                     <td><a href="<?= SITE_URL ?>/admin/server_view.php?id=<?= $r['server_id'] ?>"><?= e(truncate($r['server_name'], 20)) ?></a></td>
                     <td><a href="<?= SITE_URL ?>/admin/user_view.php?id=<?= $r['user_id'] ?>"><?= e($r['username']) ?></a></td>
@@ -148,7 +184,8 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
             <?php endforeach; ?>
         </tbody>
     </table>
-</div>
+    </div>
+</form>
 
 <?= paginate($total, $perPage, $page, $baseUrl) ?>
 

@@ -89,9 +89,15 @@ $dailyStreak = (int)($user['daily_streak'] ?? 0);
     <!-- Статистика -->
     <div class="profile-stats">
         <div class="profile-stat">
-            <div class="profile-stat-value" style="color: var(--gold);"><?= $userPoints ?></div>
+            <div class="profile-stat-value" style="color: var(--diamond);"><?= $userPoints ?></div>
             <div class="profile-stat-icon">💎</div>
             <div class="profile-stat-label">Алмазов</div>
+        </div>
+        <div class="profile-stat">
+            <?php $userCoins = 0; try { require_once INCLUDES_PATH . 'coins.php'; $userCoins = getUserCoins($userId); } catch(\Exception $e) {} ?>
+            <div class="profile-stat-value" style="color: var(--gold);"><?= $userCoins ?></div>
+            <div class="profile-stat-icon">💰</div>
+            <div class="profile-stat-label">Монет</div>
         </div>
         <div class="profile-stat">
             <div class="profile-stat-value"><?= $totalVotes ?></div>

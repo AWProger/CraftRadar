@@ -117,6 +117,7 @@ if ($onlineOnly) $baseUrl .= '&online=1';
                 </label>
 
                 <button type="submit" class="btn btn-primary btn-sm">Найти</button>
+                <a href="<?= SITE_URL ?>/servers.php" class="btn btn-ghost btn-sm">Сбросить</a>
             </div>
         </form>
 

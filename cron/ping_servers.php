@@ -141,6 +141,20 @@ foreach ($servers as $server) {
                     'Сервер не отвечает после ' . MAX_CONSECUTIVE_FAILS . ' попыток пинга.',
                     SITE_URL . '/dashboard/stats.php?id=' . $server['id']
                 );
+
+                // Уведомляем пользователей с этим сервером в избранном
+                try {
+                    $favUsers = $db->prepare('SELECT user_id FROM favorites WHERE server_id = ?');
+                    $favUsers->execute([$server['id']]);
+                    foreach ($favUsers->fetchAll() as $fu) {
+                        if ($fu['user_id'] != $server['user_id']) {
+                            createNotification($fu['user_id'], 'server_offline',
+                                '🔴 «' . $server['name'] . '» ушёл в оффлайн',
+                                'Сервер из вашего избранного не отвечает.',
+                                SITE_URL . '/server.php?id=' . $server['id']);
+                        }
+                    }
+                } catch (\Exception $e) {}
             }
         }
 
