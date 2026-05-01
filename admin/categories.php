@@ -5,7 +5,7 @@
 
 $adminPageTitle = 'Категории';
 require_once __DIR__ . '/includes/admin_header.php';
-requireAdmin();
+// Модераторы могут просматривать категории
 
 $db = getDB();
 

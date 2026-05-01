@@ -5,7 +5,7 @@
 
 $adminPageTitle = 'Платежи';
 require_once __DIR__ . '/includes/admin_header.php';
-requireAdmin();
+// Модераторы могут просматривать, но не удалять/возвращать
 
 $db = getDB();
 
@@ -28,7 +28,7 @@ if (get('export') === 'csv') {
 }
 
 // Действия
-if (isPost() && verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
+if (isPost() && isAdmin() && verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
     $action = post('action');
     $payId = (int)post('payment_id');
 

@@ -5,7 +5,7 @@
 
 $adminPageTitle = 'Страницы';
 require_once __DIR__ . '/includes/admin_header.php';
-requireAdmin();
+// Модераторы могут просматривать страницы
 
 $db = getDB();
 

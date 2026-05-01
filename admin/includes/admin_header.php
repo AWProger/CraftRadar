@@ -107,23 +107,23 @@ function navActive(string $script, ?string $param = null, ?string $value = null)
                 💰 Платежи
             </a>
 
-            <?php if (isAdmin()): ?>
-                <div class="admin-nav-group">
-                    <span class="admin-nav-group-title">⚙️ Управление</span>
-                    <a href="<?= SITE_URL ?>/admin/categories.php" class="admin-nav-link <?= $currentScript === 'categories.php' ? 'active' : '' ?>">
-                        🏷️ Категории
-                    </a>
-                    <a href="<?= SITE_URL ?>/admin/pages.php" class="admin-nav-link <?= $currentScript === 'pages.php' || $currentScript === 'page_edit.php' ? 'active' : '' ?>">
-                        📄 Страницы
-                    </a>
+            <div class="admin-nav-group">
+                <span class="admin-nav-group-title">⚙️ Управление</span>
+                <a href="<?= SITE_URL ?>/admin/categories.php" class="admin-nav-link <?= $currentScript === 'categories.php' ? 'active' : '' ?>">
+                    🏷️ Категории
+                </a>
+                <a href="<?= SITE_URL ?>/admin/pages.php" class="admin-nav-link <?= $currentScript === 'pages.php' || $currentScript === 'page_edit.php' ? 'active' : '' ?>">
+                    📄 Страницы
+                </a>
+                <?php if (isAdmin()): ?>
                     <a href="<?= SITE_URL ?>/admin/settings.php" class="admin-nav-link <?= $currentScript === 'settings.php' ? 'active' : '' ?>">
                         ⚙️ Настройки
                     </a>
                     <a href="<?= SITE_URL ?>/admin/system.php" class="admin-nav-link <?= $currentScript === 'system.php' ? 'active' : '' ?>">
                         🖥 Система
                     </a>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
 
             <a href="<?= SITE_URL ?>/admin/log.php" class="admin-nav-link <?= $currentScript === 'log.php' ? 'active' : '' ?>">
                 📋 Лог действий

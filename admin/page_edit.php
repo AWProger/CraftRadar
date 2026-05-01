@@ -5,7 +5,7 @@
 
 $adminPageTitle = 'Редактирование страницы';
 require_once __DIR__ . '/includes/admin_header.php';
-requireAdmin();
+// Модераторы могут редактировать страницы
 
 $db = getDB();
 $id = getInt('id');
