@@ -1086,9 +1086,17 @@ tr:hover td {
     .sidebar-top { display: none !important; }
 }
 
-/* === Широкие экраны — отступ для сайдбара === */
+/* === Широкие экраны — место для сайдбара === */
 @media (min-width: 1500px) {
-    .main .container { margin-right: 310px; }
+    .container {
+        max-width: calc(var(--container) + 320px);
+        padding-right: 320px;
+    }
+}
+
+/* === 2K+ мониторы === */
+@media (min-width: 2200px) {
+    :root { --container: 1400px; }
 }
 
 /* ============================================
