@@ -51,6 +51,7 @@ if (isPost()) {
 ?>
 
 <div class="dashboard">
+    <?= dashboardNav('coins') ?>
     <div class="dashboard-header">
         <h1>💰 Купить монеты</h1>
         <a href="<?= SITE_URL ?>/dashboard/profile.php" class="btn btn-ghost">← Профиль</a>

@@ -56,13 +56,9 @@ $dailyStreak = (int)($user['daily_streak'] ?? 0);
 ?>
 
 <div class="dashboard">
+    <?= dashboardNav('profile') ?>
     <div class="dashboard-header">
         <h1>👤 Мой профиль</h1>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-sm btn-outline">📡 Мои серверы</a>
-            <a href="<?= SITE_URL ?>/dashboard/points.php" class="btn btn-sm btn-ghost">💎 Баллы</a>
-            <a href="<?= SITE_URL ?>/dashboard/settings.php" class="btn btn-sm btn-ghost">⚙️ Настройки</a>
-        </div>
     </div>
 
     <!-- Карточка профиля -->

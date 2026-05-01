@@ -105,6 +105,13 @@ $reviews = $reviews->fetchAll();
             <tr><td style="color: var(--text-muted);">Регистрация</td><td><?= formatDate($user['created_at']) ?></td></tr>
             <tr><td style="color: var(--text-muted);">Последний вход</td><td><?= $user['last_login'] ? formatDate($user['last_login']) : '—' ?></td></tr>
             <tr><td style="color: var(--text-muted);">Последний IP</td><td><?= e($user['last_ip'] ?? '—') ?></td></tr>
+            <tr><td style="color: var(--text-muted);">💎 Баллы</td><td><?= (int)($user['points'] ?? 0) ?></td></tr>
+            <?php if (isset($user['coins'])): ?>
+                <tr><td style="color: var(--text-muted);">💰 Монеты</td><td><?= (int)$user['coins'] ?></td></tr>
+            <?php endif; ?>
+            <?php if (!empty($user['referral_code'])): ?>
+                <tr><td style="color: var(--text-muted);">👥 Реф. код</td><td><?= e($user['referral_code']) ?> (<?= (int)($user['referral_count'] ?? 0) ?> приглашённых)</td></tr>
+            <?php endif; ?>
             <tr>
                 <td style="color: var(--text-muted);">Статус</td>
                 <td>

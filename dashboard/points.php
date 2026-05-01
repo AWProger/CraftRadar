@@ -21,6 +21,7 @@ $myServers = $myServers->fetchAll();
 ?>
 
 <div class="dashboard">
+    <?= dashboardNav('points') ?>
     <div class="dashboard-header">
         <h1>💎 Мои баллы</h1>
         <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Кабинет</a>

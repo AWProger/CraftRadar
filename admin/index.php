@@ -54,6 +54,10 @@ $totalVotes = (int)$db->query("SELECT COUNT(*) FROM votes")->fetchColumn();
 $totalReviews = (int)$db->query("SELECT COUNT(*) FROM reviews WHERE status = 'active'")->fetchColumn();
 $verifiedServers = (int)$db->query("SELECT COUNT(*) FROM servers WHERE is_verified = 1")->fetchColumn();
 
+// Рефералы
+$totalReferrals = 0;
+try { $totalReferrals = (int)$db->query("SELECT SUM(referral_count) FROM users")->fetchColumn(); } catch (\Exception $e) {}
+
 // === Доходы ===
 $stmt = $db->prepare("SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND DATE(paid_at) = ?");
 $stmt->execute([date('Y-m-d')]);
@@ -206,6 +210,10 @@ $recentUsers = $db->query("SELECT id, username, email, created_at FROM users ORD
     <div class="admin-stat-card">
         <div class="admin-stat-value"><?= $verifiedServers ?></div>
         <div class="admin-stat-label">Верифицированных</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-value"><?= $totalReferrals ?></div>
+        <div class="admin-stat-label">Рефералов</div>
     </div>
 </div>
 

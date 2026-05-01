@@ -76,6 +76,7 @@ $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
         <div class="hero-quick-links">
             <a href="<?= SITE_URL ?>/servers.php?sort=votes" class="hero-link">🏆 Топ серверов</a>
             <a href="<?= SITE_URL ?>/servers.php?sort=online" class="hero-link">🟢 Онлайн сейчас</a>
+            <a href="<?= SITE_URL ?>/top_players.php" class="hero-link">🏅 Топ игроков</a>
             <a href="<?= SITE_URL ?>/servers.php?sort=new" class="hero-link">🆕 Новые</a>
             <?php if (!isLoggedIn()): ?>
                 <a href="<?= SITE_URL ?>/register.php" class="hero-link hero-link-accent">📡 Добавить сервер</a>

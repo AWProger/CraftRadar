@@ -31,12 +31,10 @@ foreach ($servers as $s) {
 ?>
 
 <div class="dashboard">
+    <?= dashboardNav('servers') ?>
     <div class="dashboard-header">
-        <h1>Личный кабинет</h1>
-        <div style="display: flex; gap: 8px;">
-            <a href="<?= SITE_URL ?>/dashboard/profile.php" class="btn btn-sm btn-outline">👤 Профиль</a>
-            <a href="<?= SITE_URL ?>/dashboard/add.php" class="btn btn-primary">+ Добавить сервер</a>
-        </div>
+        <h1>Мои серверы</h1>
+        <a href="<?= SITE_URL ?>/dashboard/add.php" class="btn btn-primary">+ Добавить сервер</a>
     </div>
 
     <!-- Сводка -->

@@ -90,6 +90,7 @@ if (isPost()) {
 ?>
 
 <div class="dashboard">
+    <?= dashboardNav('settings') ?>
     <div class="dashboard-header">
         <h1>Настройки профиля</h1>
         <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Назад</a>
