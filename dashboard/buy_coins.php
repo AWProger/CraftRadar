@@ -52,9 +52,13 @@ if (isPost()) {
 
 <div class="dashboard">
     <?= dashboardNav('coins') ?>
+    <?= breadcrumbs([
+        ['url' => SITE_URL . '/', 'label' => 'Главная'],
+        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
+        ['url' => '', 'label' => 'Купить монеты']
+    ]) ?>
     <div class="dashboard-header">
         <h1>💰 Купить монеты</h1>
-        <a href="<?= SITE_URL ?>/dashboard/profile.php" class="btn btn-ghost">← Профиль</a>
     </div>
 
     <!-- Баланс -->

@@ -165,9 +165,14 @@ function saveServerIcon(string $favicon): ?string
 ?>
 
 <div class="dashboard">
+    <?= dashboardNav('servers') ?>
+    <?= breadcrumbs([
+        ['url' => SITE_URL . '/', 'label' => 'Главная'],
+        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
+        ['url' => '', 'label' => 'Добавить сервер']
+    ]) ?>
     <div class="dashboard-header">
         <h1>Добавить сервер</h1>
-        <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Назад</a>
     </div>
 
     <?php if ($errors): ?>
@@ -245,21 +250,5 @@ function saveServerIcon(string $favicon): ?string
         </form>
     </div>
 </div>
-
-<style>
-    .form-row {
-        display: flex;
-        gap: 16px;
-    }
-    .form-row .form-group {
-        flex: 1;
-    }
-    @media (max-width: 768px) {
-        .form-row {
-            flex-direction: column;
-            gap: 0;
-        }
-    }
-</style>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

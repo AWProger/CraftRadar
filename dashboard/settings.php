@@ -91,9 +91,13 @@ if (isPost()) {
 
 <div class="dashboard">
     <?= dashboardNav('settings') ?>
+    <?= breadcrumbs([
+        ['url' => SITE_URL . '/', 'label' => 'Главная'],
+        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
+        ['url' => '', 'label' => 'Настройки']
+    ]) ?>
     <div class="dashboard-header">
         <h1>Настройки профиля</h1>
-        <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Назад</a>
     </div>
 
     <?php if ($errors): ?>

@@ -138,11 +138,30 @@ function dashboardNav(string $active = ''): string
         'settings'=> ['url' => SITE_URL . '/dashboard/settings.php', 'icon' => '⚙️', 'label' => 'Настройки'],
     ];
 
-    $html = '<div style="display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;">';
+    $html = '<div class="dashboard-tabs">';
     foreach ($links as $key => $link) {
-        $cls = $key === $active ? 'btn-primary' : 'btn-ghost';
-        $html .= '<a href="' . $link['url'] . '" class="btn btn-sm ' . $cls . '">' . $link['icon'] . ' ' . $link['label'] . '</a>';
+        $cls = $key === $active ? 'active' : '';
+        $html .= '<a href="' . $link['url'] . '" class="dashboard-tab ' . $cls . '">' . $link['icon'] . ' ' . $link['label'] . '</a>';
     }
     $html .= '</div>';
+    return $html;
+}
+
+/**
+ * Хлебные крошки
+ */
+function breadcrumbs(array $items): string
+{
+    $html = '<nav class="breadcrumbs">';
+    $last = count($items) - 1;
+    foreach ($items as $i => $item) {
+        if ($i === $last) {
+            $html .= '<span class="breadcrumb-current">' . e($item['label']) . '</span>';
+        } else {
+            $html .= '<a href="' . $item['url'] . '" class="breadcrumb-link">' . e($item['label']) . '</a>';
+            $html .= '<span class="breadcrumb-sep">›</span>';
+        }
+    }
+    $html .= '</nav>';
     return $html;
 }

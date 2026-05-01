@@ -120,9 +120,14 @@ $old = [
 ?>
 
 <div class="dashboard">
+    <?= dashboardNav('servers') ?>
+    <?= breadcrumbs([
+        ['url' => SITE_URL . '/', 'label' => 'Главная'],
+        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
+        ['url' => '', 'label' => 'Редактировать']
+    ]) ?>
     <div class="dashboard-header">
         <h1>Редактировать сервер</h1>
-        <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Назад</a>
     </div>
 
     <div class="alert alert-info">
@@ -211,21 +216,5 @@ $old = [
         </form>
     </div>
 </div>
-
-<style>
-    .form-row {
-        display: flex;
-        gap: 16px;
-    }
-    .form-row .form-group {
-        flex: 1;
-    }
-    @media (max-width: 768px) {
-        .form-row {
-            flex-direction: column;
-            gap: 0;
-        }
-    }
-</style>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

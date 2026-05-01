@@ -106,9 +106,14 @@ $peakData = $stmt->fetch();
 ?>
 
 <div class="dashboard">
+    <?= dashboardNav('servers') ?>
+    <?= breadcrumbs([
+        ['url' => SITE_URL . '/', 'label' => 'Главная'],
+        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
+        ['url' => '', 'label' => 'Статистика: ' . e($server['name'])]
+    ]) ?>
     <div class="dashboard-header">
         <h1>Статистика: <?= e($server['name']) ?></h1>
-        <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Назад</a>
     </div>
 
     <!-- Сводка -->
@@ -182,45 +187,6 @@ $peakData = $stmt->fetch();
         <canvas id="votesChart" height="200"></canvas>
     </div>
 </div>
-
-<style>
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 12px;
-    }
-    .stat-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 20px;
-        text-align: center;
-    }
-    .stat-card-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: var(--accent);
-    }
-    .stat-card-label {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-top: 4px;
-    }
-    .sort-tabs {
-        display: flex;
-        gap: 4px;
-    }
-    .sort-tab {
-        padding: 4px 12px;
-        border-radius: var(--radius-sm);
-        font-size: 0.8rem;
-        color: var(--text-muted);
-    }
-    .sort-tab:hover, .sort-tab.active {
-        background: var(--accent-bg);
-        color: var(--accent);
-    }
-</style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
 <script>

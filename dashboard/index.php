@@ -32,6 +32,10 @@ foreach ($servers as $s) {
 
 <div class="dashboard">
     <?= dashboardNav('servers') ?>
+    <?= breadcrumbs([
+        ['url' => SITE_URL . '/', 'label' => 'Главная'],
+        ['url' => '', 'label' => 'Кабинет']
+    ]) ?>
     <div class="dashboard-header">
         <h1>Мои серверы</h1>
         <a href="<?= SITE_URL ?>/dashboard/add.php" class="btn btn-primary">+ Добавить сервер</a>
@@ -127,38 +131,5 @@ foreach ($servers as $s) {
         </div>
     <?php endif; ?>
 </div>
-
-<style>
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 12px;
-    }
-    .stat-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 20px;
-        text-align: center;
-    }
-    .stat-card-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--accent);
-    }
-    .stat-card-label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        margin-top: 4px;
-    }
-</style>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

@@ -22,9 +22,13 @@ $myServers = $myServers->fetchAll();
 
 <div class="dashboard">
     <?= dashboardNav('points') ?>
+    <?= breadcrumbs([
+        ['url' => SITE_URL . '/', 'label' => 'Главная'],
+        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
+        ['url' => '', 'label' => 'Баллы']
+    ]) ?>
     <div class="dashboard-header">
         <h1>💎 Мои баллы</h1>
-        <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Кабинет</a>
     </div>
 
     <!-- Баланс -->
