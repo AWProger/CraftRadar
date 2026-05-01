@@ -90,13 +90,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // === Подсветка текущей страницы в навигации ===
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.admin-nav-link').forEach(function (link) {
-        const href = link.getAttribute('href');
-        if (href && currentPath.includes(href.split('?')[0].split('/').pop())) {
-            link.classList.add('active');
-        }
-    });
+    // Подсветка навигации теперь через PHP (admin_header.php)
 
 });
