@@ -15,13 +15,12 @@ function serverIcon(array $server, string $size = '48px'): string
 }
 
 /**
- * Бейдж статуса онлайн/оффлайн
+ * Бейдж статуса онлайн/оффлайн (только индикатор)
  */
-function onlineBadge(array $server, bool $showPlayers = false): string
+function onlineBadge(array $server): string
 {
     if ($server['is_online']) {
-        $text = $showPlayers ? $server['players_online'] . '/' . $server['players_max'] : 'Онлайн';
-        return '<span class="badge badge-online">' . $text . '</span>';
+        return '<span class="badge badge-online">Онлайн</span>';
     }
     return '<span class="badge badge-offline">Оффлайн</span>';
 }
@@ -37,11 +36,11 @@ function serverCard(array $s, int $rank = 0): string
 
     $url = SITE_URL . '/server.php?id=' . $s['id'];
     $icon = serverIcon($s);
-    $badge = onlineBadge($s, true);
     $name = e($s['name']);
     $ip = e($s['ip'] . ':' . $s['port']);
-    $verified = !empty($s['is_verified']) ? '<span style="color:var(--success);font-size:0.75rem;" title="Владелец подтверждён">✓</span>' : '';
-    $promoted = !empty($s['is_promoted']) ? '<span style="color:var(--warning);">⭐</span>' : '';
+    $verified = !empty($s['is_verified']) ? ' <span style="color:var(--success);font-size:0.75rem;" title="Владелец подтверждён">✓</span>' : '';
+    $promoted = !empty($s['is_promoted']) ? '<span style="color:var(--warning);">⭐</span> ' : '';
+    $pendingBadge = (!empty($s['status']) && $s['status'] === 'pending') ? ' <span class="badge badge-pending">Модерация</span>' : '';
 
     $html = '<a href="' . $url . '" class="' . $cardClass . '">';
 
@@ -50,21 +49,32 @@ function serverCard(array $s, int $rank = 0): string
     }
 
     $html .= $icon;
+
+    // Инфо
     $html .= '<div class="server-card-info">';
-    $html .= '<div class="server-card-name">' . $promoted . $name . ' ' . $verified . '</div>';
-    $pendingBadge = (!empty($s['status']) && $s['status'] === 'pending') ? ' <span class="badge badge-pending">На модерации</span>' : '';
-    $version = !empty($s['version']) ? '<span>v' . e($s['version']) . '</span>' : '';
-    $mode = !empty($s['game_mode']) ? '<span>' . e($s['game_mode']) . '</span>' : '';
-    $html .= '<div class="server-card-meta"><span>' . $ip . '</span>' . $version . $mode . $badge . $pendingBadge . '</div>';
+    $html .= '<div class="server-card-name">' . $promoted . $name . $verified . '</div>';
+
+    $metaParts = ['<span>' . $ip . '</span>'];
+    if (!empty($s['version'])) $metaParts[] = '<span>v' . e($s['version']) . '</span>';
+    if (!empty($s['game_mode'])) $metaParts[] = '<span>' . e($s['game_mode']) . '</span>';
+    $metaParts[] = $pendingBadge;
+    $html .= '<div class="server-card-meta">' . implode('', $metaParts) . '</div>';
     $html .= '</div>';
 
+    // Статистика справа
     $html .= '<div class="server-card-stats">';
-    if (isset($s['players_online']) && $s['is_online']) {
-        $html .= '<div class="stat-item"><span class="stat-value">' . $s['players_online'] . '</span><span class="stat-label">Игроков</span></div>';
-    }
-    $html .= '<div class="stat-item"><span class="stat-value">' . ($s['votes_month'] ?? 0) . '</span><span class="stat-label">Голосов</span></div>';
-    $html .= '</div>';
 
+    // Онлайн игроков
+    if ($s['is_online']) {
+        $html .= '<div class="stat-item"><span class="stat-value">' . (int)$s['players_online'] . '/' . (int)$s['players_max'] . '</span><span class="stat-label">Игроков</span></div>';
+    } else {
+        $html .= '<div class="stat-item"><span class="stat-value" style="color:var(--danger);">—</span><span class="stat-label">Оффлайн</span></div>';
+    }
+
+    // Голоса
+    $html .= '<div class="stat-item"><span class="stat-value">' . (int)($s['votes_month'] ?? 0) . '</span><span class="stat-label">Голосов</span></div>';
+
+    $html .= '</div>';
     $html .= '</a>';
     return $html;
 }
