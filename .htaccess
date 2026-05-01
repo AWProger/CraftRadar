@@ -1,5 +1,8 @@
 # CraftRadar — Apache конфигурация
 
+# Кодировка UTF-8
+AddDefaultCharset UTF-8
+
 # Включаем mod_rewrite
 RewriteEngine On
 
