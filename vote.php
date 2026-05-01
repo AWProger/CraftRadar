@@ -68,6 +68,16 @@ if ($lastVote && (time() - strtotime($lastVote)) < VOTE_COOLDOWN * 3600) {
     exit;
 }
 
+// Лимит голосов в день (защита от накрутки алмазов)
+$stmt = $db->prepare('SELECT COUNT(*) FROM votes WHERE user_id = ? AND DATE(voted_at) = ?');
+$stmt->execute([$userId, date('Y-m-d')]);
+$votesToday = (int)$stmt->fetchColumn();
+
+if ($votesToday >= MAX_VOTES_PER_DAY) {
+    echo json_encode(['success' => false, 'error' => 'Достигнут лимит голосов на сегодня (' . MAX_VOTES_PER_DAY . '). Попробуйте завтра.']);
+    exit;
+}
+
 // Minecraft ник
 $minecraftNick = post('minecraft_nick');
 if ($minecraftNick && !preg_match('/^[a-zA-Z0-9_]{3,16}$/', $minecraftNick)) {

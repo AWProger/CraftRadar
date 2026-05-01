@@ -1078,9 +1078,9 @@ tr:hover td {
     .server-header-stat .stat-label { font-size: 0.5rem; }
 }
 
-/* === Sidebar скрывается на мобильных === */
+/* === Sidebar скрывается на мобильных и планшетах === */
 @media (max-width: 1200px) {
-    .sidebar-top { display: none; }
+    .sidebar-top { display: none !important; }
 }
 
 /* === Широкие экраны — отступ для сайдбара === */

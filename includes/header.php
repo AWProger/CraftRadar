@@ -64,7 +64,7 @@ if (isLoggedIn()) {
                         <a href="<?= SITE_URL ?>/dashboard/notifications.php" class="header-notif" title="Уведомления">
                             🔔<?php if ($_notifCount > 0): ?><span class="header-notif-badge"><?= $_notifCount ?></span><?php endif; ?>
                         </a>
-                        <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-sm btn-outline">Кабинет</a>
+                        <a href="<?= SITE_URL ?>/dashboard/profile.php" class="btn btn-sm btn-outline">👤 Профиль</a>
                         <?php if (isModerator()): ?>
                             <a href="<?= SITE_URL ?>/admin/" class="btn btn-sm btn-outline">Админка</a>
                         <?php endif; ?>

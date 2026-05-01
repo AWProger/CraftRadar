@@ -49,7 +49,10 @@ $totalReviews = (int)$stmt->fetchColumn();
 <div class="dashboard">
     <div class="dashboard-header">
         <h1>👤 Мой профиль</h1>
-        <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Кабинет</a>
+        <div style="display: flex; gap: 8px;">
+            <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-sm btn-outline">📡 Мои серверы</a>
+            <a href="<?= SITE_URL ?>/dashboard/settings.php" class="btn btn-sm btn-ghost">⚙️ Настройки</a>
+        </div>
     </div>
 
     <!-- Сводка -->
