@@ -13,6 +13,7 @@ require_once __DIR__ . '/../includes/cache.php';
 
 $id = getInt('id');
 $format = get('format', 'js');
+$theme = get('theme', 'dark'); // dark или light
 
 if (!$id) {
     header('Content-Type: text/plain');
@@ -44,17 +45,23 @@ if ($format === 'html') {
     ?>
 <!DOCTYPE html>
 <html>
+<?php
+$bgColor = $theme === 'light' ? '#ffffff' : '#161b22';
+$textColor = $theme === 'light' ? '#1a1a2e' : '#e6edf3';
+$borderColor = $theme === 'light' ? '#d0d7de' : '#30363d';
+$mutedColor = $theme === 'light' ? '#656d76' : '#8b949e';
+?>
 <head><meta charset="UTF-8"><style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#161b22;color:#e6edf3}
-.widget{display:flex;align-items:center;gap:10px;padding:8px 12px;height:60px;text-decoration:none;color:#e6edf3;border:1px solid #30363d;border-radius:6px;transition:border-color .2s}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:<?= $bgColor ?>;color:<?= $textColor ?>}
+.widget{display:flex;align-items:center;gap:10px;padding:8px 12px;height:60px;text-decoration:none;color:<?= $textColor ?>;border:1px solid <?= $borderColor ?>;border-radius:6px;transition:border-color .2s}
 .widget:hover{border-color:#00ff80}
 .w-icon{width:40px;height:40px;border-radius:4px;object-fit:cover;background:#0d1117;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
 .w-info{flex:1;min-width:0}
 .w-name{font-weight:600;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.w-meta{font-size:.7rem;color:#8b949e;display:flex;gap:8px;align-items:center}
+.w-meta{font-size:.7rem;color:<?= $mutedColor ?>;display:flex;gap:8px;align-items:center}
 .w-status{color:<?= $statusColor ?>}
-.w-votes{font-size:.75rem;color:#8b949e;text-align:center}
+.w-votes{font-size:.75rem;color:<?= $mutedColor ?>;text-align:center}
 .w-votes span{display:block;font-size:1rem;font-weight:700;color:#00ff80}
 .w-brand{font-size:.55rem;color:#484f58;text-align:right}
 </style></head>

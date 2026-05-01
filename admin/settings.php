@@ -65,8 +65,18 @@ function settingVal(array $settings, string $key): string {
 ?>
 
 <!-- Быстрые действия -->
-<div style="margin-bottom: 16px; display: flex; gap: 8px;">
+<?php
+$cacheDir = ROOT_PATH . 'storage/cache/';
+$cacheFiles = is_dir($cacheDir) ? count(glob($cacheDir . '*.json')) : 0;
+$cacheSize = 0;
+if (is_dir($cacheDir)) {
+    foreach (glob($cacheDir . '*.json') as $f) $cacheSize += filesize($f);
+}
+$cacheSizeStr = $cacheSize > 1024 ? round($cacheSize / 1024, 1) . ' KB' : $cacheSize . ' B';
+?>
+<div style="margin-bottom: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
     <a href="<?= SITE_URL ?>/admin/settings.php?action=clear_cache" class="btn btn-sm btn-outline" data-confirm="Очистить весь кэш?">🗑 Очистить кэш</a>
+    <span style="color: var(--text-muted); font-size: 0.75rem;">📦 <?= $cacheFiles ?> файлов, <?= $cacheSizeStr ?></span>
 </div>
 
 <form method="POST">

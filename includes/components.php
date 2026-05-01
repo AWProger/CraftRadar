@@ -95,3 +95,30 @@ function serverList(array $servers, bool $showRank = false): string
     $html .= '</div>';
     return $html;
 }
+
+
+/**
+ * Отображение одного отзыва
+ */
+function reviewItem(array $review, bool $showServer = false): string
+{
+    $html = '<div style="padding: 10px 0; border-bottom: 1px solid var(--border);">';
+    $html .= '<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">';
+
+    if ($showServer && !empty($review['server_name'])) {
+        $html .= '<a href="' . SITE_URL . '/server.php?id=' . (int)$review['server_id'] . '">' . e($review['server_name']) . '</a>';
+    } else {
+        $html .= '<a href="' . SITE_URL . '/profile.php?id=' . (int)$review['user_id'] . '"><strong>' . e($review['username'] ?? 'Пользователь') . '</strong></a>';
+    }
+
+    $html .= '<span class="stars" style="font-size: 0.8rem;">' . str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']) . '</span>';
+    $html .= '</div>';
+
+    if (!empty($review['text'])) {
+        $html .= '<p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">' . e(truncate($review['text'], 150)) . '</p>';
+    }
+
+    $html .= '<span style="color: var(--text-muted); font-size: 0.65rem;">' . formatDate($review['created_at']) . '</span>';
+    $html .= '</div>';
+    return $html;
+}

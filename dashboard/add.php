@@ -34,6 +34,8 @@ $old = [
 if (isPost()) {
     if (!verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
         $errors[] = 'Ошибка безопасности. Обновите страницу.';
+    } elseif (!empty(post('fax_number'))) {
+        $errors[] = 'Ошибка безопасности.';
     } else {
         $name = post('name');
         $ip = post('ip');
@@ -179,6 +181,7 @@ function saveServerIcon(string $favicon): ?string
     <div class="card">
         <form method="POST" action="">
             <?= csrfField() ?>
+            <div style="position:absolute;left:-9999px;"><input type="text" name="fax_number" value="" tabindex="-1" autocomplete="off"></div>
 
             <div class="form-group">
                 <label for="name">Название сервера *</label>

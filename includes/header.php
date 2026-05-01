@@ -68,7 +68,7 @@ if (isLoggedIn()) {
                         <?php if (isModerator()): ?>
                             <a href="<?= SITE_URL ?>/admin/" class="btn btn-sm btn-outline">Админка</a>
                         <?php endif; ?>
-                        <span class="header-user"><?= e($_SESSION['username'] ?? '') ?></span>
+                        <a href="<?= SITE_URL ?>/profile.php?id=<?= currentUserId() ?>" class="header-user" title="Мой публичный профиль"><?= e($_SESSION['username'] ?? '') ?></a>
                         <a href="<?= SITE_URL ?>/dashboard/points.php" class="points-display" title="Алмазы"><span class="points-icon">💎</span> <?= getUserPoints(currentUserId()) ?></a>
                         <a href="<?= SITE_URL ?>/dashboard/buy_coins.php" class="points-display" title="Монеты" style="color: var(--gold);">
                             <span class="points-icon">💰</span> <?php try { require_once INCLUDES_PATH . 'coins.php'; echo getUserCoins(currentUserId()); } catch(\Exception $e) { echo '0'; } ?>
