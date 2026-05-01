@@ -121,11 +121,6 @@ $old = [
 
 <div class="dashboard">
     <?= dashboardNav('servers') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
-        ['url' => '', 'label' => 'Редактировать']
-    ]) ?>
     <div class="dashboard-header">
         <h1>Редактировать сервер</h1>
     </div>

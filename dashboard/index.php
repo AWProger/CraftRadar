@@ -32,10 +32,6 @@ foreach ($servers as $s) {
 
 <div class="dashboard">
     <?= dashboardNav('servers') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => '', 'label' => 'Кабинет']
-    ]) ?>
     <div class="dashboard-header">
         <h1>Мои серверы</h1>
         <a href="<?= SITE_URL ?>/dashboard/add.php" class="btn btn-primary">+ Добавить сервер</a>

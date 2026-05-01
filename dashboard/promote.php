@@ -47,11 +47,6 @@ $daysMap = ['7d' => 7, '14d' => 14, '30d' => 30];
 
 <div class="dashboard">
     <?= dashboardNav('servers') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
-        ['url' => '', 'label' => 'Продвижение']
-    ]) ?>
     <div class="dashboard-header">
         <h1>⭐ Продвижение: <?= e($server['name']) ?></h1>
     </div>

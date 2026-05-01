@@ -35,11 +35,6 @@ $unreadCount = getUnreadCount($userId);
 
 <div class="dashboard">
     <?= dashboardNav('notif') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
-        ['url' => '', 'label' => 'Уведомления']
-    ]) ?>
     <div class="dashboard-header">
         <h1>Уведомления <?php if ($unreadCount): ?><span class="badge badge-pending"><?= $unreadCount ?> новых</span><?php endif; ?></h1>
         <div style="display: flex; gap: 8px;">

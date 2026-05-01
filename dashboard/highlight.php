@@ -48,11 +48,6 @@ $history = getPointHistory($userId, 10);
 
 <div class="dashboard">
     <?= dashboardNav('servers') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
-        ['url' => '', 'label' => 'Выделить сервер']
-    ]) ?>
     <div class="dashboard-header">
         <h1>⚡ Выделить сервер</h1>
     </div>

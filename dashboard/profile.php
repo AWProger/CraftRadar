@@ -57,11 +57,6 @@ $dailyStreak = (int)($user['daily_streak'] ?? 0);
 
 <div class="dashboard">
     <?= dashboardNav('profile') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
-        ['url' => '', 'label' => 'Профиль']
-    ]) ?>
     <div class="dashboard-header">
         <h1>👤 Мой профиль</h1>
     </div>

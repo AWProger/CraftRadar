@@ -91,11 +91,6 @@ if (isPost()) {
 
 <div class="dashboard">
     <?= dashboardNav('settings') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
-        ['url' => '', 'label' => 'Настройки']
-    ]) ?>
     <div class="dashboard-header">
         <h1>Настройки профиля</h1>
     </div>

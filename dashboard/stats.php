@@ -107,11 +107,6 @@ $peakData = $stmt->fetch();
 
 <div class="dashboard">
     <?= dashboardNav('servers') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
-        ['url' => '', 'label' => 'Статистика: ' . e($server['name'])]
-    ]) ?>
     <div class="dashboard-header">
         <h1>Статистика: <?= e($server['name']) ?></h1>
     </div>

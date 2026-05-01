@@ -166,11 +166,6 @@ function saveServerIcon(string $favicon): ?string
 
 <div class="dashboard">
     <?= dashboardNav('servers') ?>
-    <?= breadcrumbs([
-        ['url' => SITE_URL . '/', 'label' => 'Главная'],
-        ['url' => SITE_URL . '/dashboard/', 'label' => 'Кабинет'],
-        ['url' => '', 'label' => 'Добавить сервер']
-    ]) ?>
     <div class="dashboard-header">
         <h1>Добавить сервер</h1>
     </div>
