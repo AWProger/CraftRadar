@@ -58,11 +58,17 @@ if (isPost() && post('action') === 'verify') {
     if (!verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
         $verifyError = 'Ошибка безопасности.';
     } else {
-        // Пингуем сервер
+        // Пингуем сервер (попытка 1 — может быть кэш API)
         $pingResult = pingMinecraftServer($server['ip'], $server['port'], PING_TIMEOUT);
 
+        // Если первая попытка не удалась — ждём и пробуем ещё раз
         if (!$pingResult) {
-            $verifyError = 'Сервер не отвечает. Убедитесь, что он запущен и доступен.';
+            sleep(2);
+            $pingResult = pingMinecraftServer($server['ip'], $server['port'], PING_TIMEOUT);
+        }
+
+        if (!$pingResult) {
+            $verifyError = 'Сервер не отвечает. Убедитесь, что он запущен и доступен. Если вы только что перезагрузили сервер — подождите 2-3 минуты и попробуйте снова (внешний API кэширует данные).';
         } else {
             $motd = $pingResult['motd'];
 
