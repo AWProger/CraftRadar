@@ -13,7 +13,13 @@ $db = getDB();
 $pendingCount = (int)$db->query("SELECT COUNT(*) FROM servers WHERE status = 'pending'")->fetchColumn();
 $newReportsCount = (int)$db->query("SELECT COUNT(*) FROM reports WHERE status = 'new'")->fetchColumn();
 $pendingPaymentsCount = 0;
-try { $pendingPaymentsCount = (int)$db->query("SELECT COUNT(*) FROM payments WHERE status = 'pending'")->fetchColumn(); } catch (\Exception $e) {}
+try {
+    $stmt = $db->prepare("SELECT COUNT(*) FROM payments WHERE status = 'pending' AND created_at < ?");
+    $stmt->execute([date('Y-m-d H:i:s', strtotime('-1 hour'))]);
+    $pendingPaymentsCount = (int)$stmt->fetchColumn();
+} catch (\Exception $e) {}
+$newTicketsCount = 0;
+try { $newTicketsCount = (int)$db->query("SELECT COUNT(*) FROM tickets WHERE status = 'open'")->fetchColumn(); } catch (\Exception $e) {}
 
 // Системные метрики для топбара
 $totalOnlinePlayers = 0;
@@ -94,6 +100,10 @@ function navActive(string $script, ?string $param = null, ?string $value = null)
 
             <a href="<?= SITE_URL ?>/admin/reviews.php" class="admin-nav-link <?= $currentScript === 'reviews.php' ? 'active' : '' ?>">
                 💬 Отзывы
+            </a>
+
+            <a href="<?= SITE_URL ?>/admin/tickets.php" class="admin-nav-link <?= $currentScript === 'tickets.php' || $currentScript === 'ticket_view.php' ? 'active' : '' ?>">
+                🎫 Обращения <?php if ($newTicketsCount): ?><span class="admin-badge"><?= $newTicketsCount ?></span><?php endif; ?>
             </a>
 
             <a href="<?= SITE_URL ?>/admin/payments.php" class="admin-nav-link <?= $currentScript === 'payments.php' ? 'active' : '' ?>">
