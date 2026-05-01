@@ -8,9 +8,10 @@ require_once __DIR__ . '/includes/admin_header.php';
 
 $db = getDB();
 $today = date('Y-m-d');
+$yesterday = date('Y-m-d', strtotime('-1 day'));
 $statsDays = STATS_PERIOD_DAYS;
 
-// === Статистика за сегодня (prepared statements) ===
+// === Статистика за сегодня ===
 $stmt = $db->prepare('SELECT COUNT(*) FROM users WHERE DATE(created_at) = ?');
 $stmt->execute([$today]);
 $newUsersToday = (int)$stmt->fetchColumn();
@@ -22,6 +23,15 @@ $newServersToday = (int)$stmt->fetchColumn();
 $stmt = $db->prepare('SELECT COUNT(*) FROM votes WHERE DATE(voted_at) = ?');
 $stmt->execute([$today]);
 $votesToday = (int)$stmt->fetchColumn();
+
+// === Статистика за вчера (для сравнения) ===
+$stmt = $db->prepare('SELECT COUNT(*) FROM users WHERE DATE(created_at) = ?');
+$stmt->execute([$yesterday]);
+$newUsersYesterday = (int)$stmt->fetchColumn();
+
+$stmt = $db->prepare('SELECT COUNT(*) FROM votes WHERE DATE(voted_at) = ?');
+$stmt->execute([$yesterday]);
+$votesYesterday = (int)$stmt->fetchColumn();
 
 $stmt = $db->prepare('SELECT COUNT(*) FROM reviews WHERE DATE(created_at) = ?');
 $stmt->execute([$today]);
@@ -135,7 +145,13 @@ $recentUsers = $db->query("SELECT id, username, email, created_at FROM users ORD
 <div class="admin-stats-grid">
     <div class="admin-stat-card">
         <div class="admin-stat-value"><?= $newUsersToday ?></div>
-        <div class="admin-stat-label">Новых пользователей</div>
+        <div class="admin-stat-label">Новых пользователей
+            <?php if ($newUsersYesterday > 0): ?>
+                <span style="color: <?= $newUsersToday >= $newUsersYesterday ? 'var(--success)' : 'var(--danger)' ?>; font-size: 0.6rem;">
+                    (вчера: <?= $newUsersYesterday ?>)
+                </span>
+            <?php endif; ?>
+        </div>
     </div>
     <div class="admin-stat-card">
         <div class="admin-stat-value"><?= $newServersToday ?></div>

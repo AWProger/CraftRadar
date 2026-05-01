@@ -148,6 +148,7 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                     <th>Статус</th>
                     <th>Онлайн</th>
                     <th>Голоса</th>
+                    <th>Пинг</th>
                     <th>Дата</th>
                     <th>Действия</th>
                 </tr>
@@ -180,6 +181,7 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                             <?php endif; ?>
                         </td>
                         <td><?= $s['votes_month'] ?></td>
+                        <td style="font-size: 0.75rem; color: var(--text-muted);"><?= $s['last_ping'] ? formatDate($s['last_ping']) : '—' ?></td>
                         <td><?= formatDate($s['created_at']) ?></td>
                         <td>
                             <div class="action-btns">

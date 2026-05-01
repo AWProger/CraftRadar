@@ -77,10 +77,53 @@ if ($banned) $baseUrl .= '&banned=' . urlencode($banned);
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>
 </form>
 
+<?php
+// Массовые действия
+if (isPost() && isAdmin()) {
+    if (verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
+        $bulkAction = post('bulk_action');
+        $ids = array_map('intval', $_POST['ids'] ?? []);
+        if (!empty($ids) && $bulkAction) {
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            switch ($bulkAction) {
+                case 'ban':
+                    $db->prepare("UPDATE users SET is_banned = 1, ban_reason = 'Массовый бан', banned_by = ? WHERE id IN ({$placeholders})")
+                        ->execute(array_merge([currentUserId()], $ids));
+                    foreach ($ids as $uid) adminLog('ban_user', 'user', $uid, 'Массовый бан');
+                    setFlash('success', count($ids) . ' пользователей забанено.');
+                    break;
+                case 'unban':
+                    $db->prepare("UPDATE users SET is_banned = 0, ban_reason = NULL, banned_by = NULL WHERE id IN ({$placeholders})")
+                        ->execute($ids);
+                    foreach ($ids as $uid) adminLog('unban_user', 'user', $uid);
+                    setFlash('success', count($ids) . ' пользователей разбанено.');
+                    break;
+            }
+            redirect($_SERVER['REQUEST_URI']);
+        }
+    }
+}
+?>
+
+<form method="POST">
+<?= csrfField() ?>
+
+<?php if (isAdmin()): ?>
+<div style="margin-bottom: 12px; display: flex; gap: 8px; align-items: center;">
+    <select name="bulk_action" style="padding: 6px 12px; background: var(--bg-input); border: 2px solid var(--border); color: var(--text); font-size: 0.8rem;">
+        <option value="">Массовое действие</option>
+        <option value="ban">Забанить</option>
+        <option value="unban">Разбанить</option>
+    </select>
+    <button type="submit" class="btn btn-sm btn-outline">Применить</button>
+</div>
+<?php endif; ?>
+
 <div class="table-wrap">
     <table>
         <thead>
             <tr>
+                <?php if (isAdmin()): ?><th><input type="checkbox" id="selectAll"></th><?php endif; ?>
                 <th>ID</th>
                 <th>Логин</th>
                 <th>Email</th>
@@ -97,6 +140,7 @@ if ($banned) $baseUrl .= '&banned=' . urlencode($banned);
         <tbody>
             <?php foreach ($users as $u): ?>
                 <tr>
+                    <?php if (isAdmin()): ?><td><input type="checkbox" name="ids[]" value="<?= $u['id'] ?>" class="row-checkbox"></td><?php endif; ?>
                     <td><?= $u['id'] ?></td>
                     <td><a href="<?= SITE_URL ?>/admin/user_view.php?id=<?= $u['id'] ?>"><?= e($u['username']) ?></a></td>
                     <td><?= e($u['email']) ?></td>
@@ -129,7 +173,8 @@ if ($banned) $baseUrl .= '&banned=' . urlencode($banned);
             <?php endforeach; ?>
         </tbody>
     </table>
-</div>
+    </div>
+</form>
 
 <?= paginate($total, $perPage, $page, $baseUrl) ?>
 

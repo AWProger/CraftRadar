@@ -183,6 +183,12 @@ $reports = $reports->fetchAll();
     <?php endif; ?>
 </div>
 
+<!-- График онлайна (24ч) -->
+<div class="card" style="margin-bottom: 16px;">
+    <h3 style="margin-bottom: 12px;">📊 Онлайн за 24 часа</h3>
+    <canvas id="adminServerChart" height="150"></canvas>
+</div>
+
 <!-- Действия -->
 <div class="card" style="margin-bottom: 16px;">
     <h3 style="margin-bottom: 12px;">Действия</h3>
@@ -282,5 +288,35 @@ $reports = $reports->fetchAll();
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
+
+<?php
+// Данные для графика
+$chartStmt = $db->prepare('SELECT recorded_at as time, players_online as players FROM server_stats WHERE server_id = ? AND recorded_at >= ? ORDER BY recorded_at');
+$chartStmt->execute([$id, dateAgo(24, 'hour')]);
+$chartData = $chartStmt->fetchAll();
+?>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
+<script>
+var chartData = <?= json_encode(array_map(fn($d) => ['time' => $d['time'], 'players' => (int)$d['players']], $chartData)) ?>;
+if (chartData.length > 0) {
+    new Chart(document.getElementById('adminServerChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: chartData.map(function(d) { var dt = new Date(d.time); return dt.getHours().toString().padStart(2,'0') + ':' + dt.getMinutes().toString().padStart(2,'0'); }),
+            datasets: [{
+                data: chartData.map(function(d) { return d.players; }),
+                borderColor: '#00ff80', backgroundColor: 'rgba(0,255,128,0.1)',
+                fill: true, tension: 0.3, pointRadius: 1
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } },
+            scales: { x: { ticks: { color: '#8b949e', maxTicksLimit: 12 }, grid: { color: 'rgba(48,54,61,0.5)' } },
+                      y: { beginAtZero: true, ticks: { color: '#8b949e' }, grid: { color: 'rgba(48,54,61,0.5)' } } } }
+    });
+} else {
+    document.getElementById('adminServerChart').parentElement.innerHTML += '<p style="color:var(--text-muted);text-align:center;">Нет данных</p>';
+}
+</script>
 
 <?php require_once __DIR__ . '/includes/admin_footer.php'; ?>

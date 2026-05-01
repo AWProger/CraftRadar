@@ -38,6 +38,19 @@ $stmt = $db->prepare("
 $stmt->execute($params);
 $reports = $stmt->fetchAll();
 
+// Статистика жалоб
+$reportStats = $db->query("
+    SELECT target_type, status, COUNT(*) as cnt 
+    FROM reports GROUP BY target_type, status
+")->fetchAll();
+
+$reportByType = [];
+$reportByStatus = ['new' => 0, 'in_progress' => 0, 'resolved' => 0, 'rejected' => 0];
+foreach ($reportStats as $rs) {
+    $reportByType[$rs['target_type']] = ($reportByType[$rs['target_type']] ?? 0) + $rs['cnt'];
+    $reportByStatus[$rs['status']] = ($reportByStatus[$rs['status']] ?? 0) + $rs['cnt'];
+}
+
 // Обработка действий
 if (isPost()) {
     if (verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
@@ -69,6 +82,28 @@ if (isPost()) {
 $baseUrl = SITE_URL . '/admin/reports.php?x=1';
 if ($status) $baseUrl .= '&status=' . urlencode($status);
 ?>
+
+<!-- Статистика жалоб -->
+<div class="admin-stats-grid" style="margin-bottom: 16px;">
+    <div class="admin-stat-card" style="border-color: var(--warning);">
+        <div class="admin-stat-value" style="color: var(--warning);"><?= $reportByStatus['new'] ?></div>
+        <div class="admin-stat-label">Новых</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-value"><?= $reportByStatus['in_progress'] ?></div>
+        <div class="admin-stat-label">В работе</div>
+    </div>
+    <div class="admin-stat-card" style="border-color: var(--success);">
+        <div class="admin-stat-value" style="color: var(--success);"><?= $reportByStatus['resolved'] ?></div>
+        <div class="admin-stat-label">Решённых</div>
+    </div>
+    <?php foreach ($reportByType as $type => $cnt): ?>
+    <div class="admin-stat-card">
+        <div class="admin-stat-value"><?= $cnt ?></div>
+        <div class="admin-stat-label"><?= e($type) ?></div>
+    </div>
+    <?php endforeach; ?>
+</div>
 
 <form method="GET" class="admin-filters">
     <select name="status">
