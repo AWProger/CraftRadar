@@ -136,6 +136,7 @@ function dashboardNav(string $active = ''): string
         'coins'   => ['url' => SITE_URL . '/dashboard/buy_coins.php', 'icon' => '💰', 'label' => 'Монеты'],
         'notif'   => ['url' => SITE_URL . '/dashboard/notifications.php', 'icon' => '🔔', 'label' => 'Уведомления'],
         'settings'=> ['url' => SITE_URL . '/dashboard/settings.php', 'icon' => '⚙️', 'label' => 'Настройки'],
+        'help'    => ['url' => SITE_URL . '/dashboard/help.php', 'icon' => '❓', 'label' => 'Помощь'],
     ];
 
     $html = '<div class="dashboard-tabs">';
