@@ -35,7 +35,7 @@ $topOnline = cacheRemember('home_top_online', 120, function() use ($db) {
 // Новые серверы
 $newServers = cacheRemember('home_new_servers', 300, function() use ($db) {
     return $db->query("
-    SELECT id, name, ip, port, icon, is_online, players_online, votes_month, is_verified, created_at
+    SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month, is_verified, created_at
     FROM servers WHERE status IN ('active', 'pending') 
     ORDER BY created_at DESC 
     LIMIT 10
