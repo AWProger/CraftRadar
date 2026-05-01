@@ -103,9 +103,17 @@
     gap: 6px;
 }
 
-.admin-user {
+.admin-sidebar-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 0.75rem;
     color: var(--text-muted);
+}
+
+.admin-sidebar-actions {
+    display: flex;
+    gap: 4px;
 }
 
 /* --- Main area --- */
@@ -120,14 +128,54 @@
 .admin-topbar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
-    padding: 16px 24px;
+    padding: 12px 24px;
     background: var(--bg-card);
     border-bottom: var(--pixel-border) var(--border);
     position: sticky;
     top: 0;
     z-index: 50;
     box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.admin-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.admin-topbar-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.admin-topbar-stats span {
+    white-space: nowrap;
+}
+
+.admin-topbar-search input {
+    padding: 6px 12px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-size: 0.8rem;
+    width: 200px;
+    transition: all var(--transition);
+}
+
+.admin-topbar-search input:focus {
+    border-color: var(--accent);
+    outline: none;
+    width: 280px;
 }
 
 .admin-topbar .burger {
@@ -263,6 +311,74 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* --- Sticky table headers --- */
+.table-wrap {
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.table-wrap table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 5;
+    box-shadow: 0 2px 0 var(--border);
+}
+
+/* --- Quick search results --- */
+.admin-quick-results {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 360px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--bg-card);
+    border: var(--pixel-border) var(--border);
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+    z-index: 200;
+    display: none;
+}
+
+.admin-quick-result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--text);
+    transition: background var(--transition);
+}
+
+.admin-quick-result:hover {
+    background: rgba(0,255,128,0.05);
+}
+
+.admin-quick-result-type {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    background: var(--bg);
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.admin-quick-result-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-quick-result-meta {
+    font-size: 0.7rem;
+    color: var(--text-muted);
 }
 
 .activity-item {
@@ -292,80 +408,42 @@
         transform: translateX(-100%);
         transition: transform var(--transition);
     }
-
     .admin-sidebar.open {
         transform: translateX(0);
     }
-
     .admin-main {
         margin-left: 0;
     }
-
     .admin-topbar .burger {
         display: flex;
     }
-
+    .admin-topbar-right {
+        display: none;
+    }
     .admin-content {
         padding: 12px;
     }
-
     .admin-stats-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
-
     .admin-stat-value { font-size: 0.75rem; }
     .admin-stat-label { font-size: 0.6rem; }
-
     .attention-grid {
         grid-template-columns: 1fr;
     }
-
     .admin-filters {
         flex-direction: column;
         align-items: stretch;
     }
-
     .admin-filters select,
     .admin-filters input {
         width: 100%;
         font-size: 1rem;
         padding: 10px 12px;
     }
-
     .admin-topbar-title { font-size: 0.6rem; }
-
-    /* Таблицы — горизонтальный скролл */
-    .table-wrap { margin: 0 -12px; padding: 0 12px; }
-
-    th, td { padding: 6px 8px; font-size: 0.75rem; white-space: nowrap; }
-    th { font-size: 0.55rem; }
-
-    /* Графики в 1 колонку */
-    div[style*="grid-template-columns: 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-    }
-    div[style*="grid-template-columns: 1fr 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .admin-stats-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* === Улучшенная мобильная адаптация таблиц === */
-@media (max-width: 768px) {
-    /* Горизонтальный скролл с подсказкой */
-    .table-wrap {
-        position: relative;
-        margin: 0 -12px;
-        padding: 0 12px;
-        -webkit-overflow-scrolling: touch;
-    }
-
+    .table-wrap { margin: 0 -12px; padding: 0 12px; max-height: none; }
     .table-wrap::after {
         content: '→ прокрутите';
         position: absolute;
@@ -375,48 +453,16 @@
         color: var(--text-muted);
         opacity: 0.5;
     }
+    th, td { padding: 6px 8px; font-size: 0.7rem; white-space: nowrap; }
+    th { font-size: 0.5rem; }
+    .action-btns { flex-direction: column; gap: 2px; }
+    div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+    div[style*="grid-template-columns: 1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
+    div[style*="grid-template-columns: 1fr 2fr"] { grid-template-columns: 1fr !important; }
+}
 
-    /* Компактные ячейки */
-    th, td {
-        padding: 6px 8px;
-        font-size: 0.7rem;
-        white-space: nowrap;
-    }
-
-    th {
-        font-size: 0.5rem;
-    }
-
-    /* Фильтры вертикально */
-    .admin-filters {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .admin-filters select,
-    .admin-filters input[type="text"],
-    .admin-filters input[type="date"] {
-        width: 100%;
-        font-size: 1rem;
-        padding: 10px 12px;
-    }
-
-    /* Графики в 1 колонку */
-    div[style*="grid-template-columns: 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-    }
-    div[style*="grid-template-columns: 1fr 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-    }
-
-    /* Кнопки действий */
-    .action-btns {
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    /* Attention cards */
-    .attention-grid {
-        grid-template-columns: 1fr !important;
+@media (max-width: 480px) {
+    .admin-stats-grid {
+        grid-template-columns: 1fr;
     }
 }

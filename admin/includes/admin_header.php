@@ -1,37 +1,30 @@
 <?php
 /**
- * CraftRadar — Шапка админки
+ * CraftRadar — Шапка админки (v2 — прокачанная)
  */
 
 require_once __DIR__ . '/admin_auth.php';
 
-$adminPageTitle = isset($adminPageTitle) ? $adminPageTitle . ' — Админка' : 'Админка';
+$adminPageTitle = isset($adminPageTitle) ? $adminPageTitle : 'Дашборд';
+$adminPageTitleFull = $adminPageTitle . ' — Админка';
 
 // Счётчики для бейджей
 $db = getDB();
 $pendingCount = (int)$db->query("SELECT COUNT(*) FROM servers WHERE status = 'pending'")->fetchColumn();
 $newReportsCount = (int)$db->query("SELECT COUNT(*) FROM reports WHERE status = 'new'")->fetchColumn();
-?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($adminPageTitle) ?> — <?= SITE_NAME ?></title>
-    <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
-    <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/admin.css">
-</head>
-<body class="admin-body">
-    <aside class="admin-sidebar" id="adminSidebar">
-        <div class="admin-sidebar-header">
-            <a href="<?= SITE_URL ?>/" class="logo">
-                <span class="logo-icon">📡</span>
-                <span class="logo-text"><?= SITE_NAME ?></span>
-            </a>
-        </div>
+$pendingPaymentsCount = 0;
+try { $pendingPaymentsCount = (int)$db->query("SELECT COUNT(*) FROM payments WHERE status = 'pending'")->fetchColumn(); } catch (\Exception $e) {}
 
-<?php
-// Определяем текущую страницу и параметры для подсветки
+// Системные метрики для топбара
+$totalOnlinePlayers = 0;
+$onlineServersCount = 0;
+try {
+    $sysStats = $db->query("SELECT SUM(CASE WHEN is_online=1 THEN players_online ELSE 0 END) as players, SUM(CASE WHEN is_online=1 THEN 1 ELSE 0 END) as online FROM servers WHERE status IN ('active','pending')")->fetch();
+    $totalOnlinePlayers = (int)($sysStats['players'] ?? 0);
+    $onlineServersCount = (int)($sysStats['online'] ?? 0);
+} catch (\Exception $e) {}
+
+// Определяем текущую страницу
 $currentScript = basename($_SERVER['SCRIPT_NAME']);
 $currentStatus = get('status');
 $currentBanned = get('banned');
@@ -40,7 +33,6 @@ function navActive(string $script, ?string $param = null, ?string $value = null)
     global $currentScript, $currentStatus, $currentBanned;
     if ($currentScript !== $script) return '';
     if ($param === null) {
-        // Основная ссылка — active только если нет фильтрующих параметров
         if ($script === 'servers.php' && ($currentStatus || get('offline_long'))) return '';
         if ($script === 'users.php' && $currentBanned) return '';
         return 'active';
@@ -50,6 +42,24 @@ function navActive(string $script, ?string $param = null, ?string $value = null)
     return '';
 }
 ?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= e($adminPageTitleFull) ?> — <?= SITE_NAME ?></title>
+    <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/admin.css">
+</head>
+<body class="admin-body" data-site-url="<?= SITE_URL ?>">
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-header">
+            <a href="<?= SITE_URL ?>/admin/" class="logo">
+                <span class="logo-icon">📡</span>
+                <span class="logo-text"><?= SITE_NAME ?></span>
+            </a>
+        </div>
+
         <nav class="admin-nav">
             <a href="<?= SITE_URL ?>/admin/" class="admin-nav-link <?= $currentScript === 'index.php' ? 'active' : '' ?>">
                 📊 Дашборд
@@ -87,19 +97,22 @@ function navActive(string $script, ?string $param = null, ?string $value = null)
             </a>
 
             <a href="<?= SITE_URL ?>/admin/payments.php" class="admin-nav-link <?= $currentScript === 'payments.php' ? 'active' : '' ?>">
-                💰 Платежи
+                💰 Платежи <?php if ($pendingPaymentsCount): ?><span class="admin-badge" style="background:var(--gold);"><?= $pendingPaymentsCount ?></span><?php endif; ?>
             </a>
 
             <?php if (isAdmin()): ?>
-                <a href="<?= SITE_URL ?>/admin/categories.php" class="admin-nav-link <?= $currentScript === 'categories.php' ? 'active' : '' ?>">
-                    🏷️ Категории
-                </a>
-                <a href="<?= SITE_URL ?>/admin/pages.php" class="admin-nav-link <?= $currentScript === 'pages.php' || $currentScript === 'page_edit.php' ? 'active' : '' ?>">
-                    📄 Страницы
-                </a>
-                <a href="<?= SITE_URL ?>/admin/settings.php" class="admin-nav-link <?= $currentScript === 'settings.php' ? 'active' : '' ?>">
-                    ⚙️ Настройки
-                </a>
+                <div class="admin-nav-group">
+                    <span class="admin-nav-group-title">⚙️ Управление</span>
+                    <a href="<?= SITE_URL ?>/admin/categories.php" class="admin-nav-link <?= $currentScript === 'categories.php' ? 'active' : '' ?>">
+                        🏷️ Категории
+                    </a>
+                    <a href="<?= SITE_URL ?>/admin/pages.php" class="admin-nav-link <?= $currentScript === 'pages.php' || $currentScript === 'page_edit.php' ? 'active' : '' ?>">
+                        📄 Страницы
+                    </a>
+                    <a href="<?= SITE_URL ?>/admin/settings.php" class="admin-nav-link <?= $currentScript === 'settings.php' ? 'active' : '' ?>">
+                        ⚙️ Настройки
+                    </a>
+                </div>
             <?php endif; ?>
 
             <a href="<?= SITE_URL ?>/admin/log.php" class="admin-nav-link <?= $currentScript === 'log.php' ? 'active' : '' ?>">
@@ -108,18 +121,37 @@ function navActive(string $script, ?string $param = null, ?string $value = null)
         </nav>
 
         <div class="admin-sidebar-footer">
-            <span class="admin-user"><?= e($_SESSION['username'] ?? '') ?> (<?= e(currentUserRole()) ?>)</span>
-            <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost btn-sm">Кабинет</a>
-            <a href="<?= SITE_URL ?>/logout.php" class="btn btn-ghost btn-sm">Выйти</a>
+            <div class="admin-sidebar-user">
+                <span>👤 <?= e($_SESSION['username'] ?? '') ?></span>
+                <span class="badge" style="font-size:0.6rem;"><?= e(currentUserRole()) ?></span>
+            </div>
+            <div class="admin-sidebar-actions">
+                <a href="<?= SITE_URL ?>/" class="btn btn-ghost btn-sm" title="На сайт">🌐</a>
+                <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost btn-sm" title="Кабинет">📡</a>
+                <a href="<?= SITE_URL ?>/logout.php" class="btn btn-ghost btn-sm" title="Выйти">🚪</a>
+            </div>
         </div>
     </aside>
 
     <div class="admin-main">
         <header class="admin-topbar">
-            <button class="burger" id="adminBurger" aria-label="Меню">
-                <span></span><span></span><span></span>
-            </button>
-            <h1 class="admin-topbar-title"><?= e($adminPageTitle ?? 'Админка') ?></h1>
+            <div class="admin-topbar-left">
+                <button class="burger" id="adminBurger" aria-label="Меню">
+                    <span></span><span></span><span></span>
+                </button>
+                <h1 class="admin-topbar-title"><?= e($adminPageTitle) ?></h1>
+            </div>
+            <div class="admin-topbar-right">
+                <div class="admin-topbar-stats">
+                    <span title="Игроков онлайн">👥 <?= $totalOnlinePlayers ?></span>
+                    <span title="Серверов онлайн">📡 <?= $onlineServersCount ?></span>
+                    <?php if ($pendingCount): ?><span title="На модерации" style="color:var(--warning);">⏳ <?= $pendingCount ?></span><?php endif; ?>
+                    <?php if ($newReportsCount): ?><span title="Новых жалоб" style="color:var(--danger);">⚠️ <?= $newReportsCount ?></span><?php endif; ?>
+                </div>
+                <div class="admin-topbar-search">
+                    <input type="text" id="adminQuickSearch" placeholder="Быстрый поиск..." autocomplete="off">
+                </div>
+            </div>
         </header>
 
         <div class="admin-content">

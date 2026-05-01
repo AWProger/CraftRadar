@@ -76,6 +76,12 @@ if (isPost() && isAdmin()) {
                 }
                 break;
 
+            case 'save_note':
+                $db->prepare('UPDATE users SET admin_note = ? WHERE id = ?')->execute([post('admin_note'), $id]);
+                adminLog('save_note', 'user', $id);
+                setFlash('success', 'Заметка сохранена.');
+                break;
+
             case 'delete':
                 adminLog('delete_user', 'user', $id, json_encode(['username' => $user['username']]));
                 $db->prepare('DELETE FROM users WHERE id = ?')->execute([$id]);
@@ -202,6 +208,19 @@ $reviews = $reviews->fetchAll();
 </div>
 <?php endif; ?>
 
+<!-- Заметка администратора -->
+<div class="card" style="margin-bottom: 16px;">
+    <h3 style="margin-bottom: 12px;">📝 Заметка</h3>
+    <form method="POST">
+        <?= csrfField() ?>
+        <input type="hidden" name="action" value="save_note">
+        <div class="form-group" style="margin-bottom: 8px;">
+            <textarea name="admin_note" rows="2" placeholder="Внутренняя заметка..."><?= e($user['admin_note'] ?? '') ?></textarea>
+        </div>
+        <button type="submit" class="btn btn-sm btn-outline">💾 Сохранить</button>
+    </form>
+</div>
+
 <!-- Серверы -->
 <div class="card" style="margin-bottom: 16px;">
     <h3 style="margin-bottom: 12px;">Серверы (<?= count($servers) ?>)</h3>
@@ -226,6 +245,35 @@ $reviews = $reviews->fetchAll();
         </div>
     <?php endif; ?>
 </div>
+
+<!-- Платежи -->
+<?php
+$userPayments = $db->prepare("SELECT p.*, s.name as server_name FROM payments p LEFT JOIN servers s ON p.server_id = s.id WHERE p.user_id = ? ORDER BY p.created_at DESC LIMIT 10");
+$userPayments->execute([$id]);
+$userPayments = $userPayments->fetchAll();
+?>
+<?php if (!empty($userPayments)): ?>
+<div class="card" style="margin-bottom: 16px;">
+    <h3 style="margin-bottom: 12px;">💰 Платежи (<?= count($userPayments) ?>)</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>ID</th><th>Сервер</th><th>Сумма</th><th>Тариф</th><th>Статус</th><th>Дата</th></tr></thead>
+            <tbody>
+                <?php foreach ($userPayments as $pay): ?>
+                <tr>
+                    <td><?= $pay['id'] ?></td>
+                    <td><?= e($pay['server_name'] ?? '—') ?></td>
+                    <td><strong><?= number_format($pay['amount'], 0) ?> ₽</strong></td>
+                    <td><?= e($pay['type']) ?></td>
+                    <td><span class="badge <?= $pay['status'] === 'completed' ? 'badge-online' : ($pay['status'] === 'pending' ? 'badge-pending' : 'badge-offline') ?>"><?= e($pay['status']) ?></span></td>
+                    <td><?= formatDate($pay['created_at']) ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Отзывы -->
 <div class="card">

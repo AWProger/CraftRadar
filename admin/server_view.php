@@ -117,6 +117,21 @@ if (isPost()) {
                     setFlash('success', 'Сервер откреплён.');
                 }
                 break;
+
+            case 'edit_server':
+                if (isAdmin()) {
+                    $db->prepare('UPDATE servers SET name = ?, version = ?, game_mode = ?, tags = ?, description = ?, website = ?, updated_at = ? WHERE id = ?')
+                        ->execute([post('edit_name'), post('edit_version') ?: null, post('edit_game_mode') ?: null, post('edit_tags') ?: null, post('edit_description') ?: null, post('edit_website') ?: null, now(), $id]);
+                    adminLog('edit_server', 'server', $id);
+                    setFlash('success', 'Сервер обновлён.');
+                }
+                break;
+
+            case 'save_note':
+                $db->prepare('UPDATE servers SET admin_note = ? WHERE id = ?')->execute([post('admin_note'), $id]);
+                adminLog('save_note', 'server', $id);
+                setFlash('success', 'Заметка сохранена.');
+                break;
         }
 
         redirect(SITE_URL . '/admin/server_view.php?id=' . $id);
@@ -216,18 +231,61 @@ $chartData = $chartData->fetchAll();
 </div>
 
 <!-- График онлайна (24ч) -->
-<div class="card" style="margin-bottom: 16px;">
-    <h3 style="margin-bottom: 12px;">📊 Онлайн за 24 часа</h3>
-    <canvas id="adminServerChart" height="150"></canvas>
-</div>
-
-<!-- График онлайна (24ч) -->
 <?php if (!empty($chartData)): ?>
 <div class="card" style="margin-bottom: 16px;">
     <h3 style="margin-bottom: 12px;">📈 Онлайн за 24 часа</h3>
     <canvas id="adminServerChart" height="150"></canvas>
 </div>
 <?php endif; ?>
+
+<!-- Быстрое редактирование -->
+<div class="card" style="margin-bottom: 16px;">
+    <h3 style="margin-bottom: 12px;">✏️ Редактировать</h3>
+    <form method="POST">
+        <?= csrfField() ?>
+        <input type="hidden" name="action" value="edit_server">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" name="edit_name" value="<?= e($server['name']) ?>" required>
+            </div>
+            <div class="form-group">
+                <label>Версия</label>
+                <input type="text" name="edit_version" value="<?= e($server['version'] ?? '') ?>">
+            </div>
+            <div class="form-group">
+                <label>Режим</label>
+                <input type="text" name="edit_game_mode" value="<?= e($server['game_mode'] ?? '') ?>">
+            </div>
+            <div class="form-group">
+                <label>Теги</label>
+                <input type="text" name="edit_tags" value="<?= e($server['tags'] ?? '') ?>">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Описание</label>
+            <textarea name="edit_description" rows="3"><?= e($server['description'] ?? '') ?></textarea>
+        </div>
+        <div class="form-group">
+            <label>Сайт</label>
+            <input type="url" name="edit_website" value="<?= e($server['website'] ?? '') ?>">
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary">💾 Сохранить</button>
+    </form>
+</div>
+
+<!-- Заметка администратора -->
+<div class="card" style="margin-bottom: 16px;">
+    <h3 style="margin-bottom: 12px;">📝 Заметка администратора</h3>
+    <form method="POST">
+        <?= csrfField() ?>
+        <input type="hidden" name="action" value="save_note">
+        <div class="form-group">
+            <textarea name="admin_note" rows="2" placeholder="Внутренняя заметка (видна только админам)..."><?= e($server['admin_note'] ?? '') ?></textarea>
+        </div>
+        <button type="submit" class="btn btn-sm btn-outline">💾 Сохранить заметку</button>
+    </form>
+</div>
 
 <!-- Действия -->
 <div class="card" style="margin-bottom: 16px;">
