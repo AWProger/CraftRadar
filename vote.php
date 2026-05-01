@@ -17,6 +17,12 @@ if (!isPost()) {
     exit;
 }
 
+// Rate-limiting
+if (!checkRateLimit('vote', 5)) {
+    echo json_encode(['success' => false, 'error' => 'Слишком много запросов. Подождите минуту.']);
+    exit;
+}
+
 // Проверка авторизации
 if (!isLoggedIn()) {
     echo json_encode(['success' => false, 'error' => 'Необходимо авторизоваться.']);

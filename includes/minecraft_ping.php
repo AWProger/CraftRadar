@@ -266,6 +266,14 @@ function pingViaApi(string $host, int $port): array|false
 {
     if (!function_exists('curl_init')) return false;
 
+    // Кэш — не пинговать чаще раз в минуту
+    $cacheKey = "ping_{$host}_{$port}";
+    $cacheFile = (defined('ROOT_PATH') ? ROOT_PATH : __DIR__ . '/../') . "storage/cache/{$cacheKey}.json";
+    if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < 60) {
+        $cached = json_decode(file_get_contents($cacheFile), true);
+        if ($cached) return $cached;
+    }
+
     $url = "https://api.mcsrvstat.us/2/{$host}:{$port}";
 
     $ch = curl_init();
@@ -301,6 +309,13 @@ function pingViaApi(string $host, int $port): array|false
         'protocol'    => (int)($data['protocol']['version'] ?? 0),
         'motd'        => $motd,
         'favicon'     => !empty($data['icon']) ? $data['icon'] : null,
-        'ping_ms'     => 0, // API не возвращает пинг
+        'ping_ms'     => 0,
     ];
+
+    // Сохраняем в кэш
+    $cacheDir = dirname($cacheFile);
+    if (!is_dir($cacheDir)) @mkdir($cacheDir, 0755, true);
+    @file_put_contents($cacheFile, json_encode($result));
+
+    return $result;
 }

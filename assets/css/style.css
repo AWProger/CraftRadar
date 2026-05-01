@@ -1606,3 +1606,10 @@ tr:hover td {
     border: 2px solid var(--border);
     font-size: 1.5rem;
 }
+
+/* --- Search highlight --- */
+mark {
+    background: rgba(0, 255, 128, 0.3);
+    color: var(--text);
+    padding: 0 2px;
+}

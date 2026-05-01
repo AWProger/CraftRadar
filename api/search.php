@@ -28,9 +28,12 @@ $results = $stmt->fetchAll();
 
 $output = [];
 foreach ($results as $s) {
+    // Подсветка совпадений
+    $highlightedName = preg_replace('/(' . preg_quote($q, '/') . ')/iu', '<mark>$1</mark>', e($s['name']));
     $output[] = [
         'id' => $s['id'],
         'name' => $s['name'],
+        'name_highlighted' => $highlightedName,
         'ip' => $s['ip'] . ':' . $s['port'],
         'icon' => $s['icon'] ? SITE_URL . '/' . $s['icon'] : null,
         'is_online' => (bool)$s['is_online'],

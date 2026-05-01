@@ -289,3 +289,34 @@ function isValidPort(int $port): bool
 {
     return $port >= 1 && $port <= 65535;
 }
+
+
+/**
+ * Простой rate-limiter по IP (файловый)
+ * @return bool true если лимит НЕ превышен
+ */
+function checkRateLimit(string $action, int $maxPerMinute = 10): bool
+{
+    $ip = getUserIP();
+    $dir = ROOT_PATH . 'storage/ratelimit/';
+    if (!is_dir($dir)) @mkdir($dir, 0755, true);
+
+    $file = $dir . md5($action . '_' . $ip) . '.json';
+    $now = time();
+
+    $data = [];
+    if (file_exists($file)) {
+        $data = json_decode(file_get_contents($file), true) ?: [];
+    }
+
+    // Убираем записи старше минуты
+    $data = array_filter($data, function($t) use ($now) { return ($now - $t) < 60; });
+
+    if (count($data) >= $maxPerMinute) {
+        return false; // Лимит превышен
+    }
+
+    $data[] = $now;
+    file_put_contents($file, json_encode(array_values($data)));
+    return true;
+}

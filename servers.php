@@ -142,6 +142,12 @@ if ($onlineOnly) $baseUrl .= '&online=1';
     <?php else: ?>
         <?= serverList($servers) ?>
 
+        <?php if ($total > $page * SERVERS_PER_PAGE): ?>
+            <div style="text-align: center; margin-top: 16px;">
+                <a href="<?= $baseUrl ?>&page=<?= $page + 1 ?>" class="btn btn-outline">Загрузить ещё →</a>
+            </div>
+        <?php endif; ?>
+
         <?= paginate($total, SERVERS_PER_PAGE, $page, $baseUrl) ?>
     <?php endif; ?>
 </div>

@@ -15,6 +15,11 @@ if (!isPost()) {
     exit;
 }
 
+if (!checkRateLimit('review', 3)) {
+    echo json_encode(['success' => false, 'error' => 'Слишком много запросов.']);
+    exit;
+}
+
 if (!isLoggedIn()) {
     echo json_encode(['success' => false, 'error' => 'Необходимо авторизоваться.']);
     exit;

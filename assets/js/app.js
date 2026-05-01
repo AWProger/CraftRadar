@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             return '<a href="' + s.url + '" class="search-dropdown-item">' +
                                 (s.icon ? '<img src="' + s.icon + '" class="search-dropdown-icon" alt="">' : '<span class="search-dropdown-icon">📡</span>') +
                                 '<div class="search-dropdown-info">' +
-                                    '<div class="search-dropdown-name">' + s.name + '</div>' +
+                                    '<div class="search-dropdown-name">' + (s.name_highlighted || s.name) + '</div>' +
                                     '<div class="search-dropdown-meta">' + s.ip +
                                         (s.is_online ? ' <span style="color:#3fb950;">● ' + s.players_online + '/' + s.players_max + '</span>' : ' <span style="color:#f85149;">● Оффлайн</span>') +
                                     '</div>' +

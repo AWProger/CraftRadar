@@ -127,7 +127,16 @@ if ($dateTo) $baseUrl .= '&date_to=' . urlencode($dateTo);
                         <?php endif; ?>
                     </td>
                     <td style="font-size: 0.8rem; color: var(--text-muted);"><?= e($log['ip_address'] ?? '') ?></td>
-                    <td style="font-size: 0.8rem; color: var(--text-muted);"><?= e(truncate($log['details'] ?? '', 60)) ?></td>
+                    <td style="font-size: 0.8rem; color: var(--text-muted);">
+                        <?php if (!empty($log['details']) && strlen($log['details']) > 60): ?>
+                            <span title="Нажмите для просмотра" style="cursor:pointer;text-decoration:underline dotted;" 
+                                  onclick="alert(this.dataset.full)" data-full="<?= e($log['details']) ?>">
+                                <?= e(truncate($log['details'], 60)) ?>
+                            </span>
+                        <?php else: ?>
+                            <?= e($log['details'] ?? '') ?>
+                        <?php endif; ?>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
