@@ -618,9 +618,26 @@ if (voteBtn) {
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                voteBtn.textContent = '✓ Голос принят!';
+                voteBtn.textContent = '✓ Голос принят! +1 💎';
                 voteBtn.disabled = true;
                 voteBtn.classList.remove('btn-primary');
+                voteBtn.classList.add('btn-ghost');
+
+                // Конфетти-эффект
+                for (var i = 0; i < 20; i++) {
+                    var confetti = document.createElement('div');
+                    confetti.style.cssText = 'position:fixed;width:8px;height:8px;z-index:999;pointer-events:none;';
+                    confetti.style.left = (event.clientX || window.innerWidth/2) + (Math.random()*100-50) + 'px';
+                    confetti.style.top = (event.clientY || window.innerHeight/2) + 'px';
+                    confetti.style.background = ['#00ff80','#ffd700','#5ce1e6','#ff6b81','#70a1ff'][Math.floor(Math.random()*5)];
+                    confetti.style.transition = 'all 1s ease-out';
+                    document.body.appendChild(confetti);
+                    setTimeout(function(el, dx, dy) { return function() {
+                        el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + (Math.random()*360) + 'deg)';
+                        el.style.opacity = '0';
+                    }; }(confetti, Math.random()*200-100, -(100+Math.random()*200)), 10);
+                    setTimeout(function(el) { return function() { el.remove(); }; }(confetti), 1200);
+                }
                 voteBtn.classList.add('btn-ghost');
             } else {
                 alert(data.error || 'Ошибка');

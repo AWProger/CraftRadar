@@ -137,6 +137,26 @@ $peakData = $stmt->fetch();
             <div class="stat-card-value"><?= $server['votes_month'] ?></div>
             <div class="stat-card-label">Голосов (месяц)</div>
         </div>
+        <?php
+        // Голоса за эту неделю vs прошлую
+        $stmt = $db->prepare('SELECT COUNT(*) FROM votes WHERE server_id = ? AND voted_at >= ?');
+        $stmt->execute([$id, dateAgo(7, 'day')]);
+        $votesThisWeek = (int)$stmt->fetchColumn();
+        $stmt = $db->prepare('SELECT COUNT(*) FROM votes WHERE server_id = ? AND voted_at >= ? AND voted_at < ?');
+        $stmt->execute([$id, dateAgo(14, 'day'), dateAgo(7, 'day')]);
+        $votesLastWeek = (int)$stmt->fetchColumn();
+        $weekDiff = $votesThisWeek - $votesLastWeek;
+        ?>
+        <div class="stat-card">
+            <div class="stat-card-value"><?= $votesThisWeek ?></div>
+            <div class="stat-card-label">За неделю
+                <?php if ($weekDiff !== 0): ?>
+                    <span style="color: <?= $weekDiff > 0 ? 'var(--success)' : 'var(--danger)' ?>; font-size: 0.6rem;">
+                        (<?= $weekDiff > 0 ? '+' : '' ?><?= $weekDiff ?>)
+                    </span>
+                <?php endif; ?>
+            </div>
+        </div>
         <div class="stat-card">
             <div class="stat-card-value"><?= $server['votes_total'] ?></div>
             <div class="stat-card-label">Голосов всего</div>

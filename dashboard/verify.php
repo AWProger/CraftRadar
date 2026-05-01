@@ -182,9 +182,12 @@ function generateVerifyCode(): string
                     <form method="POST" style="margin-top: 12px;">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="verify">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="verifyBtn">
                             🔍 Проверить MOTD
                         </button>
+                        <p style="color: var(--text-muted); font-size: 0.7rem; margin-top: 6px;">
+                            ⏳ Подождите 2-3 минуты после перезагрузки сервера перед проверкой
+                        </p>
                     </form>
                 </div>
             </div>

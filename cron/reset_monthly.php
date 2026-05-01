@@ -37,3 +37,16 @@ $stmt = $db->query('UPDATE servers SET votes_month = 0');
 $affected = $stmt->rowCount();
 
 cronLog("Месячные голоса сброшены. Затронуто серверов: {$affected}");
+
+// Уведомление админам
+try {
+    require_once __DIR__ . '/../includes/notifications.php';
+    $admins = $db->query("SELECT id FROM users WHERE role = 'admin'")->fetchAll();
+    foreach ($admins as $admin) {
+        createNotification($admin['id'], 'system',
+            '🔄 Месячные голоса сброшены',
+            "Затронуто серверов: {$affected}. Новый месяц начался!",
+            SITE_URL . '/admin/'
+        );
+    }
+} catch (\Exception $e) {}

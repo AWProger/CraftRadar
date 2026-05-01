@@ -28,6 +28,17 @@ if (get('export') === 'csv') {
     exit;
 }
 
+// Возврат платежа
+if (isPost() && post('refund_id')) {
+    if (verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
+        $refundId = (int)post('refund_id');
+        $db->prepare("UPDATE payments SET status = 'refunded' WHERE id = ? AND status = 'completed'")->execute([$refundId]);
+        adminLog('refund_payment', 'setting', $refundId);
+        setFlash('success', 'Платёж #' . $refundId . ' помечен как возврат.');
+        redirect($_SERVER['REQUEST_URI']);
+    }
+}
+
 $page = max(1, getInt('page', 1));
 $status = get('status');
 $search = get('q');
@@ -141,6 +152,7 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                 <th>Метка</th>
                 <th>Создан</th>
                 <th>Оплачен</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -170,6 +182,15 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                     <td style="font-size: 0.75rem; color: var(--text-muted);"><?= e($p['label'] ?? '') ?></td>
                     <td><?= formatDate($p['created_at']) ?></td>
                     <td><?= $p['paid_at'] ? formatDate($p['paid_at']) : '—' ?></td>
+                    <td>
+                        <?php if ($p['status'] === 'completed'): ?>
+                            <form method="POST" style="display:inline;">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="refund_id" value="<?= $p['id'] ?>">
+                                <button class="btn btn-sm btn-ghost" data-confirm="Пометить как возврат?" title="Возврат">↩️</button>
+                            </form>
+                        <?php endif; ?>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

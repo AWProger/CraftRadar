@@ -330,3 +330,30 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.style.display = window.scrollY > 300 ? 'flex' : 'none';
     });
 })();
+
+// === Notification polling (каждые 60 сек) ===
+(function() {
+    var badge = document.querySelector('.header-notif-badge');
+    var bell = document.querySelector('.header-notif');
+    if (!bell) return;
+
+    setInterval(function() {
+        var siteUrl = document.body.dataset.siteUrl || '';
+        fetch(siteUrl + '/api/notifications_count.php')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.count > 0) {
+                    if (!badge) {
+                        badge = document.createElement('span');
+                        badge.className = 'header-notif-badge';
+                        bell.appendChild(badge);
+                    }
+                    badge.textContent = data.count;
+                    badge.style.display = 'flex';
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(function() {});
+    }, 60000);
+})();
