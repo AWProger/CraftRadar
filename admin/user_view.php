@@ -77,9 +77,13 @@ if (isPost() && isAdmin()) {
                 break;
 
             case 'save_note':
-                $db->prepare('UPDATE users SET admin_note = ? WHERE id = ?')->execute([post('admin_note'), $id]);
+                try {
+                    $db->prepare('UPDATE users SET admin_note = ? WHERE id = ?')->execute([post('admin_note'), $id]);
+                    setFlash('success', 'Заметка сохранена.');
+                } catch (\Exception $e) {
+                    setFlash('error', 'Колонка admin_note не найдена. Выполните миграцию.');
+                }
                 adminLog('save_note', 'user', $id);
-                setFlash('success', 'Заметка сохранена.');
                 break;
 
             case 'delete':

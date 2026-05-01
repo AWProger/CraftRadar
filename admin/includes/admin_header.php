@@ -3,6 +3,9 @@
  * CraftRadar — Шапка админки (v2 — прокачанная)
  */
 
+// Output buffering — позволяет redirect() работать после вывода HTML
+if (!ob_get_level()) ob_start();
+
 require_once __DIR__ . '/admin_auth.php';
 
 $adminPageTitle = isset($adminPageTitle) ? $adminPageTitle : 'Дашборд';

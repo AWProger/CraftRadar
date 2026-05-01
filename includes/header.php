@@ -3,6 +3,9 @@
  * CraftRadar — Шапка сайта
  */
 
+// Output buffering — позволяет redirect() работать после вывода HTML
+if (!ob_get_level()) ob_start();
+
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/functions.php';
