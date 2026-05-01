@@ -18,6 +18,9 @@ if (isPost()) {
     // Проверка CSRF
     if (!verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
         $errors[] = 'Ошибка безопасности. Обновите страницу.';
+    } elseif (!empty(post('website_url'))) {
+        // Honeypot сработал — бот
+        $errors[] = 'Ошибка безопасности.';
     } else {
         $username = post('username');
         $email = post('email');
@@ -51,6 +54,8 @@ if (isPost()) {
 
         <form method="POST" action="" class="auth-form">
             <?= csrfField() ?>
+            <!-- Honeypot антиспам -->
+            <div style="position:absolute;left:-9999px;"><input type="text" name="website_url" value="" tabindex="-1" autocomplete="off"></div>
 
             <div class="form-group">
                 <label for="username">Логин</label>

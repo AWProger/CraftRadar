@@ -34,6 +34,8 @@ if (get('export') === 'csv' && isAdmin()) {
 $page = max(1, getInt('page', 1));
 $adminFilter = get('admin_id');
 $actionFilter = get('action');
+$dateFrom = get('date_from');
+$dateTo = get('date_to');
 $perPage = ADMIN_PER_PAGE;
 
 $where = ['1=1'];
@@ -53,6 +55,16 @@ if ($adminFilter) {
 if ($actionFilter) {
     $where[] = 'al.action LIKE ?';
     $params[] = "%{$actionFilter}%";
+}
+
+if ($dateFrom) {
+    $where[] = 'al.created_at >= ?';
+    $params[] = $dateFrom . ' 00:00:00';
+}
+
+if ($dateTo) {
+    $where[] = 'al.created_at <= ?';
+    $params[] = $dateTo . ' 23:59:59';
 }
 
 $whereSQL = implode(' AND ', $where);
@@ -76,6 +88,8 @@ $logs = $stmt->fetchAll();
 $baseUrl = SITE_URL . '/admin/log.php?x=1';
 if ($adminFilter) $baseUrl .= '&admin_id=' . urlencode($adminFilter);
 if ($actionFilter) $baseUrl .= '&action=' . urlencode($actionFilter);
+if ($dateFrom) $baseUrl .= '&date_from=' . urlencode($dateFrom);
+if ($dateTo) $baseUrl .= '&date_to=' . urlencode($dateTo);
 ?>
 
 <form method="GET" class="admin-filters">
@@ -83,6 +97,8 @@ if ($actionFilter) $baseUrl .= '&action=' . urlencode($actionFilter);
         <input type="text" name="admin_id" value="<?= e($adminFilter) ?>" placeholder="ID администратора">
     <?php endif; ?>
     <input type="text" name="action" value="<?= e($actionFilter) ?>" placeholder="Тип действия...">
+    <input type="date" name="date_from" value="<?= e($dateFrom) ?>" title="Дата от">
+    <input type="date" name="date_to" value="<?= e($dateTo) ?>" title="Дата до">
     <button type="submit" class="btn btn-sm btn-primary">Фильтр</button>
     <?php if (isAdmin()): ?>
         <a href="<?= SITE_URL ?>/admin/log.php?export=csv" class="btn btn-sm btn-outline">📥 Экспорт CSV</a>

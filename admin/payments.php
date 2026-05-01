@@ -9,6 +9,25 @@ requireAdmin();
 
 $db = getDB();
 
+// Экспорт CSV
+if (get('export') === 'csv') {
+    $allPayments = $db->query("
+        SELECT p.id, u.username, s.name as server_name, p.amount, p.type, p.status, p.label, p.created_at, p.paid_at
+        FROM payments p JOIN users u ON p.user_id = u.id LEFT JOIN servers s ON p.server_id = s.id
+        ORDER BY p.created_at DESC
+    ")->fetchAll();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=payments_' . date('Y-m-d') . '.csv');
+    $out = fopen('php://output', 'w');
+    fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+    fputcsv($out, ['ID', 'Пользователь', 'Сервер', 'Сумма', 'Тариф', 'Статус', 'Метка', 'Создан', 'Оплачен'], ';');
+    foreach ($allPayments as $p) {
+        fputcsv($out, [$p['id'], $p['username'], $p['server_name'], $p['amount'], $p['type'], $p['status'], $p['label'], $p['created_at'], $p['paid_at']], ';');
+    }
+    fclose($out);
+    exit;
+}
+
 $page = max(1, getInt('page', 1));
 $status = get('status');
 $search = get('q');
@@ -105,6 +124,7 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
     </select>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Поиск по метке, пользователю, серверу...">
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>
+    <a href="<?= SITE_URL ?>/admin/payments.php?export=csv" class="btn btn-sm btn-outline">📥 CSV</a>
 </form>
 
 <!-- Таблица -->

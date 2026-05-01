@@ -22,6 +22,11 @@ if (!$server) {
     redirect(SITE_URL . '/dashboard/');
 }
 
+// Позиция в рейтинге по голосам за месяц
+$stmt = $db->prepare("SELECT COUNT(*) + 1 FROM servers WHERE status IN ('active', 'pending') AND votes_month > ?");
+$stmt->execute([$server['votes_month']]);
+$rankPosition = (int)$stmt->fetchColumn();
+
 $period = get('period', '24h');
 
 // Формат даты для группировки (совместимость MySQL/SQLite)
@@ -108,6 +113,10 @@ $peakData = $stmt->fetch();
 
     <!-- Сводка -->
     <div class="stats-grid">
+        <div class="stat-card" style="border-color: var(--gold);">
+            <div class="stat-card-value" style="color: var(--gold);">#<?= $rankPosition ?></div>
+            <div class="stat-card-label">В рейтинге</div>
+        </div>
         <div class="stat-card">
             <div class="stat-card-value"><?= $server['players_online'] ?>/<?= $server['players_max'] ?></div>
             <div class="stat-card-label">Сейчас онлайн</div>

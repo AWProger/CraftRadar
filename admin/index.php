@@ -125,6 +125,9 @@ $recentLog = $db->query("
     JOIN users u ON al.admin_id = u.id 
     ORDER BY al.created_at DESC LIMIT 20
 ")->fetchAll();
+
+// === Последние регистрации ===
+$recentUsers = $db->query("SELECT id, username, email, created_at FROM users ORDER BY created_at DESC LIMIT 5")->fetchAll();
 ?>
 
 <!-- Статистика за сегодня -->
@@ -314,9 +317,20 @@ $recentLog = $db->query("
     </div>
 </div>
 
-<!-- Последние действия -->
-<h2 class="section-title">📋 Последние действия</h2>
-<div class="card">
+<!-- Последние регистрации + Последние действия -->
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px;">
+    <div class="card">
+        <h3 style="margin-bottom: 12px; font-size: 0.85rem;">👤 Новые пользователи</h3>
+        <?php foreach ($recentUsers as $ru): ?>
+            <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem;">
+                <a href="<?= SITE_URL ?>/admin/user_view.php?id=<?= $ru['id'] ?>"><?= e($ru['username']) ?></a>
+                <span style="color: var(--text-muted); font-size: 0.7rem;"><?= formatDate($ru['created_at']) ?></span>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <div class="card">
+        <h2 class="section-title" style="margin-bottom: 12px;">📋 Последние действия</h2>
     <?php if (empty($recentLog)): ?>
         <p style="color: var(--text-muted);">Действий пока нет.</p>
     <?php else: ?>
@@ -331,6 +345,7 @@ $recentLog = $db->query("
         </div>
     <?php endif; ?>
 </div>
+</div><!-- /grid -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3"></script>
 <script>
