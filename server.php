@@ -264,7 +264,10 @@ require_once __DIR__ . '/includes/header.php';
                 <?php else: ?>
                     <a href="<?= SITE_URL ?>/login.php" class="btn btn-outline btn-block">Войдите, чтобы голосовать</a>
                 <?php endif; ?>
-                <div style="text-align: center; margin-top: 8px; color: var(--text-muted); font-size: 0.85rem;">
+                <div style="text-align: center; margin-top: 8px; color: var(--text-muted); font-size: 0.75rem;">
+                    +<?= POINTS_PER_VOTE ?> 💎 за голос · до <?= MAX_VOTES_PER_DAY ?> голосов в день
+                </div>
+                <div style="text-align: center; margin-top: 4px; color: var(--text-muted); font-size: 0.85rem;">
                     Всего голосов: <?= $server['votes_total'] ?>
                     <?php
                     try {

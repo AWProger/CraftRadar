@@ -84,7 +84,7 @@ $history = getPointHistory($userId, 10);
         </div>
         <?php endif; ?>
         <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">
-            Баллы начисляются за голосование за серверы (1 балл за голос)
+            Баллы начисляются за голосование (<?= POINTS_PER_VOTE ?> 💎 за голос, до <?= MAX_VOTES_PER_DAY ?> в день)
         </p>
     </div>
 

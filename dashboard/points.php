@@ -42,7 +42,7 @@ $myServers = $myServers->fetchAll();
                 <div style="font-size: 1.5rem; margin-bottom: 6px;">👍</div>
                 <div style="font-weight: 700; margin-bottom: 4px;">Голосуй за серверы</div>
                 <div style="color: var(--gold); font-family: var(--font-mc); font-size: 0.7rem;">+<?= POINTS_PER_VOTE ?> 💎 за голос</div>
-                <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">1 голос в 24 часа за каждый сервер</div>
+                <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">1 голос в 24 часа за сервер · до <?= MAX_VOTES_PER_DAY ?> в день</div>
             </div>
         </div>
     </div>
