@@ -284,3 +284,49 @@ document.addEventListener('DOMContentLoaded', function () {
         input.style.paddingRight = '40px';
     });
 })();
+
+// === Animated counters ===
+(function() {
+    function animateCounter(el) {
+        var target = parseInt(el.textContent.replace(/\D/g, '')) || 0;
+        if (target === 0) return;
+        var duration = 1000;
+        var start = 0;
+        var startTime = null;
+
+        function step(timestamp) {
+            if (!startTime) startTime = timestamp;
+            var progress = Math.min((timestamp - startTime) / duration, 1);
+            var current = Math.floor(progress * target);
+            el.textContent = current.toLocaleString('ru');
+            if (progress < 1) requestAnimationFrame(step);
+            else el.textContent = target.toLocaleString('ru');
+        }
+
+        var observer = new IntersectionObserver(function(entries) {
+            if (entries[0].isIntersecting) {
+                requestAnimationFrame(step);
+                observer.disconnect();
+            }
+        });
+        observer.observe(el);
+    }
+
+    document.querySelectorAll('.home-stat-value, .stat-card-value').forEach(animateCounter);
+})();
+
+// === Scroll to top button ===
+(function() {
+    var btn = document.createElement('button');
+    btn.innerHTML = '▲';
+    btn.className = 'scroll-top-btn';
+    btn.style.cssText = 'position:fixed;bottom:20px;right:20px;width:40px;height:40px;background:var(--bg-card);border:3px solid var(--border);color:var(--accent);font-size:1rem;cursor:pointer;z-index:80;display:none;align-items:center;justify-content:center;box-shadow:4px 4px 0 rgba(0,0,0,0.5);transition:all 0.15s;';
+    btn.addEventListener('click', function() { window.scrollTo({top: 0, behavior: 'smooth'}); });
+    btn.addEventListener('mouseenter', function() { this.style.borderColor = 'var(--accent)'; });
+    btn.addEventListener('mouseleave', function() { this.style.borderColor = 'var(--border)'; });
+    document.body.appendChild(btn);
+
+    window.addEventListener('scroll', function() {
+        btn.style.display = window.scrollY > 300 ? 'flex' : 'none';
+    });
+})();

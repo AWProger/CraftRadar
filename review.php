@@ -49,7 +49,7 @@ if (mb_strlen($text) > REVIEW_MAX_LENGTH) {
 }
 
 // Проверка существования сервера
-$stmt = $db->prepare("SELECT id, user_id FROM servers WHERE id = ? AND status IN ('active', 'pending')");
+$stmt = $db->prepare("SELECT id, user_id, name FROM servers WHERE id = ? AND status IN ('active', 'pending')");
 $stmt->execute([$serverId]);
 $server = $stmt->fetch();
 
@@ -87,5 +87,17 @@ $stmt->execute([
     $stats['cnt'],
     $serverId
 ]);
+
+// Уведомление владельцу сервера о новом отзыве
+if ($server['user_id'] != $userId) {
+    require_once __DIR__ . '/includes/notifications.php';
+    $username = $_SESSION['username'] ?? 'Пользователь';
+    createNotification(
+        $server['user_id'], 'new_review',
+        '💬 Новый отзыв на «' . $server['name'] . '»' ,
+        $username . ' оставил отзыв: ' . $rating . '★',
+        SITE_URL . '/server.php?id=' . $serverId
+    );
+}
 
 echo json_encode(['success' => true]);

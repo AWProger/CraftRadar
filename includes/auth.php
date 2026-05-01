@@ -109,6 +109,12 @@ function loginUser(string $login, string $password): array
     $stmt = $db->prepare('UPDATE users SET last_login = ?, last_ip = ? WHERE id = ?');
     $stmt->execute([now(), $ip, $user['id']]);
 
+    // Логируем вход
+    try {
+        $db->prepare('INSERT INTO admin_log (admin_id, action, target_type, target_id, details, ip_address, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+            ->execute([$user['id'], 'login', 'user', $user['id'], json_encode(['user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '']), $ip, now()]);
+    } catch (\Exception $e) {} // Не блокируем вход если лог не записался
+
     return ['success' => true, 'error' => null];
 }
 

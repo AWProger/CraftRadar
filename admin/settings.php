@@ -25,9 +25,25 @@ if (isPost()) {
         $settings = $_POST;
         unset($settings[CSRF_TOKEN_NAME]);
 
+        // Валидация числовых значений
+        $numericKeys = ['servers_per_user', 'vote_cooldown_hours', 'ping_interval_minutes',
+                        'ping_timeout_seconds', 'max_consecutive_fails', 'min_password_length',
+                        'promote_price_7d', 'promote_price_14d', 'promote_price_30d'];
+        $errors = [];
+        foreach ($numericKeys as $nk) {
+            if (isset($settings[$nk]) && (!is_numeric($settings[$nk]) || (int)$settings[$nk] < 1)) {
+                $errors[] = "Значение «{$nk}» должно быть числом больше 0.";
+            }
+        }
+
+        if (!empty($errors)) {
+            setFlash('error', implode(' ', $errors));
+            redirect(SITE_URL . '/admin/settings.php');
+        }
+
         foreach ($settings as $key => $value) {
             $stmt = $db->prepare('UPDATE settings SET `value` = ?, updated_at = ?, updated_by = ? WHERE `key` = ?');
-            $stmt->execute([$value, now(), currentUserId(), $key]);
+            $stmt->execute([trim($value), now(), currentUserId(), $key]);
         }
 
         adminLog('update_settings', 'setting', 0, json_encode(array_keys($settings)));
