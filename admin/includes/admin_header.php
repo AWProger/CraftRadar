@@ -116,6 +116,9 @@ function navActive(string $script, ?string $param = null, ?string $value = null)
                     <a href="<?= SITE_URL ?>/admin/settings.php" class="admin-nav-link <?= $currentScript === 'settings.php' ? 'active' : '' ?>">
                         ⚙️ Настройки
                     </a>
+                    <a href="<?= SITE_URL ?>/admin/system.php" class="admin-nav-link <?= $currentScript === 'system.php' ? 'active' : '' ?>">
+                        🖥 Система
+                    </a>
                 </div>
             <?php endif; ?>
 

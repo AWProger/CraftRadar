@@ -11,6 +11,18 @@ require_once __DIR__ . '/notifications.php';
 require_once __DIR__ . '/points.php';
 require_once __DIR__ . '/components.php';
 
+// Режим обслуживания
+$_maintenanceFile = ROOT_PATH . 'storage/.maintenance';
+if (file_exists($_maintenanceFile) && (!isLoggedIn() || currentUserRole() !== 'admin')) {
+    http_response_code(503);
+    header('Retry-After: 3600');
+    echo '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>' . SITE_NAME . ' — Обслуживание</title>';
+    echo '<style>body{background:#0d1117;color:#c9d1d9;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;text-align:center;}';
+    echo '.box{max-width:500px;padding:40px;border:3px solid #30363d;}.icon{font-size:4rem;margin-bottom:16px;}h1{color:#00ff80;font-size:1.2rem;margin-bottom:12px;}p{color:#8b949e;line-height:1.6;}</style>';
+    echo '</head><body><div class="box"><div class="icon">🔧</div><h1>Технические работы</h1><p>Сайт временно недоступен. Мы проводим обновление и скоро вернёмся. Попробуйте зайти позже.</p></div></body></html>';
+    exit;
+}
+
 $pageTitle = isset($pageTitle) ? $pageTitle . ' — ' . SITE_NAME : SITE_NAME;
 $_notifCount = isLoggedIn() ? getUnreadCount(currentUserId()) : 0;
 
