@@ -347,6 +347,7 @@ requireAuth();
             <h2>Остались вопросы?</h2>
             <p>Напишите нам — мы поможем разобраться.</p>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a href="<?= SITE_URL ?>/dashboard/tickets.php" class="btn btn-sm btn-primary">🎫 Создать обращение</a>
                 <a href="<?= SITE_URL ?>/page.php?slug=faq" class="btn btn-sm btn-outline">📋 FAQ</a>
                 <a href="<?= SITE_URL ?>/page.php?slug=rules" class="btn btn-sm btn-outline">📜 Правила</a>
                 <a href="<?= SITE_URL ?>/page.php?slug=contacts" class="btn btn-sm btn-outline">✉️ Контакты</a>

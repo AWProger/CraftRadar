@@ -30,38 +30,63 @@ if (isPost() && post('action') === 'create') {
         } elseif (empty($message) || mb_strlen($message) < 10 || mb_strlen($message) > 5000) {
             setFlash('error', 'Сообщение: от 10 до 5000 символов.');
         } else {
-            $db->prepare('INSERT INTO tickets (user_id, subject, category, status, priority, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-                ->execute([$userId, $subject, $category, 'open', 'normal', now(), now()]);
-            $ticketId = (int)$db->lastInsertId();
+            // Лимит открытых тикетов
+            $stmt = $db->prepare("SELECT COUNT(*) FROM tickets WHERE user_id = ? AND status IN ('open', 'waiting')");
+            $stmt->execute([$userId]);
+            $openCount = (int)$stmt->fetchColumn();
 
-            $db->prepare('INSERT INTO ticket_messages (ticket_id, user_id, message, is_admin, created_at) VALUES (?, ?, ?, 0, ?)')
-                ->execute([$ticketId, $userId, $message, now()]);
+            if ($openCount >= 5) {
+                setFlash('error', 'Максимум 5 открытых обращений. Дождитесь ответа или закройте старые.');
+            } else {
+                $db->prepare('INSERT INTO tickets (user_id, subject, category, status, priority, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+                    ->execute([$userId, $subject, $category, 'open', 'normal', now(), now()]);
+                $ticketId = (int)$db->lastInsertId();
 
-            setFlash('success', 'Обращение #' . $ticketId . ' создано. Мы ответим в течение 24 часов.');
-            redirect(SITE_URL . '/dashboard/ticket_view.php?id=' . $ticketId);
+                $db->prepare('INSERT INTO ticket_messages (ticket_id, user_id, message, is_admin, created_at) VALUES (?, ?, ?, 0, ?)')
+                    ->execute([$ticketId, $userId, $message, now()]);
+
+                setFlash('success', 'Обращение #' . $ticketId . ' создано. Мы ответим в течение 24 часов.');
+                redirect(SITE_URL . '/dashboard/ticket_view.php?id=' . $ticketId);
+            }
         }
     }
     redirect(SITE_URL . '/dashboard/tickets.php');
 }
 
 // Мои тикеты
-$tickets = $db->prepare('SELECT * FROM tickets WHERE user_id = ? ORDER BY updated_at DESC');
+$tickets = $db->prepare('
+    SELECT t.*, 
+        (SELECT COUNT(*) FROM ticket_messages WHERE ticket_id = t.id) as msg_count,
+        (SELECT COUNT(*) FROM ticket_messages WHERE ticket_id = t.id AND is_admin = 1 AND created_at > COALESCE(
+            (SELECT MAX(created_at) FROM ticket_messages WHERE ticket_id = t.id AND is_admin = 0), t.created_at
+        )) as unread_replies
+    FROM tickets t WHERE t.user_id = ? ORDER BY 
+        CASE WHEN t.status = "answered" THEN 0 WHEN t.status = "open" THEN 1 WHEN t.status = "waiting" THEN 2 ELSE 3 END,
+        t.updated_at DESC
+');
 $tickets->execute([$userId]);
 $tickets = $tickets->fetchAll();
 
 $statusLabels = ['open' => '🟢 Открыт', 'answered' => '💬 Отвечен', 'waiting' => '⏳ Ожидает', 'closed' => '🔒 Закрыт'];
 $catLabels = ['question' => '❓ Вопрос', 'bug' => '🐛 Баг', 'payment' => '💰 Оплата', 'server' => '📡 Сервер', 'abuse' => '⚠️ Жалоба', 'other' => '📋 Другое'];
+$answeredCount = count(array_filter($tickets, fn($t) => $t['status'] === 'answered'));
 ?>
 
 <div class="dashboard">
-    <?= dashboardNav('help') ?>
+    <?= dashboardNav('tickets') ?>
     <div class="dashboard-header">
         <h1>🎫 Мои обращения</h1>
     </div>
 
+    <?php if ($answeredCount > 0): ?>
+    <div class="alert alert-info" style="margin-bottom: 16px;">
+        💬 У вас <?= $answeredCount ?> обращени<?= $answeredCount === 1 ? 'е' : ($answeredCount < 5 ? 'я' : 'й') ?> с новым ответом от поддержки.
+    </div>
+    <?php endif; ?>
+
     <!-- Создать обращение -->
     <div class="card" style="margin-bottom: 20px;">
-        <h2 class="section-title">Новое обращение</h2>
+        <h2 class="section-title">✏️ Новое обращение</h2>
         <form method="POST">
             <?= csrfField() ?>
             <input type="hidden" name="action" value="create">
@@ -86,7 +111,7 @@ $catLabels = ['question' => '❓ Вопрос', 'bug' => '🐛 Баг', 'payment
             </div>
 
             <div class="form-group">
-                <label for="message">Сообщение *</label>
+                <label for="message">Сообщение * <small style="color:var(--text-muted);">(от 10 до 5000 символов)</small></label>
                 <textarea id="message" name="message" rows="4" required minlength="10" maxlength="5000" placeholder="Подробно опишите вашу проблему или вопрос..."></textarea>
             </div>
 
@@ -101,14 +126,20 @@ $catLabels = ['question' => '❓ Вопрос', 'bug' => '🐛 Баг', 'payment
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr><th>#</th><th>Тема</th><th>Категория</th><th>Статус</th><th>Обновлено</th></tr>
+                    <tr><th>#</th><th>Тема</th><th>Категория</th><th>💬</th><th>Статус</th><th>Обновлено</th></tr>
                 </thead>
                 <tbody>
                     <?php foreach ($tickets as $t): ?>
-                    <tr>
+                    <tr style="<?= $t['status'] === 'answered' ? 'background:rgba(0,255,128,0.03);' : '' ?>">
                         <td><?= $t['id'] ?></td>
-                        <td><a href="<?= SITE_URL ?>/dashboard/ticket_view.php?id=<?= $t['id'] ?>"><?= e($t['subject']) ?></a></td>
+                        <td>
+                            <a href="<?= SITE_URL ?>/dashboard/ticket_view.php?id=<?= $t['id'] ?>"><?= e($t['subject']) ?></a>
+                            <?php if ($t['unread_replies'] > 0): ?>
+                                <span class="badge badge-online" style="font-size:0.6rem;margin-left:4px;">новый ответ</span>
+                            <?php endif; ?>
+                        </td>
                         <td style="font-size: 0.8rem;"><?= $catLabels[$t['category']] ?? $t['category'] ?></td>
+                        <td style="color:var(--text-muted);"><?= $t['msg_count'] ?></td>
                         <td>
                             <?php
                             $sBadge = match($t['status']) {
@@ -129,7 +160,7 @@ $catLabels = ['question' => '❓ Вопрос', 'bug' => '🐛 Баг', 'payment
     </div>
     <?php else: ?>
     <div class="card" style="text-align: center; padding: 30px; color: var(--text-muted);">
-        <p>У вас пока нет обращений.</p>
+        <p>У вас пока нет обращений. Если есть вопрос — создайте обращение выше.</p>
     </div>
     <?php endif; ?>
 </div>

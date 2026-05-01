@@ -97,20 +97,59 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
     </select>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Поиск по теме, автору, ID...">
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>
+    <a href="<?= SITE_URL ?>/admin/tickets.php" class="btn btn-sm btn-ghost">Сбросить</a>
 </form>
 
+<?php
+// Массовые действия
+if (isPost() && verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
+    $bulkAction = post('bulk_action');
+    $ids = array_map('intval', $_POST['ids'] ?? []);
+    if (!empty($ids) && $bulkAction) {
+        $ph = implode(',', array_fill(0, count($ids), '?'));
+        switch ($bulkAction) {
+            case 'close':
+                $db->prepare("UPDATE tickets SET status = 'closed', closed_by = ?, closed_at = ?, updated_at = ? WHERE id IN ({$ph})")
+                    ->execute(array_merge([currentUserId(), now(), now()], $ids));
+                setFlash('success', count($ids) . ' обращений закрыто.');
+                break;
+            case 'delete':
+                if (isAdmin()) {
+                    $db->prepare("DELETE FROM tickets WHERE id IN ({$ph})")->execute($ids);
+                    setFlash('success', count($ids) . ' обращений удалено.');
+                }
+                break;
+        }
+        foreach ($ids as $tid) adminLog($bulkAction . '_ticket', 'ticket', $tid);
+        redirect($_SERVER['REQUEST_URI']);
+    }
+}
+?>
+
 <!-- Таблица -->
+<form method="POST">
+<?= csrfField() ?>
+<div style="margin-bottom: 12px; display: flex; gap: 8px; align-items: center;">
+    <select name="bulk_action" style="padding:6px 12px;background:var(--bg-input);border:2px solid var(--border);color:var(--text);font-size:0.8rem;">
+        <option value="">Массовое действие</option>
+        <option value="close">🔒 Закрыть</option>
+        <option value="delete">🗑 Удалить</option>
+    </select>
+    <button type="submit" class="btn btn-sm btn-outline" data-confirm="Выполнить действие?">Применить</button>
+    <span id="selectedCount" style="color:var(--accent);font-size:0.8rem;font-weight:700;display:none;"></span>
+</div>
 <div class="table-wrap">
     <table>
         <thead>
-            <tr><th>#</th><th>Тема</th><th>Автор</th><th>Кат.</th><th>Сообщ.</th><th>Статус</th><th>Создан</th><th>Обновлён</th></tr>
+            <tr><th><input type="checkbox" id="selectAll"></th><th>#</th><th>Тема</th><th>Автор</th><th>Кат.</th><th>💬</th><th>Статус</th><th>Создан</th><th>Обновлён</th></tr>
         </thead>
         <tbody>
             <?php if (empty($tickets)): ?>
-                <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Обращений нет</td></tr>
+                <tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:30px;">Обращений нет</td></tr>
             <?php endif; ?>
             <?php foreach ($tickets as $t): ?>
-            <tr>
+            <tr style="<?= $t['status'] === 'open' ? 'border-left: 3px solid var(--warning);' : ($t['status'] === 'waiting' ? 'border-left: 3px solid var(--info);' : '') ?>">
+                <td><input type="checkbox" name="ids[]" value="<?= $t['id'] ?>" class="row-checkbox"></td>
                 <td><?= $t['id'] ?></td>
                 <td><a href="<?= SITE_URL ?>/admin/ticket_view.php?id=<?= $t['id'] ?>"><?= e(truncate($t['subject'], 50)) ?></a></td>
                 <td><a href="<?= SITE_URL ?>/admin/user_view.php?id=<?= $t['user_id'] ?>"><?= e($t['username']) ?></a></td>
@@ -133,7 +172,8 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
             <?php endforeach; ?>
         </tbody>
     </table>
-</div>
+    </div>
+</form>
 
 <?= paginate($total, $perPage, $page, $baseUrl) ?>
 
