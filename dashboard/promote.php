@@ -1,11 +1,11 @@
 <?php
 /**
- * CraftRadar — Покупка продвижения сервера
+ * CraftRadar — Продвижение сервера за монеты
  */
 
 $pageTitle = 'Продвижение сервера';
 require_once __DIR__ . '/../includes/header.php';
-require_once INCLUDES_PATH . 'yoomoney.php';
+require_once INCLUDES_PATH . 'coins.php';
 
 requireAuth();
 
@@ -13,17 +13,16 @@ $db = getDB();
 $userId = currentUserId();
 $serverId = getInt('id');
 
-// Получаем сервер (только свой, только active)
-$stmt = $db->prepare("SELECT * FROM servers WHERE id = ? AND user_id = ? AND status = 'active'");
+$stmt = $db->prepare("SELECT * FROM servers WHERE id = ? AND user_id = ? AND status IN ('active', 'pending')");
 $stmt->execute([$serverId, $userId]);
 $server = $stmt->fetch();
 
 if (!$server) {
-    setFlash('error', 'Сервер не найден или не активен.');
+    setFlash('error', 'Сервер не найден.');
     redirect(SITE_URL . '/dashboard/');
 }
 
-$paymentData = null;
+$currentCoins = getUserCoins($userId);
 $errors = [];
 
 if (isPost()) {
@@ -31,199 +30,102 @@ if (isPost()) {
         $errors[] = 'Ошибка безопасности.';
     } else {
         $type = post('type');
-        if (!in_array($type, ['7d', '14d', '30d'])) {
-            $errors[] = 'Выберите тариф.';
-        }
-
-        if (empty($errors)) {
-            $result = createPayment($userId, $serverId, $type);
-            if ($result['success']) {
-                $paymentData = $result;
-            } else {
-                $errors[] = $result['error'];
-            }
+        $result = promoteServerWithCoins($userId, $serverId, $type);
+        if ($result['success']) {
+            setFlash('success', '⭐ Сервер продвигается до ' . formatDate($result['until']) . '! Потрачено ' . $result['coins_spent'] . ' 💰');
+            redirect(SITE_URL . '/dashboard/');
+        } else {
+            $errors[] = $result['error'];
         }
     }
+    $currentCoins = getUserCoins($userId);
 }
 
-$prices = PROMOTE_PRICES;
+$costs = PROMOTE_COIN_COSTS;
+$daysMap = ['7d' => 7, '14d' => 14, '30d' => 30];
 ?>
 
 <div class="dashboard">
     <div class="dashboard-header">
-        <h1>Продвижение: <?= e($server['name']) ?></h1>
+        <h1>⭐ Продвижение: <?= e($server['name']) ?></h1>
         <a href="<?= SITE_URL ?>/dashboard/" class="btn btn-ghost">← Назад</a>
     </div>
 
     <?php if ($errors): ?>
-        <div class="alert alert-error">
-            <?php foreach ($errors as $err): ?>
-                <p><?= e($err) ?></p>
-            <?php endforeach; ?>
-        </div>
+        <div class="alert alert-error"><?php foreach ($errors as $err): ?><p><?= e($err) ?></p><?php endforeach; ?></div>
     <?php endif; ?>
+
+    <!-- Баланс -->
+    <div class="card" style="text-align: center; margin-bottom: 16px;">
+        <div style="font-family: var(--font-mc); font-size: 1rem; color: var(--gold);">💰 <?= $currentCoins ?> монет</div>
+        <a href="<?= SITE_URL ?>/dashboard/buy_coins.php" class="btn btn-sm btn-gold" style="margin-top: 8px;">Купить монеты</a>
+    </div>
 
     <?php if ($server['is_promoted']): ?>
         <?php $daysLeft = max(0, (int)ceil((strtotime($server['promoted_until']) - time()) / 86400)); ?>
         <div class="alert alert-info">
-            ⭐ Сервер уже продвигается до <?= formatDate($server['promoted_until']) ?> (осталось <?= $daysLeft ?> дн.).
-            Вы можете продлить — дни добавятся к текущему сроку.
+            ⭐ Уже продвигается до <?= formatDate($server['promoted_until']) ?> (<?= $daysLeft ?> дн.). Дни добавятся.
         </div>
     <?php endif; ?>
 
-    <?php if ($paymentData): ?>
-        <!-- Форма оплаты — автоматический редирект на ЮMoney -->
-        <div class="card" style="text-align: center; padding: 40px;">
-            <h2 style="margin-bottom: 16px;">Переход к оплате...</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">
-                Сумма: <strong><?= $paymentData['amount'] ?> ₽</strong> — продвижение на <?= $paymentData['days'] ?> дней
-            </p>
-
-            <form id="paymentForm" method="POST" action="<?= e($paymentData['form']['action']) ?>">
-                <?php foreach ($paymentData['form'] as $key => $value): ?>
-                    <?php if ($key !== 'action'): ?>
-                        <input type="hidden" name="<?= e($key) ?>" value="<?= e($value) ?>">
+    <!-- Тарифы -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+        <?php
+        $tariffs = [
+            '7d'  => ['icon' => '⚡', 'label' => '7 дней'],
+            '14d' => ['icon' => '🔥', 'label' => '14 дней', 'popular' => true],
+            '30d' => ['icon' => '👑', 'label' => '30 дней'],
+        ];
+        foreach ($tariffs as $key => $t):
+            $cost = $costs[$key];
+            $days = $daysMap[$key];
+            $canAfford = $currentCoins >= $cost;
+        ?>
+            <div class="card" style="text-align: center; <?= !empty($t['popular']) ? 'border-color: var(--gold); box-shadow: 4px 4px 0 rgba(255,215,0,0.2);' : '' ?>">
+                <?php if (!empty($t['popular'])): ?>
+                    <div style="background: var(--gold); color: #000; font-size: 0.65rem; font-weight: 700; padding: 2px 10px; display: inline-block; margin-bottom: 8px;">ПОПУЛЯРНЫЙ</div>
+                <?php endif; ?>
+                <div style="font-size: 2rem;"><?= $t['icon'] ?></div>
+                <div style="font-family: var(--font-mc); font-size: 0.75rem; margin: 8px 0;"><?= $t['label'] ?></div>
+                <div style="font-family: var(--font-mc); font-size: 1.2rem; color: var(--gold);"><?= $cost ?> 💰</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 12px;"><?= round($cost / $days, 1) ?> 💰/день</div>
+                <ul style="list-style: none; text-align: left; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 16px;">
+                    <li>📌 Закрепление в топе каталога</li>
+                    <li>⭐ Золотая рамка</li>
+                    <li>📈 Приоритет в поиске</li>
+                </ul>
+                <form method="POST">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="type" value="<?= $key ?>">
+                    <?php if ($canAfford): ?>
+                        <button type="submit" class="btn btn-gold btn-block">Продвинуть за <?= $cost ?> 💰</button>
+                    <?php else: ?>
+                        <a href="<?= SITE_URL ?>/dashboard/buy_coins.php" class="btn btn-ghost btn-block">Нужно <?= $cost ?> 💰</a>
                     <?php endif; ?>
-                <?php endforeach; ?>
+                </form>
+            </div>
+        <?php endforeach; ?>
+    </div>
 
-                <p style="color: var(--text-muted); margin-bottom: 16px;">Если автоматический переход не сработал:</p>
-                <button type="submit" class="btn btn-primary">Перейти к оплате →</button>
-            </form>
-
-            <script>
-                // Автоматический редирект через 2 секунды
-                setTimeout(function() {
-                    document.getElementById('paymentForm').submit();
-                }, 2000);
-            </script>
+    <!-- Разница -->
+    <div class="card" style="margin-top: 16px;">
+        <h3 style="margin-bottom: 8px;">⭐ Продвижение vs ⚡ Выделение</h3>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th></th><th>⭐ Продвижение (💰)</th><th>⚡ Выделение (💎)</th></tr></thead>
+                <tbody>
+                    <tr><td>Валюта</td><td style="color: var(--gold);">Монеты (платные)</td><td style="color: var(--diamond);">Алмазы (бесплатные)</td></tr>
+                    <tr><td>Длительность</td><td>7-30 дней</td><td>1-24 часа</td></tr>
+                    <tr><td>Рамка</td><td style="color: var(--gold);">⭐ Золотая</td><td style="color: var(--diamond);">⚡ Алмазная</td></tr>
+                    <tr><td>Позиция</td><td>Самый верх каталога</td><td>Ниже продвигаемых</td></tr>
+                </tbody>
+            </table>
         </div>
-
-    <?php else: ?>
-        <!-- Выбор тарифа -->
-        <div class="promote-grid">
-            <?php
-            $tariffs = [
-                '7d'  => ['days' => 7,  'label' => '7 дней',  'icon' => '⚡'],
-                '14d' => ['days' => 14, 'label' => '14 дней', 'icon' => '🔥'],
-                '30d' => ['days' => 30, 'label' => '30 дней', 'icon' => '👑'],
-            ];
-            ?>
-            <?php foreach ($tariffs as $key => $tariff): ?>
-                <div class="promote-card <?= $key === '14d' ? 'promote-card-popular' : '' ?>">
-                    <?php if ($key === '14d'): ?>
-                        <div class="promote-badge">Популярный</div>
-                    <?php endif; ?>
-                    <div class="promote-icon"><?= $tariff['icon'] ?></div>
-                    <div class="promote-days"><?= $tariff['label'] ?></div>
-                    <div class="promote-price"><?= $prices[$key] ?> ₽</div>
-                    <div class="promote-per-day"><?= round($prices[$key] / $tariff['days'], 1) ?> ₽/день</div>
-                    <ul class="promote-features">
-                        <li>📌 Закрепление в топе каталога</li>
-                        <li>⭐ Значок на главной странице</li>
-                        <li>📈 Приоритет в поиске</li>
-                    </ul>
-                    <form method="POST">
-                        <?= csrfField() ?>
-                        <input type="hidden" name="type" value="<?= $key ?>">
-                        <button type="submit" class="btn btn-primary btn-block">Оплатить <?= $prices[$key] ?> ₽</button>
-                    </form>
-                </div>
-            <?php endforeach; ?>
-        </div>
-
-        <div class="card" style="margin-top: 20px;">
-            <h3 style="margin-bottom: 8px;">Что даёт продвижение?</h3>
-            <ul style="color: var(--text-muted); line-height: 1.8;">
-                <li>Ваш сервер закрепляется в самом верху каталога и на главной странице</li>
-                <li>Отображается значок ⭐ рядом с названием</li>
-                <li>Приоритет в результатах поиска</li>
-                <li>Если сервер уже продвигается — дни добавляются к текущему сроку</li>
-            </ul>
-
-            <h3 style="margin-top: 16px; margin-bottom: 8px;">Как это работает?</h3>
-            <ol style="color: var(--text-muted); line-height: 1.8; padding-left: 20px;">
-                <li>Выберите тариф и нажмите «Оплатить»</li>
-                <li>Вы будете перенаправлены на страницу оплаты ЮMoney</li>
-                <li>Оплатите банковской картой (Visa, MasterCard, МИР) или кошельком ЮMoney</li>
-                <li>Продвижение активируется автоматически в течение нескольких минут</li>
-            </ol>
-
-            <h3 style="margin-top: 16px; margin-bottom: 8px;">Способы оплаты</h3>
-            <p style="color: var(--text-muted);">Банковская карта (Visa, MasterCard, МИР), кошелёк ЮMoney.</p>
-
-            <p style="color: var(--text-muted); margin-top: 16px; font-size: 0.85rem;">
-                Нажимая «Оплатить», вы соглашаетесь с 
-                <a href="<?= SITE_URL ?>/page.php?slug=offer" target="_blank">публичной офертой</a>.
-                По вопросам оплаты — <a href="<?= SITE_URL ?>/page.php?slug=contacts">контакты</a>.
-            </p>
-        </div>
-    <?php endif; ?>
+        <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px;">
+            <a href="<?= SITE_URL ?>/dashboard/highlight.php?id=<?= $serverId ?>">⚡ Выделить за алмазы (бесплатно)</a>
+            · <a href="<?= SITE_URL ?>/page.php?slug=offer">Оферта</a>
+        </p>
+    </div>
 </div>
-
-<style>
-    .promote-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 16px;
-    }
-    .promote-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 24px;
-        text-align: center;
-        position: relative;
-        transition: border-color var(--transition);
-    }
-    .promote-card:hover {
-        border-color: var(--accent);
-    }
-    .promote-card-popular {
-        border-color: var(--accent);
-        box-shadow: 0 0 20px rgba(0, 255, 128, 0.1);
-    }
-    .promote-badge {
-        position: absolute;
-        top: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--accent);
-        color: #000;
-        padding: 2px 12px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 700;
-    }
-    .promote-icon {
-        font-size: 2.5rem;
-        margin-bottom: 8px;
-    }
-    .promote-days {
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 4px;
-    }
-    .promote-price {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--accent);
-        margin-bottom: 4px;
-    }
-    .promote-per-day {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 16px;
-    }
-    .promote-features {
-        list-style: none;
-        text-align: left;
-        margin-bottom: 20px;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-    }
-    .promote-features li {
-        padding: 4px 0;
-    }
-</style>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

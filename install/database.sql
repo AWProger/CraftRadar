@@ -445,3 +445,6 @@ INSERT INTO achievements (slug, name, description, icon, points_reward, sort_ord
 ALTER TABLE users ADD COLUMN minecraft_nick VARCHAR(32) NULL AFTER email;
 ALTER TABLE users ADD COLUMN daily_streak INT NOT NULL DEFAULT 0;
 ALTER TABLE users ADD COLUMN last_daily_visit DATE NULL;
+
+-- Монеты (платная валюта)
+ALTER TABLE users ADD COLUMN coins INT NOT NULL DEFAULT 0 COMMENT 'Монеты (платная валюта, 1 монета = 1 рубль)';

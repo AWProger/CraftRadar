@@ -291,27 +291,44 @@ function processPaymentNotification(array $postData): bool
     ");
     $stmt->execute([$notification['operation_id'], now(), $payment['id']]);
 
-    // Активируем продвижение сервера
-    $daysMap = ['promote_7d' => 7, 'promote_14d' => 14, 'promote_30d' => 30];
-    $days = $daysMap[$payment['type']] ?? 7;
+    // Определяем тип платежа
+    if (str_starts_with($payment['type'], 'coins_')) {
+        // Покупка монет
+        $coinPackages = ['coins_100' => 100, 'coins_300' => 300, 'coins_500' => 550, 'coins_1000' => 1200];
+        $coinsToAdd = $coinPackages[$payment['type']] ?? 0;
 
-    $stmt = $db->prepare('SELECT is_promoted, promoted_until FROM servers WHERE id = ?');
-    $stmt->execute([$payment['server_id']]);
-    $server = $stmt->fetch();
+        if ($coinsToAdd > 0) {
+            require_once __DIR__ . '/coins.php';
+            addCoins($payment['user_id'], $coinsToAdd, 'Покупка монет (' . $payment['amount'] . ' ₽)');
 
-    if ($server) {
-        // Если уже продвигается — добавляем дни к текущему сроку
-        $baseDate = ($server['is_promoted'] && $server['promoted_until'] && strtotime($server['promoted_until']) > time())
-            ? $server['promoted_until']
-            : now();
+            require_once __DIR__ . '/notifications.php';
+            createNotification($payment['user_id'], 'payment_completed',
+                '💰 Зачислено ' . $coinsToAdd . ' монет!',
+                'Оплата ' . $payment['amount'] . ' ₽ прошла успешно.',
+                SITE_URL . '/dashboard/profile.php'
+            );
+        }
 
-        $promotedUntil = date('Y-m-d H:i:s', strtotime($baseDate . " +{$days} days"));
+        paymentLog("SUCCESS COINS: Payment #{$payment['id']}, coins={$coinsToAdd}, amount={$notification['amount']}");
+    } else {
+        // Продвижение сервера (старый формат — прямая оплата)
+        $daysMap = ['promote_7d' => 7, 'promote_14d' => 14, 'promote_30d' => 30];
+        $days = $daysMap[$payment['type']] ?? 7;
 
-        $db->prepare('UPDATE servers SET is_promoted = 1, promoted_until = ? WHERE id = ?')
-            ->execute([$promotedUntil, $payment['server_id']]);
+        $stmt = $db->prepare('SELECT is_promoted, promoted_until FROM servers WHERE id = ?');
+        $stmt->execute([$payment['server_id']]);
+        $server = $stmt->fetch();
+
+        if ($server) {
+            $baseDate = ($server['is_promoted'] && $server['promoted_until'] && strtotime($server['promoted_until']) > time())
+                ? $server['promoted_until'] : now();
+            $promotedUntil = date('Y-m-d H:i:s', strtotime($baseDate . " +{$days} days"));
+            $db->prepare('UPDATE servers SET is_promoted = 1, promoted_until = ? WHERE id = ?')
+                ->execute([$promotedUntil, $payment['server_id']]);
+        }
+
+        paymentLog("SUCCESS PROMOTE: Payment #{$payment['id']}, days={$days}, server={$payment['server_id']}");
     }
-
-    paymentLog("SUCCESS: Payment #{$payment['id']}, label={$notification['label']}, amount={$notification['amount']}, server={$payment['server_id']}, days={$days}");
 
     return true;
 }

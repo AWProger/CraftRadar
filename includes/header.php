@@ -69,7 +69,10 @@ if (isLoggedIn()) {
                             <a href="<?= SITE_URL ?>/admin/" class="btn btn-sm btn-outline">Админка</a>
                         <?php endif; ?>
                         <span class="header-user"><?= e($_SESSION['username'] ?? '') ?></span>
-                        <a href="<?= SITE_URL ?>/dashboard/points.php" class="points-display" title="Ваши баллы — нажмите для подробностей"><span class="points-icon">💎</span> <?= getUserPoints(currentUserId()) ?></a>
+                        <a href="<?= SITE_URL ?>/dashboard/points.php" class="points-display" title="Алмазы"><span class="points-icon">💎</span> <?= getUserPoints(currentUserId()) ?></a>
+                        <a href="<?= SITE_URL ?>/dashboard/buy_coins.php" class="points-display" title="Монеты" style="color: var(--gold);">
+                            <span class="points-icon">💰</span> <?php try { require_once INCLUDES_PATH . 'coins.php'; echo getUserCoins(currentUserId()); } catch(\Exception $e) { echo '0'; } ?>
+                        </a>
                         <a href="<?= SITE_URL ?>/logout.php" class="btn btn-sm btn-ghost">Выйти</a>
                     <?php else: ?>
                         <a href="<?= SITE_URL ?>/login.php" class="btn btn-sm btn-outline">Войти</a>

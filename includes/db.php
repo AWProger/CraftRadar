@@ -106,6 +106,7 @@ function initSQLiteTables(PDO $pdo): void
             role TEXT DEFAULT 'user', is_banned INTEGER DEFAULT 0,
             ban_reason TEXT, ban_until TEXT, banned_by INTEGER,
             points INTEGER DEFAULT 0, daily_streak INTEGER DEFAULT 0, last_daily_visit TEXT,
+            coins INTEGER DEFAULT 0,
             created_at TEXT, last_login TEXT, last_ip TEXT
         );
         CREATE TABLE IF NOT EXISTS categories (
