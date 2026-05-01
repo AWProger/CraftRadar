@@ -12,12 +12,6 @@ $adminPageTitleFull = $adminPageTitle . ' — Админка';
 $db = getDB();
 $pendingCount = (int)$db->query("SELECT COUNT(*) FROM servers WHERE status = 'pending'")->fetchColumn();
 $newReportsCount = (int)$db->query("SELECT COUNT(*) FROM reports WHERE status = 'new'")->fetchColumn();
-$pendingPaymentsCount = 0;
-try {
-    $stmt = $db->prepare("SELECT COUNT(*) FROM payments WHERE status = 'pending' AND created_at < ?");
-    $stmt->execute([date('Y-m-d H:i:s', strtotime('-1 hour'))]);
-    $pendingPaymentsCount = (int)$stmt->fetchColumn();
-} catch (\Exception $e) {}
 $newTicketsCount = 0;
 try { $newTicketsCount = (int)$db->query("SELECT COUNT(*) FROM tickets WHERE status = 'open'")->fetchColumn(); } catch (\Exception $e) {}
 
@@ -107,7 +101,7 @@ function navActive(string $script, ?string $param = null, ?string $value = null)
             </a>
 
             <a href="<?= SITE_URL ?>/admin/payments.php" class="admin-nav-link <?= $currentScript === 'payments.php' ? 'active' : '' ?>">
-                💰 Платежи <?php if ($pendingPaymentsCount): ?><span class="admin-badge" style="background:var(--gold);"><?= $pendingPaymentsCount ?></span><?php endif; ?>
+                💰 Платежи
             </a>
 
             <?php if (isAdmin()): ?>
