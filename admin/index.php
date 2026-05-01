@@ -143,6 +143,14 @@ $recentLog = $db->query("
 
 // === Последние регистрации ===
 $recentUsers = $db->query("SELECT id, username, email, created_at FROM users ORDER BY created_at DESC LIMIT 5")->fetchAll();
+
+// === Активность по часам (сегодня) ===
+$hourlyExpr = isSQLite() ? "CAST(STRFTIME('%H', voted_at) AS INTEGER)" : "HOUR(voted_at)";
+$stmt = $db->prepare("SELECT {$hourlyExpr} as h, COUNT(*) as cnt FROM votes WHERE DATE(voted_at) = ? GROUP BY h ORDER BY h");
+$stmt->execute([$today]);
+$hourlyVotes = $stmt->fetchAll();
+$hourlyMap = array_fill(0, 24, 0);
+foreach ($hourlyVotes as $hv) $hourlyMap[(int)$hv['h']] = (int)$hv['cnt'];
 ?>
 
 <!-- Статистика за сегодня -->
@@ -361,6 +369,12 @@ if (isPost() && isAdmin() && post('quick_action') === 'reject_server') {
     </div>
 </div>
 
+<!-- Активность по часам -->
+<div class="card" style="margin-bottom: 24px;">
+    <h3 style="margin-bottom: 8px; font-size: 0.85rem;">⏰ Активность по часам (сегодня)</h3>
+    <canvas id="chartHourly" height="150"></canvas>
+</div>
+
 <!-- Топ-5 серверов + Категории + Рейтинги -->
 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
     <!-- Топ-5 серверов -->
@@ -471,6 +485,29 @@ makeChart('chartRegistrations', <?= json_encode(array_map(fn($d) => ['day' => $d
 makeChart('chartServers', <?= json_encode(array_map(fn($d) => ['day' => $d['day'], 'cnt' => (int)$d['cnt']], $serversByDay)) ?>, 'rgb(63,185,80)');
 makeChart('chartVotes', <?= json_encode(array_map(fn($d) => ['day' => $d['day'], 'cnt' => (int)$d['cnt']], $votesByDay)) ?>, 'rgb(210,153,34)');
 makeChart('chartRevenue', <?= json_encode(array_map(fn($d) => ['day' => $d['day'], 'total' => (float)$d['total']], $revenueByDay)) ?>, 'rgb(255,215,0)');
+
+// Hourly activity chart
+(function() {
+    var hourlyData = <?= json_encode(array_values($hourlyMap)) ?>;
+    var labels = [];
+    for (var i = 0; i < 24; i++) labels.push(i.toString().padStart(2, '0') + ':00');
+    new Chart(document.getElementById('chartHourly').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: hourlyData,
+                backgroundColor: hourlyData.map(function(v, i) {
+                    var now = new Date().getHours();
+                    return i === now ? 'rgba(0,255,128,0.6)' : 'rgba(0,255,128,0.2)';
+                }),
+                borderColor: '#00ff80',
+                borderWidth: 1
+            }]
+        },
+        options: chartOpts
+    });
+})();
 </script>
 
 <?php require_once __DIR__ . '/includes/admin_footer.php'; ?>

@@ -137,6 +137,11 @@ $reviews = $reviews->fetchAll();
 $reports = $db->prepare("SELECT r.*, u.username as reporter_name FROM reports r JOIN users u ON r.reporter_id = u.id WHERE r.target_type = 'server' AND r.target_id = ? ORDER BY r.created_at DESC");
 $reports->execute([$id]);
 $reports = $reports->fetchAll();
+
+// Данные для мини-графика онлайна (24ч)
+$chartData = $db->prepare('SELECT recorded_at as time, players_online as players FROM server_stats WHERE server_id = ? AND recorded_at >= ? ORDER BY recorded_at');
+$chartData->execute([$id, dateAgo(24, 'hour')]);
+$chartData = $chartData->fetchAll();
 ?>
 
 <div style="margin-bottom: 16px;">
@@ -215,6 +220,14 @@ $reports = $reports->fetchAll();
     <h3 style="margin-bottom: 12px;">📊 Онлайн за 24 часа</h3>
     <canvas id="adminServerChart" height="150"></canvas>
 </div>
+
+<!-- График онлайна (24ч) -->
+<?php if (!empty($chartData)): ?>
+<div class="card" style="margin-bottom: 16px;">
+    <h3 style="margin-bottom: 12px;">📈 Онлайн за 24 часа</h3>
+    <canvas id="adminServerChart" height="150"></canvas>
+</div>
+<?php endif; ?>
 
 <!-- Действия -->
 <div class="card" style="margin-bottom: 16px;">

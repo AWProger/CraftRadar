@@ -62,6 +62,21 @@ $dailyStreak = (int)($user['daily_streak'] ?? 0);
     </div>
 
     <!-- Карточка профиля -->
+    <?php
+    // Уровень пользователя
+    $pts = (int)($user['points'] ?? 0);
+    if ($pts >= 500) $level = 10;
+    elseif ($pts >= 200) $level = 7;
+    elseif ($pts >= 100) $level = 5;
+    elseif ($pts >= 50) $level = 4;
+    elseif ($pts >= 20) $level = 3;
+    elseif ($pts >= 5) $level = 2;
+    else $level = 1;
+    $levelNames = [1 => 'Новичок', 2 => 'Игрок', 3 => 'Активный', 4 => 'Опытный', 5 => 'Ветеран', 7 => 'Мастер', 10 => 'Легенда'];
+    $levelName = $levelNames[$level] ?? 'Уровень ' . $level;
+    $roleBadges = ['admin' => '👑 Админ', 'moderator' => '🛡️ Модератор', 'user' => ''];
+    $roleBadge = $roleBadges[$user['role']] ?? '';
+    ?>
     <div class="profile-card">
         <div class="profile-avatar">
             <?php if ($mcNick): ?>
@@ -72,11 +87,15 @@ $dailyStreak = (int)($user['daily_streak'] ?? 0);
         </div>
         <div class="profile-info">
             <h2 class="profile-name"><?= e($user['username']) ?></h2>
+            <?php if ($roleBadge): ?>
+                <span style="font-size: 0.7rem; color: var(--gold);"><?= $roleBadge ?></span>
+            <?php endif; ?>
             <?php if ($mcNick): ?>
                 <div class="profile-nick">🎮 <?= e($mcNick) ?></div>
             <?php endif; ?>
             <div class="profile-meta">
-                Зарегистрирован <?= formatDate($user['created_at']) ?>
+                Lv.<?= $level ?> <?= $levelName ?>
+                · Зарегистрирован <?= formatDate($user['created_at']) ?>
                 <?php if ($dailyStreak > 0): ?> · 🔥 <?= $dailyStreak ?> дн. подряд<?php endif; ?>
             </div>
         </div>

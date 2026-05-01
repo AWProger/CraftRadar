@@ -20,6 +20,11 @@ if (!isLoggedIn()) {
     exit;
 }
 
+if (!checkRateLimit('report', 3)) {
+    echo json_encode(['success' => false, 'error' => 'Слишком много жалоб. Подождите минуту.']);
+    exit;
+}
+
 if (!verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
     echo json_encode(['success' => false, 'error' => 'Ошибка безопасности.']);
     exit;

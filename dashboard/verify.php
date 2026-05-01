@@ -185,8 +185,10 @@ function generateVerifyCode(): string
                         <button type="submit" class="btn btn-primary" id="verifyBtn">
                             🔍 Проверить MOTD
                         </button>
+                        <div id="verifyStatus" style="margin-top: 8px;"></div>
                         <p style="color: var(--text-muted); font-size: 0.7rem; margin-top: 6px;">
-                            ⏳ Подождите 2-3 минуты после перезагрузки сервера перед проверкой
+                            ⏳ Подождите 2-3 минуты после перезагрузки сервера. 
+                            <button type="button" class="btn btn-sm btn-ghost" id="autoCheckBtn" style="font-size: 0.7rem;">🔄 Автопроверка каждые 30 сек</button>
                         </p>
                     </form>
                 </div>
@@ -277,5 +279,70 @@ function generateVerifyCode(): string
         color: var(--accent);
     }
 </style>
+
+<script>
+// Автопроверка верификации
+(function() {
+    var autoCheckBtn = document.getElementById('autoCheckBtn');
+    var verifyStatus = document.getElementById('verifyStatus');
+    var timer = null;
+    var countdown = 30;
+    var checking = false;
+
+    if (!autoCheckBtn || !verifyStatus) return;
+
+    function checkMotd() {
+        if (checking) return;
+        checking = true;
+        verifyStatus.innerHTML = '<span style="color:var(--accent);">🔍 Проверяю...</span>';
+
+        fetch('<?= SITE_URL ?>/api/server_status.php?id=<?= $serverId ?>')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                checking = false;
+                if (!data.is_online) {
+                    verifyStatus.innerHTML = '<span style="color:var(--danger);">❌ Сервер оффлайн. Ожидаю...</span>';
+                    return;
+                }
+                var motd = (data.motd || '').toLowerCase();
+                var code = '<?= e(strtolower($verifyCode)) ?>';
+                if (motd.indexOf(code) !== -1) {
+                    verifyStatus.innerHTML = '<span style="color:var(--success);font-weight:700;">✅ Код найден в MOTD! Подтверждаю...</span>';
+                    stopAutoCheck();
+                    // Автоматически отправляем форму
+                    document.getElementById('verifyBtn').click();
+                } else {
+                    verifyStatus.innerHTML = '<span style="color:var(--text-muted);">⏳ Код пока не найден. MOTD: «' + (data.motd || '—') + '»</span>';
+                }
+            })
+            .catch(function() {
+                checking = false;
+                verifyStatus.innerHTML = '<span style="color:var(--text-muted);">⚠️ Ошибка проверки</span>';
+            });
+    }
+
+    function startAutoCheck() {
+        autoCheckBtn.textContent = '⏹ Остановить автопроверку';
+        autoCheckBtn.style.color = 'var(--danger)';
+        checkMotd();
+        timer = setInterval(checkMotd, 30000);
+    }
+
+    function stopAutoCheck() {
+        autoCheckBtn.textContent = '🔄 Автопроверка каждые 30 сек';
+        autoCheckBtn.style.color = '';
+        clearInterval(timer);
+        timer = null;
+    }
+
+    autoCheckBtn.addEventListener('click', function() {
+        if (timer) {
+            stopAutoCheck();
+        } else {
+            startAutoCheck();
+        }
+    });
+})();
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

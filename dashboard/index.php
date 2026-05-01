@@ -37,6 +37,19 @@ foreach ($servers as $s) {
         <a href="<?= SITE_URL ?>/dashboard/add.php" class="btn btn-primary">+ Добавить сервер</a>
     </div>
 
+    <?php
+    // Предупреждение о серверах давно оффлайн
+    $offlineServers = array_filter($servers, fn($s) => $s['status'] === 'active' && !$s['is_online']);
+    if (!empty($offlineServers)):
+    ?>
+    <div class="alert alert-error" style="margin-bottom: 16px;">
+        ⚠️ <?= count($offlineServers) ?> сервер(ов) оффлайн:
+        <?php foreach ($offlineServers as $os): ?>
+            <strong><?= e($os['name']) ?></strong><?php if ($os !== end($offlineServers)) echo ', '; ?>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
     <!-- Сводка -->
     <div class="stats-grid">
         <div class="stat-card">
