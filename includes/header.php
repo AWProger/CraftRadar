@@ -13,6 +13,12 @@ require_once __DIR__ . '/components.php';
 
 $pageTitle = isset($pageTitle) ? $pageTitle . ' — ' . SITE_NAME : SITE_NAME;
 $_notifCount = isLoggedIn() ? getUnreadCount(currentUserId()) : 0;
+
+// Трекинг ежедневных визитов
+if (isLoggedIn()) {
+    require_once __DIR__ . '/achievements.php';
+    trackDailyVisit(currentUserId());
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">

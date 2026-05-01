@@ -91,6 +91,7 @@ $stmt->execute([
 // Уведомление владельцу сервера о новом отзыве
 if ($server['user_id'] != $userId) {
     require_once __DIR__ . '/includes/notifications.php';
+    require_once __DIR__ . '/includes/achievements.php';
     $username = $_SESSION['username'] ?? 'Пользователь';
     createNotification(
         $server['user_id'], 'new_review',
@@ -98,6 +99,7 @@ if ($server['user_id'] != $userId) {
         $username . ' оставил отзыв: ' . $rating . '★',
         SITE_URL . '/server.php?id=' . $serverId
     );
+    checkAchievement($userId, 'review');
 }
 
 echo json_encode(['success' => true]);

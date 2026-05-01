@@ -102,10 +102,10 @@ function initSQLiteTables(PDO $pdo): void
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE, email TEXT UNIQUE, password_hash TEXT,
+            username TEXT UNIQUE, email TEXT UNIQUE, minecraft_nick TEXT, password_hash TEXT,
             role TEXT DEFAULT 'user', is_banned INTEGER DEFAULT 0,
             ban_reason TEXT, ban_until TEXT, banned_by INTEGER,
-            points INTEGER DEFAULT 0,
+            points INTEGER DEFAULT 0, daily_streak INTEGER DEFAULT 0, last_daily_visit TEXT,
             created_at TEXT, last_login TEXT, last_ip TEXT
         );
         CREATE TABLE IF NOT EXISTS categories (
@@ -176,6 +176,21 @@ function initSQLiteTables(PDO $pdo): void
             user_id INTEGER, amount INTEGER, type TEXT, description TEXT,
             server_id INTEGER, created_at TEXT
         );
+        CREATE TABLE IF NOT EXISTS favorites (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, server_id INTEGER, created_at TEXT,
+            UNIQUE(user_id, server_id)
+        );
+        CREATE TABLE IF NOT EXISTS achievements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            slug TEXT UNIQUE, name TEXT, description TEXT, icon TEXT,
+            points_reward INTEGER DEFAULT 0, sort_order INTEGER DEFAULT 0
+        );
+        CREATE TABLE IF NOT EXISTS user_achievements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER, achievement_slug TEXT, earned_at TEXT,
+            UNIQUE(user_id, achievement_slug)
+        );
     ");
 
     // Начальные данные
@@ -200,6 +215,18 @@ function initSQLiteTables(PDO $pdo): void
 
         INSERT OR IGNORE INTO users (id, username, email, password_hash, role, created_at) VALUES
         (1, 'admin', 'admin@craftradar.ru', '\$2y\$12\$3xBPpv2jgcALacp2kYZz5eX7Byeo7C2OhiIENyhf7DpVf9nn/Y2EW', 'admin', datetime('now'));
+
+        INSERT OR IGNORE INTO achievements (slug, name, description, icon, points_reward, sort_order) VALUES
+        ('first_vote', 'Первый голос', 'Проголосовал за сервер впервые', '👍', 5, 1),
+        ('voter_10', 'Активный избиратель', 'Проголосовал 10 раз', '🗳️', 10, 2),
+        ('voter_50', 'Голос народа', 'Проголосовал 50 раз', '📢', 25, 3),
+        ('first_review', 'Критик', 'Оставил первый отзыв', '💬', 5, 5),
+        ('first_server', 'Владелец', 'Добавил свой первый сервер', '📡', 10, 7),
+        ('verified_owner', 'Подтверждённый', 'Подтвердил владение сервером', '🔐', 20, 8),
+        ('daily_3', 'Постоянный', 'Заходил 3 дня подряд', '📅', 5, 9),
+        ('daily_7', 'Недельный марафон', 'Заходил 7 дней подряд', '🔥', 15, 10),
+        ('daily_30', 'Месячный марафон', 'Заходил 30 дней подряд', '⭐', 50, 11),
+        ('favorite_5', 'Коллекционер', 'Добавил 5 серверов в избранное', '❤️', 5, 13);
 
         INSERT OR IGNORE INTO servers (id, user_id, name, ip, port, description, game_mode, is_online, players_online, players_max, motd, votes_month, votes_total, status, is_verified, created_at) VALUES
         (1, 1, 'McAWP - АНАРХИЯ', 'mc.mcawp.ru', 25560, '✦ McAWP - Анархия без правил! ВОЙС ЧАТ, Бесплатные Донаты, /code free. Версии 1.18 - 1.21.*', 'anarchy', 0, 0, 0, '', 0, 0, 'active', 1, datetime('now'));

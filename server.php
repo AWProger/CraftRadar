@@ -227,13 +227,25 @@ require_once __DIR__ . '/includes/header.php';
 
         <!-- Правая колонка -->
         <div class="server-sidebar">
+            <!-- Избранное -->
+            <?php if (isLoggedIn()): ?>
+                <?php $isFav = isFavorite(currentUserId(), $id); ?>
+                <div class="card" style="margin-bottom: 12px;">
+                    <button class="btn <?= $isFav ? 'btn-danger' : 'btn-outline' ?> btn-block" id="favBtn" data-server="<?= $id ?>" data-fav="<?= $isFav ? '1' : '0' ?>">
+                        <?= $isFav ? '❤️ В избранном' : '🤍 В избранное' ?>
+                    </button>
+                </div>
+            <?php endif; ?>
+
             <!-- Голосование -->
             <div class="card">
                 <h3 style="margin-bottom: 12px;">Голосование</h3>
                 <?php if (isLoggedIn()): ?>
                     <?php if ($canVote): ?>
+                        <?php $savedNick = getUserMinecraftNick(currentUserId()); ?>
                         <div class="form-group" style="margin-bottom: 8px;">
                             <input type="text" id="voteNick" placeholder="Ваш ник в Minecraft" 
+                                   value="<?= e($savedNick) ?>"
                                    pattern="[a-zA-Z0-9_]{3,16}" maxlength="16"
                                    style="font-size: 0.85rem; text-align: center;">
                         </div>
@@ -661,6 +673,30 @@ if (reportForm) {
                 alert('Жалоба отправлена!');
             } else {
                 alert(data.error || 'Ошибка');
+            }
+        });
+    });
+}
+
+// Избранное
+var favBtn = document.getElementById('favBtn');
+if (favBtn) {
+    favBtn.addEventListener('click', function() {
+        fetch('<?= SITE_URL ?>/api/favorite.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'server_id=<?= $id ?>&action=toggle&<?= CSRF_TOKEN_NAME ?>=<?= generateCsrfToken() ?>'
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                if (data.is_favorite) {
+                    favBtn.textContent = '❤️ В избранном';
+                    favBtn.className = 'btn btn-danger btn-block';
+                } else {
+                    favBtn.textContent = '🤍 В избранное';
+                    favBtn.className = 'btn btn-outline btn-block';
+                }
             }
         });
     });

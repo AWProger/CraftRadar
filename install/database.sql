@@ -389,3 +389,59 @@ INSERT INTO settings (`key`, `value`, description) VALUES
 ('highlight_cost_1h', '5', 'Стоимость выделения на 1 час (баллы)'),
 ('highlight_cost_6h', '25', 'Стоимость выделения на 6 часов (баллы)'),
 ('highlight_cost_24h', '80', 'Стоимость выделения на 24 часа (баллы)');
+
+-- ============================================
+-- Избранные серверы
+-- ============================================
+CREATE TABLE IF NOT EXISTS favorites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    server_id INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (server_id) REFERENCES servers(id) ON DELETE CASCADE,
+    UNIQUE INDEX idx_user_server (user_id, server_id)
+) ENGINE=InnoDB;
+
+-- ============================================
+-- Достижения
+-- ============================================
+CREATE TABLE IF NOT EXISTS achievements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    slug VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    icon VARCHAR(10) NOT NULL,
+    points_reward INT NOT NULL DEFAULT 0,
+    sort_order INT NOT NULL DEFAULT 0
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS user_achievements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    achievement_slug VARCHAR(50) NOT NULL,
+    earned_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE INDEX idx_user_achievement (user_id, achievement_slug)
+) ENGINE=InnoDB;
+
+-- Достижения по умолчанию
+INSERT INTO achievements (slug, name, description, icon, points_reward, sort_order) VALUES
+('first_vote', 'Первый голос', 'Проголосовал за сервер впервые', '👍', 5, 1),
+('voter_10', 'Активный избиратель', 'Проголосовал 10 раз', '🗳️', 10, 2),
+('voter_50', 'Голос народа', 'Проголосовал 50 раз', '📢', 25, 3),
+('voter_100', 'Легенда голосований', 'Проголосовал 100 раз', '🏆', 50, 4),
+('first_review', 'Критик', 'Оставил первый отзыв', '💬', 5, 5),
+('reviewer_5', 'Обозреватель', 'Оставил 5 отзывов', '📝', 15, 6),
+('first_server', 'Владелец', 'Добавил свой первый сервер', '📡', 10, 7),
+('verified_owner', 'Подтверждённый', 'Подтвердил владение сервером', '🔐', 20, 8),
+('daily_3', 'Постоянный', 'Заходил 3 дня подряд', '📅', 5, 9),
+('daily_7', 'Недельный марафон', 'Заходил 7 дней подряд', '🔥', 15, 10),
+('daily_30', 'Месячный марафон', 'Заходил 30 дней подряд', '⭐', 50, 11),
+('points_100', 'Копилка', 'Накопил 100 баллов', '💎', 0, 12),
+('favorite_5', 'Коллекционер', 'Добавил 5 серверов в избранное', '❤️', 5, 13);
+
+-- Minecraft ник в профиле + ежедневные визиты
+ALTER TABLE users ADD COLUMN minecraft_nick VARCHAR(32) NULL AFTER email;
+ALTER TABLE users ADD COLUMN daily_streak INT NOT NULL DEFAULT 0;
+ALTER TABLE users ADD COLUMN last_daily_visit DATE NULL;

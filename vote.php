@@ -86,6 +86,16 @@ $stmt->execute([$serverId]);
 // Начисляем баллы за голосование
 rewardVotePoints($userId);
 
+// Сохраняем ник в профиль если указан
+if ($minecraftNick) {
+    require_once __DIR__ . '/includes/achievements.php';
+    setUserMinecraftNick($userId, $minecraftNick);
+    checkAchievement($userId, 'vote');
+} else {
+    require_once __DIR__ . '/includes/achievements.php';
+    checkAchievement($userId, 'vote');
+}
+
 echo json_encode([
     'success' => true,
     'votes_total' => $server['votes_total'] + 1,
