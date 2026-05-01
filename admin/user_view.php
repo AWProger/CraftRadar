@@ -58,7 +58,21 @@ if (isPost() && isAdmin()) {
                     require_once INCLUDES_PATH . 'points.php';
                     addPoints($id, $pointsAmount, 'admin_grant', 'Начислено администратором');
                     adminLog('add_points', 'user', $id, json_encode(['amount' => $pointsAmount]));
-                    setFlash('success', ($pointsAmount > 0 ? '+' : '') . $pointsAmount . ' баллов.');
+                    setFlash('success', ($pointsAmount > 0 ? '+' : '') . $pointsAmount . ' 💎 баллов.');
+                }
+                break;
+
+            case 'add_coins':
+                $coinsAmount = (int)post('coins_amount');
+                if ($coinsAmount !== 0) {
+                    require_once INCLUDES_PATH . 'coins.php';
+                    if ($coinsAmount > 0) {
+                        addCoins($id, $coinsAmount, 'Начислено администратором');
+                    } else {
+                        spendCoins($id, abs($coinsAmount), 'Списано администратором');
+                    }
+                    adminLog('add_coins', 'user', $id, json_encode(['amount' => $coinsAmount]));
+                    setFlash('success', ($coinsAmount > 0 ? '+' : '') . $coinsAmount . ' 💰 монет.');
                 }
                 break;
 
@@ -168,6 +182,14 @@ $reviews = $reviews->fetchAll();
             <input type="hidden" name="action" value="add_points">
             <input type="number" name="points_amount" placeholder="±баллы" style="width: 80px; padding: 6px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text);">
             <button type="submit" class="btn btn-sm btn-gold">💎 Баллы</button>
+        </form>
+
+        <!-- Монеты -->
+        <form method="POST" style="display: inline-flex; gap: 4px; align-items: center;">
+            <?= csrfField() ?>
+            <input type="hidden" name="action" value="add_coins">
+            <input type="number" name="coins_amount" placeholder="±монеты" style="width: 80px; padding: 6px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text);">
+            <button type="submit" class="btn btn-sm btn-gold">💰 Монеты</button>
         </form>
 
         <!-- Удаление -->

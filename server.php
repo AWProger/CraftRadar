@@ -114,6 +114,12 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="copy-ip" data-ip="<?= e($server['ip'] . ':' . $server['port']) ?>">
                         <?= e($server['ip'] . ':' . $server['port']) ?> 📋
                     </span>
+                    <?php if ($server['version']): ?>
+                        <span class="badge" style="font-size: 0.7rem;">v<?= e($server['version']) ?></span>
+                    <?php endif; ?>
+                    <?php if ($server['game_mode']): ?>
+                        <span class="badge" style="font-size: 0.7rem;"><?= e($server['game_mode']) ?></span>
+                    <?php endif; ?>
                     <button class="copy-ip" data-ip="<?= e(SITE_URL . '/server.php?id=' . $server['id']) ?>" title="Скопировать ссылку">🔗 Поделиться</button>
                     <?php if ($server['is_online']): ?>
                         <span class="badge badge-online">Онлайн</span>

@@ -240,6 +240,73 @@ $recentUsers = $db->query("SELECT id, username, email, created_at FROM users ORD
 
 <!-- ⚠️ Требует внимания -->
 <h2 class="section-title">⚠️ Требует внимания</h2>
+
+<?php
+// Быстрое одобрение pending серверов
+if (isPost() && isAdmin() && post('quick_action') === 'approve_server') {
+    if (verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
+        $sid = (int)post('server_id');
+        $db->prepare("UPDATE servers SET status = 'active' WHERE id = ? AND status = 'pending'")->execute([$sid]);
+        adminLog('approve_server', 'server', $sid);
+        setFlash('success', 'Сервер #' . $sid . ' одобрен.');
+        redirect(SITE_URL . '/admin/');
+    }
+}
+if (isPost() && isAdmin() && post('quick_action') === 'reject_server') {
+    if (verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
+        $sid = (int)post('server_id');
+        $db->prepare("UPDATE servers SET status = 'rejected', reject_reason = ? WHERE id = ? AND status = 'pending'")->execute([post('reject_reason', 'Отклонено'), $sid]);
+        adminLog('reject_server', 'server', $sid);
+        setFlash('success', 'Сервер #' . $sid . ' отклонён.');
+        redirect(SITE_URL . '/admin/');
+    }
+}
+?>
+
+<?php if ($pendingServers > 0):
+    $pendingList = $db->query("SELECT s.id, s.name, s.ip, s.port, s.is_online, s.players_online, s.players_max, u.username as owner_name, s.created_at FROM servers s JOIN users u ON s.user_id = u.id WHERE s.status = 'pending' ORDER BY s.created_at DESC LIMIT 5")->fetchAll();
+?>
+<div class="card" style="margin-bottom: 16px; border-color: var(--warning);">
+    <h3 style="margin-bottom: 12px; color: var(--warning);">📋 Серверы на модерации (<?= $pendingServers ?>)</h3>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>Название</th><th>IP</th><th>Владелец</th><th>Онлайн</th><th>Дата</th><th>Действия</th></tr></thead>
+            <tbody>
+            <?php foreach ($pendingList as $ps): ?>
+                <tr>
+                    <td><a href="<?= SITE_URL ?>/admin/server_view.php?id=<?= $ps['id'] ?>"><?= e($ps['name']) ?></a></td>
+                    <td><?= e($ps['ip'] . ':' . $ps['port']) ?></td>
+                    <td><?= e($ps['owner_name']) ?></td>
+                    <td><?= $ps['is_online'] ? $ps['players_online'] . '/' . $ps['players_max'] : '<span style="color:var(--text-muted);">—</span>' ?></td>
+                    <td style="font-size: 0.75rem;"><?= formatDate($ps['created_at']) ?></td>
+                    <td>
+                        <div style="display: flex; gap: 4px;">
+                            <form method="POST" style="display:inline;">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="quick_action" value="approve_server">
+                                <input type="hidden" name="server_id" value="<?= $ps['id'] ?>">
+                                <button class="btn btn-sm btn-primary">✅</button>
+                            </form>
+                            <form method="POST" style="display:inline;">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="quick_action" value="reject_server">
+                                <input type="hidden" name="server_id" value="<?= $ps['id'] ?>">
+                                <button class="btn btn-sm btn-ghost" data-confirm="Отклонить сервер?">❌</button>
+                            </form>
+                            <a href="<?= SITE_URL ?>/server.php?id=<?= $ps['id'] ?>" class="btn btn-sm btn-ghost" target="_blank">🔗</a>
+                        </div>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php if ($pendingServers > 5): ?>
+        <a href="<?= SITE_URL ?>/admin/servers.php?status=pending" class="btn btn-sm btn-outline" style="margin-top: 8px;">Все <?= $pendingServers ?> серверов →</a>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
 <div class="attention-grid">
     <div class="attention-card">
         <div class="attention-card-info">
