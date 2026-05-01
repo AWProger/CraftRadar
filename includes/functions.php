@@ -86,11 +86,22 @@ function e(string $str): string
  */
 function redirect(string $url): void
 {
-    // Очищаем буфер вывода если есть (чтобы header() сработал)
+    // Очищаем все буферы вывода
     while (ob_get_level()) {
         ob_end_clean();
     }
-    header('Location: ' . $url);
+    
+    // Пробуем HTTP-заголовок
+    if (!headers_sent()) {
+        header('Location: ' . $url, true, 302);
+        exit;
+    }
+    
+    // Fallback: JS + meta refresh (если headers уже отправлены)
+    echo '<html><head>';
+    echo '<meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url) . '">';
+    echo '<script>window.location.href="' . htmlspecialchars($url) . '";</script>';
+    echo '</head><body></body></html>';
     exit;
 }
 
