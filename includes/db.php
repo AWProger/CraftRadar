@@ -21,6 +21,7 @@ function getDB(): PDO
 
         try {
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+            $pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
         } catch (PDOException $e) {
             // Fallback на SQLite для локальной разработки
             if (DEBUG) {
