@@ -448,3 +448,22 @@ ALTER TABLE users ADD COLUMN last_daily_visit DATE NULL;
 
 -- Монеты (платная валюта)
 ALTER TABLE users ADD COLUMN coins INT NOT NULL DEFAULT 0 COMMENT 'Монеты (платная валюта, 1 монета = 1 рубль)';
+
+-- ============================================
+-- Реферальная программа
+-- ============================================
+ALTER TABLE users ADD COLUMN referral_code VARCHAR(10) UNIQUE NULL COMMENT 'Уникальный реферальный код';
+ALTER TABLE users ADD COLUMN referred_by INT NULL COMMENT 'Кто пригласил (user_id)';
+ALTER TABLE users ADD COLUMN referral_count INT NOT NULL DEFAULT 0 COMMENT 'Сколько пригласил';
+
+CREATE TABLE IF NOT EXISTS referral_rewards (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    referrer_id INT NOT NULL COMMENT 'Кто пригласил',
+    referred_id INT NOT NULL COMMENT 'Кого пригласил',
+    reward_type VARCHAR(20) NOT NULL DEFAULT 'registration' COMMENT 'registration, first_vote',
+    points_reward INT NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (referrer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (referred_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_referrer (referrer_id)
+) ENGINE=InnoDB;

@@ -133,8 +133,38 @@ $dailyStreak = (int)($user['daily_streak'] ?? 0);
             </div>
             <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
         </form>
-        <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 6px;">
-            Ник подставляется автоматически при голосовании. Также используется для аватарки.
+    </div>
+
+    <!-- Реферальная программа -->
+    <div class="card" style="margin-bottom: 16px;">
+        <h2 class="section-title">👥 Реферальная программа</h2>
+        <?php
+        try {
+            require_once INCLUDES_PATH . 'referrals.php';
+            $refCode = getReferralCode($userId);
+            $refLink = getReferralLink($userId);
+            $refStats = getReferralStats($userId);
+        } catch (\Exception $e) {
+            $refCode = '—'; $refLink = ''; $refStats = ['count' => 0, 'total_reward' => 0];
+        }
+        ?>
+        <div style="display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mc); font-size: 0.85rem; color: var(--accent);"><?= $refStats['count'] ?></div>
+                <div style="font-size: 0.65rem; color: var(--text-muted);">ПРИГЛАШЕНО</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mc); font-size: 0.85rem; color: var(--gold);"><?= $refStats['total_reward'] ?> 💎</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted);">ЗАРАБОТАНО</div>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 8px;">
+            <label>Ваша реферальная ссылка</label>
+            <input type="text" readonly value="<?= e($refLink) ?>" onclick="this.select(); navigator.clipboard.writeText(this.value).then(function(){});" style="cursor: pointer;">
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.7rem;">
+            Приглашайте друзей! Вы получите +<?= REFERRAL_REWARD_REGISTER ?> 💎 за каждого, кто зарегистрируется по вашей ссылке.
+            Приглашённый получит +<?= REFERRAL_REWARD_REFERRED ?> 💎 бонус.
         </p>
     </div>
 

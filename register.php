@@ -31,6 +31,21 @@ if (isPost()) {
         $result = registerUser($username, $email, $password, $password);
 
         if ($result['success']) {
+            // Реферальная программа
+            $refCode = get('ref') ?: post('ref_code');
+            if ($refCode) {
+                try {
+                    // Получаем ID нового пользователя
+                    $newUser = getDB()->prepare('SELECT id FROM users WHERE username = ?');
+                    $newUser->execute([$username]);
+                    $newUserId = (int)$newUser->fetchColumn();
+                    if ($newUserId) {
+                        require_once __DIR__ . '/includes/referrals.php';
+                        processReferral($newUserId, $refCode);
+                    }
+                } catch (\Exception $e) {}
+            }
+
             setFlash('success', 'Регистрация успешна! Теперь войдите в аккаунт.');
             redirect(SITE_URL . '/login.php');
         } else {
@@ -56,6 +71,10 @@ if (isPost()) {
             <?= csrfField() ?>
             <!-- Honeypot антиспам -->
             <div style="position:absolute;left:-9999px;"><input type="text" name="website_url" value="" tabindex="-1" autocomplete="off"></div>
+            <?php if (get('ref')): ?>
+                <input type="hidden" name="ref_code" value="<?= e(get('ref')) ?>">
+                <div class="alert alert-info" style="margin-bottom: 12px;">👥 Вас пригласил друг! Вы получите бонус <?= REFERRAL_REWARD_REFERRED ?> 💎 после регистрации.</div>
+            <?php endif; ?>
 
             <div class="form-group">
                 <label for="username">Логин</label>

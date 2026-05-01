@@ -108,7 +108,12 @@ define('PROMOTE_COIN_COSTS', [
 
 // Баллы за действия
 define('POINTS_PER_VOTE', 1);
-define('MAX_VOTES_PER_DAY', 10); // Максимум голосов в день (лимит накрутки алмазов)
+define('MAX_VOTES_PER_DAY', 10);
+
+// Реферальная программа
+define('REFERRAL_REWARD_REGISTER', 3);  // 💎 рефереру за регистрацию
+define('REFERRAL_REWARD_REFERRED', 2);  // 💎 приглашённому бонус
+define('REFERRAL_REWARD_FIRST_VOTE', 1); // 💎 рефереру за первый голос приглашённого // Максимум голосов в день (лимит накрутки алмазов)
 
 // Боковой виджет топ-серверов
 define('SIDEBAR_TOP_COUNT', 20);
