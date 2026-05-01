@@ -13,7 +13,7 @@ $userId = currentUserId();
 
 // Мои серверы
 $stmt = $db->prepare('
-    SELECT id, name, ip, port, status, is_online, players_online, players_max, votes_month, votes_total, is_verified, highlighted_until, created_at
+    SELECT id, name, ip, port, status, is_online, players_online, players_max, votes_month, votes_total, is_verified, highlighted_until, reject_reason, created_at
     FROM servers 
     WHERE user_id = ? 
     ORDER BY created_at DESC
@@ -95,6 +95,9 @@ foreach ($servers as $s) {
                                     <span class="badge badge-pending">На модерации</span>
                                 <?php elseif ($s['status'] === 'rejected'): ?>
                                     <span class="badge badge-offline">Отклонён</span>
+                                    <?php if (!empty($s['reject_reason'])): ?>
+                                        <span style="color: var(--danger); font-size: 0.75rem;"> — <?= e($s['reject_reason']) ?></span>
+                                    <?php endif; ?>
                                 <?php else: ?>
                                     <span class="badge badge-offline">Забанен</span>
                                 <?php endif; ?>

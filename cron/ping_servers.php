@@ -11,6 +11,7 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/minecraft_ping.php';
+require_once __DIR__ . '/../includes/notifications.php';
 
 // Авторизация: CLI пропускаем, HTTP — проверяем ключ
 if (php_sapi_name() !== 'cli') {
@@ -51,7 +52,7 @@ function cronLog(string $message): void
 $db = getDB();
 
 // Выбираем все активные серверы
-$servers = $db->query("SELECT id, ip, port, consecutive_fails FROM servers WHERE status IN ('active', 'pending')")->fetchAll();
+$servers = $db->query("SELECT id, ip, port, consecutive_fails, is_online, user_id, name FROM servers WHERE status IN ('active', 'pending')")->fetchAll();
 
 $total = count($servers);
 $online = 0;
@@ -100,6 +101,16 @@ foreach ($servers as $server) {
             mb_substr($result['motd'], 0, 255), now(), $server['id']
         ]);
 
+        // Уведомление — сервер вернулся онлайн (если был оффлайн)
+        if ($server['is_online'] == 0 && $server['user_id']) {
+            createNotification(
+                $server['user_id'], 'server_approved',
+                '🟢 Сервер «' . $server['name'] . '» снова онлайн!',
+                'Игроков: ' . $result['players'] . '/' . $result['max_players'],
+                SITE_URL . '/server.php?id=' . $server['id']
+            );
+        }
+
         // Иконка
         if (!empty($result['favicon'])) {
             $iconPath = saveServerIconCron($result['favicon'], $server['id']);
@@ -122,6 +133,15 @@ foreach ($servers as $server) {
         $updateParams = [$fails];
         if ($fails >= MAX_CONSECUTIVE_FAILS) {
             $updateFields .= ', is_online = 0, players_online = 0';
+            // Уведомление владельцу — сервер ушёл в оффлайн (только при первом переходе)
+            if ($server['is_online'] == 1 && $server['user_id']) {
+                createNotification(
+                    $server['user_id'], 'server_offline',
+                    '🔴 Сервер «' . $server['name'] . '» оффлайн',
+                    'Сервер не отвечает после ' . MAX_CONSECUTIVE_FAILS . ' попыток пинга.',
+                    SITE_URL . '/dashboard/stats.php?id=' . $server['id']
+                );
+            }
         }
 
         $db->prepare("UPDATE servers SET {$updateFields} WHERE id = ?")->execute(array_merge($updateParams, [$server['id']]));

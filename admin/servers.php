@@ -175,6 +175,14 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                             <div class="action-btns">
                                 <a href="<?= SITE_URL ?>/admin/server_view.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-ghost">👁</a>
                                 <a href="<?= SITE_URL ?>/server.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-ghost" target="_blank">🔗</a>
+                                <?php if ($s['status'] === 'pending'): ?>
+                                    <form method="POST" style="display:inline;">
+                                        <?= csrfField() ?>
+                                        <input type="hidden" name="bulk_action" value="approve">
+                                        <input type="hidden" name="ids[]" value="<?= $s['id'] ?>">
+                                        <button class="btn btn-sm btn-primary" title="Одобрить">✅</button>
+                                    </form>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>

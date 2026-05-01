@@ -53,7 +53,9 @@ function serverCard(array $s, int $rank = 0): string
     $html .= '<div class="server-card-info">';
     $html .= '<div class="server-card-name">' . $promoted . $name . ' ' . $verified . '</div>';
     $pendingBadge = (!empty($s['status']) && $s['status'] === 'pending') ? ' <span class="badge badge-pending">На модерации</span>' : '';
-    $html .= '<div class="server-card-meta"><span>' . $ip . '</span>' . $badge . $pendingBadge . '</div>';
+    $version = !empty($s['version']) ? '<span>v' . e($s['version']) . '</span>' : '';
+    $mode = !empty($s['game_mode']) ? '<span>' . e($s['game_mode']) . '</span>' : '';
+    $html .= '<div class="server-card-meta"><span>' . $ip . '</span>' . $version . $mode . $badge . $pendingBadge . '</div>';
     $html .= '</div>';
 
     $html .= '<div class="server-card-stats">';

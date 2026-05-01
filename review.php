@@ -49,7 +49,7 @@ if (mb_strlen($text) > REVIEW_MAX_LENGTH) {
 }
 
 // Проверка существования сервера
-$stmt = $db->prepare("SELECT id, user_id FROM servers WHERE id = ? AND status = 'active'");
+$stmt = $db->prepare("SELECT id, user_id FROM servers WHERE id = ? AND status IN ('active', 'pending')");
 $stmt->execute([$serverId]);
 $server = $stmt->fetch();
 

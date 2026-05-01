@@ -41,7 +41,7 @@ if ($user && $user['is_banned']) {
 }
 
 // Проверка существования сервера
-$stmt = $db->prepare("SELECT id, votes_total, votes_month FROM servers WHERE id = ? AND status = 'active'");
+$stmt = $db->prepare("SELECT id, votes_total, votes_month FROM servers WHERE id = ? AND status IN ('active', 'pending')");
 $stmt->execute([$serverId]);
 $server = $stmt->fetch();
 

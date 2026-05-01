@@ -278,6 +278,12 @@ require_once __DIR__ . '/includes/header.php';
                         <span class="info-label">Добавлен</span>
                         <span><?= formatDate($server['created_at']) ?></span>
                     </div>
+                    <?php if ($server['last_ping']): ?>
+                    <div class="info-item">
+                        <span class="info-label">Последний пинг</span>
+                        <span><?= formatDate($server['last_ping']) ?></span>
+                    </div>
+                    <?php endif; ?>
                     <div class="info-item">
                         <span class="info-label">Владелец</span>
                         <span><?= e($server['owner_name']) ?></span>

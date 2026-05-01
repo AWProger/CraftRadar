@@ -258,3 +258,29 @@ document.addEventListener('DOMContentLoaded', function () {
     // Обновляем данные каждые 2 минуты
     setInterval(refreshSidebarData, 120000);
 })();
+
+// === Toggle password visibility ===
+(function() {
+    document.querySelectorAll('input[type="password"]').forEach(function(input) {
+        var wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        var toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.textContent = '👁';
+        toggle.style.cssText = 'position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;opacity:0.5;padding:4px;';
+        toggle.addEventListener('click', function() {
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggle.style.opacity = '1';
+            } else {
+                input.type = 'password';
+                toggle.style.opacity = '0.5';
+            }
+        });
+        wrapper.appendChild(toggle);
+        input.style.paddingRight = '40px';
+    });
+})();

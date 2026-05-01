@@ -10,6 +10,15 @@ requireAdmin();
 
 $db = getDB();
 
+// Очистка кэша
+if (get('action') === 'clear_cache') {
+    require_once INCLUDES_PATH . 'cache.php';
+    cacheClear();
+    adminLog('clear_cache', 'setting', 0);
+    setFlash('success', 'Кэш очищен.');
+    redirect(SITE_URL . '/admin/settings.php');
+}
+
 // Сохранение
 if (isPost()) {
     if (verifyCsrfToken(post(CSRF_TOKEN_NAME))) {
@@ -38,6 +47,11 @@ function settingVal(array $settings, string $key): string {
     return $settings[$key]['value'] ?? '';
 }
 ?>
+
+<!-- Быстрые действия -->
+<div style="margin-bottom: 16px; display: flex; gap: 8px;">
+    <a href="<?= SITE_URL ?>/admin/settings.php?action=clear_cache" class="btn btn-sm btn-outline" data-confirm="Очистить весь кэш?">🗑 Очистить кэш</a>
+</div>
 
 <form method="POST">
     <?= csrfField() ?>
