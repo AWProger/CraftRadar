@@ -120,6 +120,13 @@ if (isPost()) {
             ]);
 
             setFlash('success', 'Сервер добавлен и отправлен на модерацию!');
+
+            // Достижение за первый сервер
+            try {
+                require_once INCLUDES_PATH . 'achievements.php';
+                checkAchievement($userId, 'server_add');
+            } catch (\Exception $e) {}
+
             redirect(SITE_URL . '/dashboard/');
         }
     }

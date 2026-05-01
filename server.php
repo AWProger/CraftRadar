@@ -260,6 +260,15 @@ require_once __DIR__ . '/includes/header.php';
                 <?php endif; ?>
                 <div style="text-align: center; margin-top: 8px; color: var(--text-muted); font-size: 0.85rem;">
                     Всего голосов: <?= $server['votes_total'] ?>
+                    <?php
+                    try {
+                        $favCount = (int)$db->prepare('SELECT COUNT(*) FROM favorites WHERE server_id = ?')->execute([$id]) ? 0 : 0;
+                        $stmt = $db->prepare('SELECT COUNT(*) FROM favorites WHERE server_id = ?');
+                        $stmt->execute([$id]);
+                        $favCount = (int)$stmt->fetchColumn();
+                        if ($favCount > 0) echo " · ❤️ {$favCount}";
+                    } catch (\Exception $e) {}
+                    ?>
                 </div>
             </div>
 

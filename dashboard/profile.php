@@ -129,6 +129,32 @@ $totalReviews = (int)$stmt->fetchColumn();
             <?= serverList($favorites) ?>
         <?php endif; ?>
     </div>
+
+    <!-- Мои отзывы -->
+    <?php
+    $myReviews = $db->prepare("
+        SELECT r.*, s.name as server_name, s.id as server_id 
+        FROM reviews r JOIN servers s ON r.server_id = s.id 
+        WHERE r.user_id = ? ORDER BY r.created_at DESC LIMIT 10
+    ");
+    $myReviews->execute([$userId]);
+    $myReviews = $myReviews->fetchAll();
+    ?>
+    <?php if (!empty($myReviews)): ?>
+    <div class="card" style="margin-top: 16px;">
+        <h2 class="section-title">💬 Мои отзывы (<?= $totalReviews ?>)</h2>
+        <?php foreach ($myReviews as $r): ?>
+            <div style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <a href="<?= SITE_URL ?>/server.php?id=<?= $r['server_id'] ?>" style="font-weight: 700;"><?= e($r['server_name']) ?></a>
+                    <span class="stars" style="font-size: 0.8rem;"><?= str_repeat('★', $r['rating']) . str_repeat('☆', 5 - $r['rating']) ?></span>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;"><?= e(truncate($r['text'], 100)) ?></p>
+                <span style="color: var(--text-muted); font-size: 0.65rem;"><?= formatDate($r['created_at']) ?></span>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

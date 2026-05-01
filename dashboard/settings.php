@@ -116,12 +116,20 @@ if (isPost()) {
                 <span><?= e($user['email']) ?></span>
             </div>
             <div class="info-item">
+                <span class="info-label">Minecraft ник</span>
+                <span><?= !empty($user['minecraft_nick']) ? e($user['minecraft_nick']) : '<a href="' . SITE_URL . '/dashboard/profile.php" style="color:var(--text-muted);">Не указан →</a>' ?></span>
+            </div>
+            <div class="info-item">
                 <span class="info-label">Роль</span>
                 <span><?= e($user['role']) ?></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Дата регистрации</span>
                 <span><?= formatDate($user['created_at']) ?></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Профиль</span>
+                <a href="<?= SITE_URL ?>/dashboard/profile.php">👤 Достижения и избранное →</a>
             </div>
         </div>
     </div>

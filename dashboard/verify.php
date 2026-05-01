@@ -86,6 +86,13 @@ if (isPost() && post('action') === 'verify') {
                 ')->execute([$userId, now(), $userId, $serverId]);
 
                 setFlash('success', 'Поздравляем! Вы подтвердили владение сервером «' . $server['name'] . '». Теперь вы можете удалить код из MOTD.');
+
+                // Достижение за верификацию
+                try {
+                    require_once INCLUDES_PATH . 'achievements.php';
+                    checkAchievement($userId, 'verify');
+                } catch (\Exception $e) {}
+
                 redirect(SITE_URL . '/dashboard/');
             } else {
                 $verifyError = 'Код не найден в MOTD сервера. Текущий MOTD: «' . e($motd) . '». Убедитесь, что код ' . $verifyCode . ' добавлен в server.properties и сервер перезагружен.';
