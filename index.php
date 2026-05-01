@@ -53,18 +53,6 @@ $stats = cacheRemember('home_stats', 120, function() use ($db) {
     ")->fetch();
 });
 
-// Недавно проголосовали (кэш 2 мин)
-$recentVotes = cacheRemember('home_recent_votes', 120, function() use ($db) {
-    return $db->query("
-        SELECT v.voted_at, v.minecraft_nick, u.username, s.name as server_name, s.id as server_id
-        FROM votes v 
-        JOIN users u ON v.user_id = u.id 
-        JOIN servers s ON v.server_id = s.id 
-        WHERE s.status IN ('active', 'pending')
-        ORDER BY v.voted_at DESC LIMIT 5
-    ")->fetchAll();
-});
-
 $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
     $stmt = $db->prepare("SELECT COUNT(*) FROM votes WHERE DATE(voted_at) = ?");
     $stmt->execute([date('Y-m-d')]);
@@ -158,22 +146,6 @@ $votesToday = cacheRemember('home_votes_today', 120, function() use ($db) {
     <?php else: ?>
         <a href="<?= SITE_URL ?>/register.php" class="btn btn-primary">Зарегистрироваться</a>
     <?php endif; ?>
-</section>
-<?php endif; ?>
-
-<?php if (!empty($recentVotes)): ?>
-<section class="section">
-    <h2 class="section-title">🗳 Недавно проголосовали</h2>
-    <div class="recent-votes">
-        <?php foreach ($recentVotes as $rv): ?>
-            <div class="recent-vote-item">
-                <span class="recent-vote-user"><?= e($rv['minecraft_nick'] ?: $rv['username']) ?></span>
-                <span style="color: var(--text-muted);">→</span>
-                <a href="<?= SITE_URL ?>/server.php?id=<?= $rv['server_id'] ?>" class="recent-vote-server"><?= e($rv['server_name']) ?></a>
-                <span class="recent-vote-time"><?= formatDate($rv['voted_at']) ?></span>
-            </div>
-        <?php endforeach; ?>
-    </div>
 </section>
 <?php endif; ?>
 
