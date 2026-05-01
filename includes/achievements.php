@@ -211,3 +211,56 @@ function setUserMinecraftNick(int $userId, string $nick): void
     $db = getDB();
     $db->prepare('UPDATE users SET minecraft_nick = ? WHERE id = ?')->execute([$nick ?: null, $userId]);
 }
+
+
+/**
+ * Получить прогресс достижения (текущее/требуемое)
+ */
+function getAchievementProgress(int $userId, string $slug): array
+{
+    $db = getDB();
+    $targets = [
+        'first_vote' => 1, 'voter_10' => 10, 'voter_50' => 50, 'voter_100' => 100,
+        'first_review' => 1, 'reviewer_5' => 5,
+        'first_server' => 1, 'verified_owner' => 1,
+        'daily_3' => 3, 'daily_7' => 7, 'daily_30' => 30,
+        'favorite_5' => 5, 'points_100' => 100,
+    ];
+
+    $target = $targets[$slug] ?? 0;
+    if ($target === 0) return ['current' => 0, 'target' => 0];
+
+    $current = 0;
+    switch ($slug) {
+        case 'first_vote': case 'voter_10': case 'voter_50': case 'voter_100':
+            $stmt = $db->prepare('SELECT COUNT(*) FROM votes WHERE user_id = ?');
+            $stmt->execute([$userId]);
+            $current = (int)$stmt->fetchColumn();
+            break;
+        case 'first_review': case 'reviewer_5':
+            $stmt = $db->prepare('SELECT COUNT(*) FROM reviews WHERE user_id = ?');
+            $stmt->execute([$userId]);
+            $current = (int)$stmt->fetchColumn();
+            break;
+        case 'first_server':
+            $stmt = $db->prepare('SELECT COUNT(*) FROM servers WHERE user_id = ?');
+            $stmt->execute([$userId]);
+            $current = (int)$stmt->fetchColumn();
+            break;
+        case 'daily_3': case 'daily_7': case 'daily_30':
+            $stmt = $db->prepare('SELECT daily_streak FROM users WHERE id = ?');
+            $stmt->execute([$userId]);
+            $current = (int)$stmt->fetchColumn();
+            break;
+        case 'favorite_5':
+            $current = getFavoriteCount($userId);
+            break;
+        case 'points_100':
+            $stmt = $db->prepare('SELECT points FROM users WHERE id = ?');
+            $stmt->execute([$userId]);
+            $current = (int)$stmt->fetchColumn();
+            break;
+    }
+
+    return ['current' => min($current, $target), 'target' => $target];
+}

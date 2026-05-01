@@ -144,6 +144,21 @@ $dailyStreak = (int)($user['daily_streak'] ?? 0);
                     <div class="achievement-info">
                         <div class="achievement-name"><?= e($a['name']) ?></div>
                         <div class="achievement-desc"><?= e($a['description']) ?></div>
+                        <?php if (!$earned): ?>
+                            <?php
+                            try {
+                                $progress = getAchievementProgress($userId, $a['slug']);
+                                if ($progress['target'] > 0):
+                                    $pct = round(($progress['current'] / $progress['target']) * 100);
+                            ?>
+                            <div style="margin-top: 4px;">
+                                <div style="height: 4px; background: var(--bg); border: 1px solid var(--border);">
+                                    <div style="height: 100%; width: <?= $pct ?>%; background: var(--accent);"></div>
+                                </div>
+                                <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 1px;"><?= $progress['current'] ?>/<?= $progress['target'] ?></div>
+                            </div>
+                            <?php endif; } catch (\Exception $e) {} ?>
+                        <?php endif; ?>
                         <?php if ($a['points_reward'] > 0): ?>
                             <div class="achievement-reward">+<?= $a['points_reward'] ?> 💎</div>
                         <?php endif; ?>

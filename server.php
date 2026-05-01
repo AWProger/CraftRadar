@@ -213,7 +213,7 @@ require_once __DIR__ . '/includes/header.php';
                         <?php foreach ($reviews as $review): ?>
                             <div class="review-item">
                                 <div class="review-header">
-                                    <strong><?= e($review['username']) ?></strong>
+                                    <a href="<?= SITE_URL ?>/profile.php?id=<?= $review['user_id'] ?>"><strong><?= e($review['username']) ?></strong></a>
                                     <span class="stars"><?= str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']) ?></span>
                                     <span style="color: var(--text-muted); font-size: 0.8rem;"><?= formatDate($review['created_at']) ?></span>
                                 </div>
@@ -329,7 +329,7 @@ require_once __DIR__ . '/includes/header.php';
                     <?php endif; ?>
                     <div class="info-item">
                         <span class="info-label">Владелец</span>
-                        <span><?= e($server['owner_name']) ?></span>
+                        <span><a href="<?= SITE_URL ?>/profile.php?id=<?= $server['user_id'] ?>"><?= e($server['owner_name']) ?></a></span>
                     </div>
                 </div>
             </div>
