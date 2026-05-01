@@ -587,15 +587,38 @@ function loadChart(period) {
                         data: data.data.map(d => d.players),
                         borderColor: '#00ff80',
                         backgroundColor: 'rgba(0, 255, 128, 0.1)',
-                        fill: true, tension: 0.3, pointRadius: period === '24h' ? 1 : 2,
+                        fill: true, tension: 0.3,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointHitRadius: 20,
+                        pointBackgroundColor: '#00ff80',
+                        borderWidth: 2,
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false } },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(13,17,23,0.95)',
+                            borderColor: '#00ff80',
+                            borderWidth: 1,
+                            titleColor: '#00ff80',
+                            bodyColor: '#c9d1d9',
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(ctx) { return ctx.parsed.y + ' игроков'; }
+                            }
+                        }
+                    },
                     scales: {
                         x: { ticks: { color: '#8b949e', maxTicksLimit: 12 }, grid: { color: 'rgba(48,54,61,0.5)' } },
-                        y: { beginAtZero: true, ticks: { color: '#8b949e' }, grid: { color: 'rgba(48,54,61,0.5)' } }
+                        y: { beginAtZero: true, ticks: { color: '#8b949e', stepSize: 1 }, grid: { color: 'rgba(48,54,61,0.5)' } }
                     }
                 }
             });

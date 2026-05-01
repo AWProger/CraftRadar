@@ -405,10 +405,10 @@ if (chartData.length > 0) {
             datasets: [{
                 data: chartData.map(function(d) { return d.players; }),
                 borderColor: '#00ff80', backgroundColor: 'rgba(0,255,128,0.1)',
-                fill: true, tension: 0.3, pointRadius: 1
+                fill: true, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, pointHitRadius: 20
             }]
         },
-        options: { responsive: true, plugins: { legend: { display: false } },
+        options: { responsive: true, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(13,17,23,0.95)', borderColor: '#00ff80', borderWidth: 1, padding: 10, displayColors: false } },
             scales: { x: { ticks: { color: '#8b949e', maxTicksLimit: 12 }, grid: { color: 'rgba(48,54,61,0.5)' } },
                       y: { beginAtZero: true, ticks: { color: '#8b949e' }, grid: { color: 'rgba(48,54,61,0.5)' } } } }
     });

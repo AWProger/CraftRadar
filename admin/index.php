@@ -457,7 +457,19 @@ if (isPost() && isAdmin() && post('quick_action') === 'reject_server') {
 <script>
 const chartOpts = {
     responsive: true,
-    plugins: { legend: { display: false } },
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+        legend: { display: false },
+        tooltip: {
+            backgroundColor: 'rgba(13,17,23,0.95)',
+            borderColor: '#00ff80',
+            borderWidth: 1,
+            titleColor: '#00ff80',
+            bodyColor: '#c9d1d9',
+            padding: 10,
+            displayColors: false,
+        }
+    },
     scales: {
         x: { ticks: { color: '#8b949e', maxTicksLimit: 10 }, grid: { color: 'rgba(48,54,61,0.5)' } },
         y: { beginAtZero: true, ticks: { color: '#8b949e' }, grid: { color: 'rgba(48,54,61,0.5)' } }
@@ -474,7 +486,7 @@ function makeChart(id, data, color) {
                 data: data.map(d => d.cnt || d.total),
                 borderColor: color,
                 backgroundColor: color.replace(')', ',0.1)').replace('rgb', 'rgba'),
-                fill: true, tension: 0.3, pointRadius: 2
+                fill: true, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, pointHitRadius: 20, borderWidth: 2
             }]
         },
         options: chartOpts
