@@ -47,6 +47,15 @@ if ($banned === '1') {
     $where[] = 'u.is_banned = 1';
 }
 
+if (get('date_from')) {
+    $where[] = 'u.created_at >= ?';
+    $params[] = get('date_from') . ' 00:00:00';
+}
+if (get('date_to')) {
+    $where[] = 'u.created_at <= ?';
+    $params[] = get('date_to') . ' 23:59:59';
+}
+
 $whereSQL = implode(' AND ', $where);
 
 $stmt = $db->prepare("SELECT COUNT(*) FROM users u WHERE {$whereSQL}");
@@ -87,6 +96,8 @@ if ($banned) $baseUrl .= '&banned=' . urlencode($banned);
         <input type="checkbox" name="banned" value="1" <?= $banned === '1' ? 'checked' : '' ?>> Забаненные
     </label>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Поиск по логину, email, IP, ID...">
+    <input type="date" name="date_from" value="<?= e(get('date_from')) ?>" title="Дата от">
+    <input type="date" name="date_to" value="<?= e(get('date_to')) ?>" title="Дата до">
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>
     <a href="<?= SITE_URL ?>/admin/users.php?export=csv" class="btn btn-sm btn-outline">📥 CSV</a>
 </form>

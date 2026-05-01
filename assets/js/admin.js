@@ -29,7 +29,33 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.row-checkbox').forEach(function (cb) {
                 cb.checked = selectAll.checked;
             });
+            updateSelectedCount();
         });
+    }
+
+    // === Счётчик выбранных элементов ===
+    function updateSelectedCount() {
+        var checked = document.querySelectorAll('.row-checkbox:checked').length;
+        var counter = document.getElementById('selectedCount');
+        if (counter) {
+            counter.textContent = checked > 0 ? 'Выбрано: ' + checked : '';
+            counter.style.display = checked > 0 ? 'inline' : 'none';
+        }
+    }
+
+    document.querySelectorAll('.row-checkbox').forEach(function(cb) {
+        cb.addEventListener('change', updateSelectedCount);
+    });
+
+    // Создаём элемент счётчика если есть чекбоксы
+    if (document.querySelector('.row-checkbox')) {
+        var bulkDiv = document.querySelector('[name="bulk_action"]');
+        if (bulkDiv) {
+            var span = document.createElement('span');
+            span.id = 'selectedCount';
+            span.style.cssText = 'color:var(--accent);font-size:0.8rem;font-weight:700;display:none;margin-left:8px;';
+            bulkDiv.parentNode.insertBefore(span, bulkDiv.nextSibling);
+        }
     }
 
     // === Подтверждение опасных действий ===

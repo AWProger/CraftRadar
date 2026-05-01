@@ -53,6 +53,15 @@ if (get('verified') !== '') {
     $params[] = (int)get('verified');
 }
 
+if (get('date_from')) {
+    $where[] = 's.created_at >= ?';
+    $params[] = get('date_from') . ' 00:00:00';
+}
+if (get('date_to')) {
+    $where[] = 's.created_at <= ?';
+    $params[] = get('date_to') . ' 23:59:59';
+}
+
 $whereSQL = implode(' AND ', $where);
 
 // Подсчёт
@@ -136,6 +145,8 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
         <option value="0" <?= get('verified') === '0' ? 'selected' : '' ?>>Не верифицированные</option>
     </select>
     <input type="text" name="q" value="<?= e($search) ?>" placeholder="Поиск по названию, IP, ID...">
+    <input type="date" name="date_from" value="<?= e(get('date_from')) ?>" title="Дата от">
+    <input type="date" name="date_to" value="<?= e(get('date_to')) ?>" title="Дата до">
     <button type="submit" class="btn btn-sm btn-primary">Найти</button>
     <a href="<?= SITE_URL ?>/admin/servers.php?export=csv" class="btn btn-sm btn-outline">📥 CSV</a>
 </form>
@@ -174,6 +185,9 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                 </tr>
             </thead>
             <tbody>
+                <?php if (empty($servers)): ?>
+                    <tr><td colspan="12" style="text-align: center; color: var(--text-muted); padding: 30px;">Серверы не найдены</td></tr>
+                <?php endif; ?>
                 <?php foreach ($servers as $s): ?>
                     <tr>
                         <?php if (isAdmin()): ?>

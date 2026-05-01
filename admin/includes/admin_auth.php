@@ -34,3 +34,11 @@ function adminLog(string $action, string $targetType, int $targetId, ?string $de
         $details, getUserIP(), now()
     ]);
 }
+
+/**
+ * Rate-limiting для админ-действий (макс 30 действий в минуту)
+ */
+function checkAdminRateLimit(): bool
+{
+    return checkRateLimit('admin_action', 30);
+}

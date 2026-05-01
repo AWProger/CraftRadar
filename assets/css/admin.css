@@ -352,3 +352,68 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* === Улучшенная мобильная адаптация таблиц === */
+@media (max-width: 768px) {
+    /* Горизонтальный скролл с подсказкой */
+    .table-wrap {
+        position: relative;
+        margin: 0 -12px;
+        padding: 0 12px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-wrap::after {
+        content: '→ прокрутите';
+        position: absolute;
+        top: 0;
+        right: 12px;
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        opacity: 0.5;
+    }
+
+    /* Компактные ячейки */
+    th, td {
+        padding: 6px 8px;
+        font-size: 0.7rem;
+        white-space: nowrap;
+    }
+
+    th {
+        font-size: 0.5rem;
+    }
+
+    /* Фильтры вертикально */
+    .admin-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-filters select,
+    .admin-filters input[type="text"],
+    .admin-filters input[type="date"] {
+        width: 100%;
+        font-size: 1rem;
+        padding: 10px 12px;
+    }
+
+    /* Графики в 1 колонку */
+    div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+    div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Кнопки действий */
+    .action-btns {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    /* Attention cards */
+    .attention-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
