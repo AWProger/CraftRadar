@@ -1810,4 +1810,69 @@ mark {
         font-size: 0.75rem;
         padding: 5px 10px;
     }
+
+    /* Все inline grid 1fr 1fr → 1 колонка на мобильных */
+    div[style*="grid-template-columns: 1fr 1fr"],
+    div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Dashboard tabs — горизонтальный скролл */
+    .dashboard-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        padding-bottom: 4px;
+    }
+    .dashboard-tab {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Таблицы — горизонтальный скролл */
+    .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Ticket messages */
+    .ticket-msg { padding: 10px 12px; }
+    .ticket-msg-header { flex-wrap: wrap; }
+    .ticket-msg-body { font-size: 0.85rem; }
+
+    /* Help page sections */
+    .help-section { flex-direction: column; gap: 8px; }
+    .help-icon { width: auto; }
+    .help-nav { gap: 4px; }
+    .help-nav-link { font-size: 0.6rem; padding: 4px 6px; }
+    .help-table { font-size: 0.7rem; }
+    .help-table th, .help-table td { padding: 4px 6px; }
+    .help-compare { grid-template-columns: 1fr; }
+    .help-steps { gap: 12px; }
+    .help-step { flex-direction: column; gap: 6px; }
+
+    /* Profile stats */
+    .profile-stats { grid-template-columns: repeat(3, 1fr); }
+    .profile-stat { padding: 10px 6px; }
+    .profile-stat-value { font-size: 0.75rem; }
+    .profile-stat-icon { font-size: 1rem; }
+    .profile-stat-label { font-size: 0.55rem; }
+
+    /* Promote/highlight cards */
+    .promote-grid { grid-template-columns: 1fr !important; }
+    .promote-card { padding: 16px; }
+    .promote-icon { font-size: 2rem; }
+
+    /* Buy coins packages */
+    div[style*="minmax(200px"] { grid-template-columns: 1fr !important; }
+
+    /* Server page sidebar */
+    .server-sidebar { order: -1; }
+}
+
+@media (max-width: 480px) {
+    .dashboard-tab { font-size: 0.55rem; padding: 4px 6px; }
+    .profile-stats { grid-template-columns: repeat(2, 1fr); }
+    .achievements-grid { grid-template-columns: 1fr !important; }
+    .help-nav-link { font-size: 0.55rem; }
 }
