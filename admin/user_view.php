@@ -52,6 +52,16 @@ if (isPost() && isAdmin()) {
                 setFlash('success', 'Пользователь разбанен.');
                 break;
 
+            case 'add_points':
+                $pointsAmount = (int)post('points_amount');
+                if ($pointsAmount !== 0) {
+                    require_once INCLUDES_PATH . 'points.php';
+                    addPoints($id, $pointsAmount, 'admin_grant', 'Начислено администратором');
+                    adminLog('add_points', 'user', $id, json_encode(['amount' => $pointsAmount]));
+                    setFlash('success', ($pointsAmount > 0 ? '+' : '') . $pointsAmount . ' баллов.');
+                }
+                break;
+
             case 'delete':
                 adminLog('delete_user', 'user', $id, json_encode(['username' => $user['username']]));
                 $db->prepare('DELETE FROM users WHERE id = ?')->execute([$id]);
@@ -144,6 +154,14 @@ $reviews = $reviews->fetchAll();
                 <button type="submit" class="btn btn-sm btn-primary">Разбанить</button>
             </form>
         <?php endif; ?>
+
+        <!-- Баллы -->
+        <form method="POST" style="display: inline-flex; gap: 4px; align-items: center;">
+            <?= csrfField() ?>
+            <input type="hidden" name="action" value="add_points">
+            <input type="number" name="points_amount" placeholder="±баллы" style="width: 80px; padding: 6px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text);">
+            <button type="submit" class="btn btn-sm btn-gold">💎 Баллы</button>
+        </form>
 
         <!-- Удаление -->
         <form method="POST" style="display: inline;">

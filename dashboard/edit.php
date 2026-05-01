@@ -151,7 +151,8 @@ $old = [
             <div class="form-group">
                 <label for="description">Описание</label>
                 <textarea id="description" name="description" maxlength="<?= DESCRIPTION_MAX_LENGTH ?>"
-                          rows="5"><?= e($old['description']) ?></textarea>
+                          rows="5" oninput="document.getElementById('charCount').textContent=this.value.length"><?= e($old['description']) ?></textarea>
+                <small style="color: var(--text-muted);"><span id="charCount"><?= mb_strlen($old['description']) ?></span> / <?= DESCRIPTION_MAX_LENGTH ?></small>
             </div>
 
             <div class="form-row">

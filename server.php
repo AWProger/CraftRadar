@@ -80,6 +80,16 @@ $uptime = $uptimeData['total'] > 0
     ? round(($uptimeData['online_count'] / $uptimeData['total']) * 100, 1) 
     : 0;
 
+// Пик и средний онлайн за 30 дней
+$stmt = $db->prepare('
+    SELECT MAX(players_online) as peak, ROUND(AVG(players_online)) as avg_online
+    FROM server_stats WHERE server_id = ? AND recorded_at >= ? AND is_online = 1
+');
+$stmt->execute([$id, dateAgo(30, 'day')]);
+$peakData = $stmt->fetch();
+$peakOnline = (int)($peakData['peak'] ?? 0);
+$avgOnline = (int)($peakData['avg_online'] ?? 0);
+
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -104,6 +114,7 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="copy-ip" data-ip="<?= e($server['ip'] . ':' . $server['port']) ?>">
                         <?= e($server['ip'] . ':' . $server['port']) ?> 📋
                     </span>
+                    <button class="copy-ip" data-ip="<?= e(SITE_URL . '/server.php?id=' . $server['id']) ?>" title="Скопировать ссылку">🔗 Поделиться</button>
                     <?php if ($server['is_online']): ?>
                         <span class="badge badge-online">Онлайн</span>
                     <?php else: ?>
@@ -129,6 +140,12 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="stat-value"><?= $uptime ?>%</div>
                 <div class="stat-label">Uptime</div>
             </div>
+            <?php if ($peakOnline > 0): ?>
+            <div class="server-header-stat">
+                <div class="stat-value"><?= $peakOnline ?></div>
+                <div class="stat-label">Пик</div>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 

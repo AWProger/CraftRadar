@@ -22,11 +22,10 @@ if (isPost()) {
         $username = post('username');
         $email = post('email');
         $password = post('password');
-        $passwordConfirm = post('password_confirm');
 
         $old = ['username' => $username, 'email' => $email];
 
-        $result = registerUser($username, $email, $password, $passwordConfirm);
+        $result = registerUser($username, $email, $password, $password);
 
         if ($result['success']) {
             setFlash('success', 'Регистрация успешна! Теперь войдите в аккаунт.');
@@ -67,15 +66,9 @@ if (isPost()) {
             </div>
 
             <div class="form-group">
-                <label for="password">Пароль</label>
+                <label for="password">Пароль (минимум <?= MIN_PASSWORD_LENGTH ?> символов)</label>
                 <input type="password" id="password" name="password"
-                       required minlength="<?= MIN_PASSWORD_LENGTH ?>" placeholder="Минимум <?= MIN_PASSWORD_LENGTH ?> символов">
-            </div>
-
-            <div class="form-group">
-                <label for="password_confirm">Подтверждение пароля</label>
-                <input type="password" id="password_confirm" name="password_confirm"
-                       required placeholder="Повторите пароль">
+                       required minlength="<?= MIN_PASSWORD_LENGTH ?>" placeholder="Придумайте пароль">
             </div>
 
             <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>

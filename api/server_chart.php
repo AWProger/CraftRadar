@@ -6,6 +6,7 @@
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/cache.php';
 
 header('Content-Type: application/json');
 
@@ -23,6 +24,13 @@ $stmt = $db->prepare("SELECT id FROM servers WHERE id = ? AND status = 'active'"
 $stmt->execute([$id]);
 if (!$stmt->fetch()) {
     echo json_encode(['error' => 'Server not found']);
+    exit;
+}
+
+// Проверяем кэш
+$cached = cacheGet("chart_{$id}_{$period}", 120);
+if ($cached !== null) {
+    echo json_encode($cached);
     exit;
 }
 
@@ -61,9 +69,14 @@ switch ($period) {
 
 $data = $stmt->fetchAll();
 
-echo json_encode([
+$result = [
     'period' => $period,
     'data' => array_map(function($d) {
         return ['time' => $d['time'], 'players' => (int)$d['players']];
     }, $data)
-]);
+];
+
+// Кэшируем на 2 минуты
+cacheSet("chart_{$id}_{$period}", $result);
+
+echo json_encode($result);

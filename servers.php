@@ -15,6 +15,7 @@ $sort = get('sort', 'votes');
 $search = get('q');
 $version = get('version');
 $mode = get('mode');
+$tag = get('tag');
 $onlineOnly = get('online') === '1';
 
 // Построение запроса
@@ -39,6 +40,11 @@ if ($mode) {
 
 if ($onlineOnly) {
     $where[] = 's.is_online = 1';
+}
+
+if ($tag) {
+    $where[] = 's.tags LIKE ?';
+    $params[] = "%{$tag}%";
 }
 
 $whereSQL = implode(' AND ', $where);
@@ -79,6 +85,7 @@ $baseUrl = SITE_URL . '/servers.php?sort=' . urlencode($sort);
 if ($search) $baseUrl .= '&q=' . urlencode($search);
 if ($version) $baseUrl .= '&version=' . urlencode($version);
 if ($mode) $baseUrl .= '&mode=' . urlencode($mode);
+if ($tag) $baseUrl .= '&tag=' . urlencode($tag);
 if ($onlineOnly) $baseUrl .= '&online=1';
 ?>
 
@@ -101,6 +108,8 @@ if ($onlineOnly) $baseUrl .= '&online=1';
                 </select>
 
                 <input type="text" name="version" value="<?= e($version) ?>" placeholder="Версия (1.20...)" style="max-width: 140px;">
+
+                <input type="text" name="tag" value="<?= e($tag) ?>" placeholder="Тег (pvp, донат...)" style="max-width: 140px;">
 
                 <label class="filter-checkbox">
                     <input type="checkbox" name="online" value="1" <?= $onlineOnly ? 'checked' : '' ?>>
