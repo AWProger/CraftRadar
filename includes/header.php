@@ -73,6 +73,7 @@ if (isLoggedIn()) {
                     <a href="<?= SITE_URL ?>/" class="nav-link">Главная</a>
                     <a href="<?= SITE_URL ?>/servers.php" class="nav-link">Серверы</a>
                     <a href="<?= SITE_URL ?>/top_players.php" class="nav-link">Игроки</a>
+                    <a href="<?= SITE_URL ?>/anticheat.php" class="nav-link" style="color: var(--danger);">🛡️ Античит</a>
                 </nav>
 
                 <div class="header-actions">
