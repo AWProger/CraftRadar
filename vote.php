@@ -99,6 +99,15 @@ $stmt->execute([$serverId, $userId, $minecraftNick ?: null, getUserIP(), now()])
 $stmt = $db->prepare('UPDATE servers SET votes_total = votes_total + 1, votes_month = votes_month + 1 WHERE id = ?');
 $stmt->execute([$serverId]);
 
+// Сбрасываем кэш главной страницы
+try {
+    require_once __DIR__ . '/includes/cache.php';
+    cacheDelete('home_top_votes');
+    cacheDelete('home_top_online');
+    cacheDelete('home_new_servers');
+    cacheDelete('home_votes_today');
+} catch (\Exception $e) {}
+
 // Начисляем баллы за голосование
 rewardVotePoints($userId);
 
