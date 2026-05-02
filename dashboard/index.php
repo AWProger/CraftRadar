@@ -117,7 +117,7 @@ foreach ($servers as $s) {
                                 <?php endif; ?>
                             </td>
                             <td><?= $s['players_online'] ?>/<?= $s['players_max'] ?></td>
-                            <td><?= $s['votes_month'] ?></td>
+                            <td><?= $s['votes_total'] ?></td>
                             <td>
                                 <a href="<?= SITE_URL ?>/dashboard/edit.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline">Редактировать</a>
                                 <a href="<?= SITE_URL ?>/dashboard/stats.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-ghost">Статистика</a>

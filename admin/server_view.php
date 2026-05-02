@@ -90,13 +90,8 @@ if (isPost()) {
 
             case 'reset_votes':
                 if (isAdmin()) {
-                    $type = post('reset_type');
-                    if ($type === 'month') {
-                        $db->prepare('UPDATE servers SET votes_month = 0 WHERE id = ?')->execute([$id]);
-                    } else {
-                        $db->prepare('UPDATE servers SET votes_total = 0, votes_month = 0 WHERE id = ?')->execute([$id]);
-                    }
-                    adminLog('reset_votes', 'server', $id, json_encode(['type' => $type]));
+                    $db->prepare('UPDATE servers SET votes_total = 0 WHERE id = ?')->execute([$id]);
+                    adminLog('reset_votes', 'server', $id);
                     setFlash('success', 'Голоса сброшены.');
                 }
                 break;
@@ -202,7 +197,7 @@ $chartData = $chartData->fetchAll();
             <tr><td style="color: var(--text-muted);">Версия</td><td><?= e($server['version'] ?? '—') ?></td></tr>
             <tr><td style="color: var(--text-muted);">Режим</td><td><?= e($server['game_mode'] ?? '—') ?></td></tr>
             <tr><td style="color: var(--text-muted);">MOTD</td><td><?= e($server['motd'] ?? '—') ?></td></tr>
-            <tr><td style="color: var(--text-muted);">Голоса (месяц/всего)</td><td><?= $server['votes_month'] ?> / <?= $server['votes_total'] ?></td></tr>
+            <tr><td style="color: var(--text-muted);">Голоса</td><td><?= $server['votes_total'] ?></td></tr>
             <tr><td style="color: var(--text-muted);">Рейтинг</td><td><?= $server['rating'] ?> (<?= $server['reviews_count'] ?> отзывов)</td></tr>
             <tr><td style="color: var(--text-muted);">Добавлен</td><td><?= formatDate($server['created_at']) ?></td></tr>
             <tr><td style="color: var(--text-muted);">Последний пинг</td><td><?= $server['last_ping'] ? formatDate($server['last_ping']) : '—' ?></td></tr>

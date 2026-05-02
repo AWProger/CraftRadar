@@ -1,17 +1,17 @@
 <?php
 /**
- * CraftRadar — Cron: Сброс месячных голосов
+ * CraftRadar — Cron: Ежемесячные задачи
+ * 
+ * ВНИМАНИЕ: Голоса больше НЕ сбрасываются! Они копятся навсегда.
+ * Этот крон теперь выполняет только вспомогательные задачи.
  * 
  * Расписание: 1-е число каждого месяца в 00:00
- * Хостинг:    wget -qO- "https://yourdomain.com/cron/reset_monthly.php?key=craftradar_cron_2026_secret" >/dev/null 2>&1
- * CLI:        php /path/to/CraftRadar/cron/reset_monthly.php
  */
 
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
-// Авторизация
 if (php_sapi_name() !== 'cli') {
     if (!isset($_GET['key']) || $_GET['key'] !== CRON_SECRET_KEY) {
         http_response_code(403);
@@ -20,7 +20,6 @@ if (php_sapi_name() !== 'cli') {
     header('Content-Type: text/plain; charset=utf-8');
 }
 
-// Логирование
 function cronLog(string $message): void
 {
     $logDir = ROOT_PATH . 'storage/logs/';
@@ -33,20 +32,9 @@ function cronLog(string $message): void
 
 $db = getDB();
 
-$stmt = $db->query('UPDATE servers SET votes_month = 0');
-$affected = $stmt->rowCount();
+// Голоса НЕ сбрасываются — они копятся навсегда
+cronLog("Голоса не сбрасываются (новая логика). Месячный крон выполнен.");
 
-cronLog("Месячные голоса сброшены. Затронуто серверов: {$affected}");
-
-// Уведомление админам
-try {
-    require_once __DIR__ . '/../includes/notifications.php';
-    $admins = $db->query("SELECT id FROM users WHERE role = 'admin'")->fetchAll();
-    foreach ($admins as $admin) {
-        createNotification($admin['id'], 'system',
-            '🔄 Месячные голоса сброшены',
-            "Затронуто серверов: {$affected}. Новый месяц начался!",
-            SITE_URL . '/admin/'
-        );
-    }
-} catch (\Exception $e) {}
+// Начисление монет за голоса (каждые 100 голосов = +1 монета)
+// Это уже обрабатывается в vote.php при каждом голосе
+cronLog("Бонусные монеты начисляются автоматически при голосовании.");

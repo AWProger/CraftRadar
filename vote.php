@@ -96,8 +96,24 @@ $stmt = $db->prepare('INSERT INTO votes (server_id, user_id, minecraft_nick, ip_
 $stmt->execute([$serverId, $userId, $minecraftNick ?: null, getUserIP(), now()]);
 
 // Обновляем счётчики сервера
-$stmt = $db->prepare('UPDATE servers SET votes_total = votes_total + 1, votes_month = votes_month + 1 WHERE id = ?');
+$stmt = $db->prepare('UPDATE servers SET votes_total = votes_total + 1 WHERE id = ?');
 $stmt->execute([$serverId]);
+
+// Бонус владельцу: каждые 100 голосов = +1 💰
+$stmt = $db->prepare('SELECT votes_total, user_id FROM servers WHERE id = ?');
+$stmt->execute([$serverId]);
+$serverData = $stmt->fetch();
+if ($serverData && $serverData['votes_total'] > 0 && $serverData['votes_total'] % 100 === 0) {
+    try {
+        require_once __DIR__ . '/includes/coins.php';
+        require_once __DIR__ . '/includes/notifications.php';
+        addCoins($serverData['user_id'], 1, 'Бонус за ' . $serverData['votes_total'] . ' голосов на сервере');
+        createNotification($serverData['user_id'], 'coin_reward',
+            '💰 +1 монета за голоса!',
+            'Ваш сервер набрал ' . $serverData['votes_total'] . ' голосов — вам начислена 1 монета.',
+            SITE_URL . '/server.php?id=' . $serverId);
+    } catch (\Exception $e) {}
+}
 
 // Сбрасываем кэш главной страницы
 try {

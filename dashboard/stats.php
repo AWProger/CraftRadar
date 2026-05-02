@@ -22,9 +22,9 @@ if (!$server) {
     redirect(SITE_URL . '/dashboard/');
 }
 
-// Позиция в рейтинге по голосам за месяц
-$stmt = $db->prepare("SELECT COUNT(*) + 1 FROM servers WHERE status IN ('active', 'pending') AND votes_month > ?");
-$stmt->execute([$server['votes_month']]);
+// Позиция в рейтинге по голосам
+$stmt = $db->prepare("SELECT COUNT(*) + 1 FROM servers WHERE status IN ('active', 'pending') AND votes_total > ?");
+$stmt->execute([$server['votes_total']]);
 $rankPosition = (int)$stmt->fetchColumn();
 
 $period = get('period', '24h');
@@ -134,8 +134,8 @@ $peakData = $stmt->fetch();
             <div class="stat-card-label">Uptime (30 дней)</div>
         </div>
         <div class="stat-card">
-            <div class="stat-card-value"><?= $server['votes_month'] ?></div>
-            <div class="stat-card-label">Голосов (месяц)</div>
+            <div class="stat-card-value"><?= $server['votes_total'] ?></div>
+            <div class="stat-card-label">Голосов всего</div>
         </div>
         <?php
         // Голоса за эту неделю vs прошлую

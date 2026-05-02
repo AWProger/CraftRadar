@@ -78,7 +78,7 @@ $stmt = $db->prepare("
     WHERE {$whereSQL} 
     ORDER BY " . match(get('sort', 'date')) {
         'name' => 's.name ASC',
-        'votes' => 's.votes_month DESC',
+        'votes' => 's.votes_total DESC',
         'online' => 's.players_online DESC',
         'status' => 's.status ASC',
         default => 's.created_at DESC',
@@ -214,7 +214,7 @@ if ($search) $baseUrl .= '&q=' . urlencode($search);
                                 <span style="color: var(--text-muted);">—</span>
                             <?php endif; ?>
                         </td>
-                        <td><?= $s['votes_month'] ?></td>
+                        <td><?= $s['votes_total'] ?></td>
                         <td style="font-size: 0.75rem; color: var(--text-muted);"><?= $s['last_ping'] ? formatDate($s['last_ping']) : '—' ?></td>
                         <td><?= formatDate($s['created_at']) ?></td>
                         <td>

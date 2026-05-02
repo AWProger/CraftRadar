@@ -71,8 +71,8 @@ function serverCard(array $s, int $rank = 0): string
         $html .= '<div class="stat-item"><span class="stat-value" style="color:var(--danger);">—</span><span class="stat-label">Оффлайн</span></div>';
     }
 
-    // Голоса
-    $html .= '<div class="stat-item"><span class="stat-value">' . (int)($s['votes_month'] ?? 0) . '</span><span class="stat-label">Голосов</span></div>';
+    // Голоса (всегда total — не сбрасываются)
+    $html .= '<div class="stat-item"><span class="stat-value">' . (int)($s['votes_total'] ?? 0) . '</span><span class="stat-label">Голосов</span></div>';
 
     $html .= '</div>';
     $html .= '</a>';

@@ -104,7 +104,7 @@ $stmt->execute([$id]);
 $user = $stmt->fetch();
 
 // Серверы пользователя
-$servers = $db->prepare('SELECT id, name, ip, port, status, is_online, players_online, votes_month FROM servers WHERE user_id = ? ORDER BY created_at DESC');
+$servers = $db->prepare('SELECT id, name, ip, port, status, is_online, players_online, votes_total FROM servers WHERE user_id = ? ORDER BY created_at DESC');
 $servers->execute([$id]);
 $servers = $servers->fetchAll();
 
@@ -241,7 +241,7 @@ $reviews = $reviews->fetchAll();
                             <td><?= e($s['ip'] . ':' . $s['port']) ?></td>
                             <td><span class="badge"><?= e($s['status']) ?></span></td>
                             <td><?= $s['is_online'] ? $s['players_online'] : '—' ?></td>
-                            <td><?= $s['votes_month'] ?></td>
+                            <td><?= $s['votes_total'] ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

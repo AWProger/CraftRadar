@@ -53,22 +53,7 @@ if (is_dir($loginDir)) {
     cronLog("Очистка login_attempts: удалено {$cleaned} файлов");
 }
 
-// 3. Пересчёт votes_month из реальных данных (защита от рассинхрона)
-try {
-    $db->exec("
-        UPDATE servers s SET votes_month = (
-            SELECT COUNT(*) FROM votes v 
-            WHERE v.server_id = s.id 
-            AND MONTH(v.voted_at) = MONTH(NOW()) 
-            AND YEAR(v.voted_at) = YEAR(NOW())
-        )
-    ");
-    cronLog("Пересчёт votes_month: выполнен");
-} catch (\Exception $e) {
-    cronLog("Ошибка пересчёта votes_month: " . $e->getMessage());
-}
-
-// 4. Очистка старых cron-логов (старше 30 дней)
+// 3. Очистка старых cron-логов (старше 30 дней)
 $logDir = ROOT_PATH . 'storage/logs/';
 if (is_dir($logDir)) {
     $logFiles = glob($logDir . 'cron_*.log');

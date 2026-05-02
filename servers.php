@@ -51,7 +51,7 @@ $whereSQL = implode(' AND ', $where);
 
 // Сортировка
 $orderMap = [
-    'votes'   => 's.votes_month DESC, s.votes_total DESC',
+    'votes'   => 's.votes_total DESC',
     'online'  => 's.players_online DESC',
     'new'     => 's.created_at DESC',
     'rating'  => 's.rating DESC, s.reviews_count DESC',

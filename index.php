@@ -15,9 +15,9 @@ $db = getDB();
 // Топ-10 по голосам за месяц (кэш 5 мин)
 $topVotes = cacheRemember('home_top_votes', 300, function() use ($db) {
     return $db->query("
-        SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month, rating, is_verified
+        SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_total, rating, is_verified
         FROM servers WHERE status IN ('active', 'pending') 
-        ORDER BY is_promoted DESC, votes_month DESC, votes_total DESC 
+        ORDER BY is_promoted DESC, votes_total DESC 
         LIMIT 10
     ")->fetchAll();
 });
@@ -25,7 +25,7 @@ $topVotes = cacheRemember('home_top_votes', 300, function() use ($db) {
 // Топ-10 по онлайну (кэш 2 мин — обновляется чаще)
 $topOnline = cacheRemember('home_top_online', 120, function() use ($db) {
     return $db->query("
-        SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month, is_verified
+        SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_total, is_verified
         FROM servers WHERE status IN ('active', 'pending') AND is_online = 1
         ORDER BY players_online DESC 
         LIMIT 10
@@ -35,7 +35,7 @@ $topOnline = cacheRemember('home_top_online', 120, function() use ($db) {
 // Новые серверы
 $newServers = cacheRemember('home_new_servers', 300, function() use ($db) {
     return $db->query("
-    SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_month, is_verified, created_at
+    SELECT id, name, ip, port, icon, is_online, players_online, players_max, votes_total, is_verified, created_at
     FROM servers WHERE status IN ('active', 'pending') 
     ORDER BY created_at DESC 
     LIMIT 10

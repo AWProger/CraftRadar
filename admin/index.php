@@ -79,9 +79,9 @@ $pendingPayments = (int)$stmt->fetchColumn();
 
 // === Топ-5 серверов ===
 $topServers = $db->query("
-    SELECT id, name, votes_month, players_online, is_online 
+    SELECT id, name, votes_total, players_online, is_online 
     FROM servers WHERE status = 'active' 
-    ORDER BY votes_month DESC LIMIT 5
+    ORDER BY votes_total DESC LIMIT 5
 ")->fetchAll();
 
 // === Статистика по категориям ===
@@ -386,7 +386,7 @@ if (isPost() && isAdmin() && post('quick_action') === 'reject_server') {
                     <strong style="color: var(--text-muted);">#<?= $i + 1 ?></strong>
                     <a href="<?= SITE_URL ?>/admin/server_view.php?id=<?= $ts['id'] ?>"><?= e(truncate($ts['name'], 20)) ?></a>
                 </span>
-                <span style="color: var(--accent);"><?= $ts['votes_month'] ?> 👍</span>
+                <span style="color: var(--accent);"><?= $ts['votes_total'] ?> 👍</span>
             </div>
         <?php endforeach; ?>
     </div>
