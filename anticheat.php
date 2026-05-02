@@ -51,7 +51,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="anticheat-section">
         <div class="anticheat-block">
             <div class="anticheat-block-header">
-                <h2>📦 JAR Sizes</h2>
+                <h2>📦 Размеры JAR-файлов</h2>
                 <button class="btn btn-sm btn-outline anticheat-copy" data-target="jarSizes">📋 Копировать</button>
             </div>
             <div class="anticheat-block-content" id="jarSizes">size:2263|size:5266|size:6515|size:6770|size:6778|size:7016|size:7218|size:7803|size:7891|size:9327|size:10283|size:10605|size:10958|size:11554|size:16541|size:17308|size:17339|size:18180|size:18527|size:18587|size:18734|size:19266|size:20578|size:20583|size:20639|size:20883|size:21161|size:21234|size:21664|size:22036|size:22861|size:26247|size:27546|size:27809|size:28084|size:28439|size:29304|size:29567|size:30279|size:31549|size:31607|size:34449|size:34669|size:35971|size:35993|size:38149|size:39017|size:39321|size:40142|size:42782|size:47159|size:48242|size:50828|size:51212|size:52426|size:54088|size:59381|size:62782|size:65316|size:65486|size:65765|size:66659|size:67491|size:68794|size:69757|size:72334|size:74105|size:80751|size:88896|size:95530|size:98811|size:100523|size:100799|size:101297|size:101571|size:101703|size:102297|size:102733|size:103761|size:104954|size:105623|size:105672|size:112386|size:120640|size:138417|size:143006|size:143597|size:143600|size:147329|size:147873|size:151762|size:153937|size:156722|size:156779|size:166677|size:169718|size:173698|size:183634|size:183651|size:192156|size:202720|size:257482|size:263070|size:267746|size:274865|size:300286|size:334588|size:343169|size:350629|size:409616|size:410358|size:517248|size:519731|size:532826|size:539151|size:556494|size:597406|size:636621|size:640838|size:878781|size:925493|size:1077149|size:1165063|size:1181556|size:1444714|size:1471429|size:1569093|size:1822841|size:3113569|size:3425801|size:3541075|size:3541138|size:3642292|size:3684385|size:4642998|size:5630483|size:7052171|size:7059952|size:22258750|size:25704986|size:26179274|size:26691896 *.jar</div>
@@ -59,7 +59,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <div class="anticheat-block">
             <div class="anticheat-block-header">
-                <h2>⚖️ Size by Weight</h2>
+                <h2>⚖️ Размеры по весу</h2>
                 <button class="btn btn-sm btn-outline anticheat-copy" data-target="sizeWeight">📋 Копировать</button>
             </div>
             <div class="anticheat-block-content" id="sizeWeight">size:9951744|size:24536064|size:15438336|size:6229504|size:6573056|size:7187456|size:7969792|size:1562249|size:1672329|size:1677449|size:1680521|size:147329|size:138351|size:202720|size:7788032|size:22885|size:23810|size:138351|size:147329|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:114974|size:111866|size:274865|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:4413440|size:116689|size:1968128|size:8011776|size:1883602|size:5918208|size:1897269|size:31445308|size:24390144|size:25158656|size:2023236|size:16836288|size:88065933|size:197933122|size:2258533|size:2305645|size:2372788|size:18764384|size:9400174|size:2363704|size:15445581|size:2373676|Baritone|Nursultan</div>
@@ -67,7 +67,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <div class="anticheat-block">
             <div class="anticheat-block-header">
-                <h2>🏷️ Size by Name</h2>
+                <h2>🏷️ Поиск по названиям</h2>
                 <button class="btn btn-sm btn-outline anticheat-copy" data-target="sizeNames">📋 Копировать</button>
             </div>
             <div class="anticheat-block-content" id="sizeNames">impact | wurst | bleachhack | aristois | huzuni | skillclient | inertia | ares | sigma | meteor | liquidbounce | nurik | nursultan | celestial | calestial | celka | expensive | neverhook | excellent | wexside | wildclient | minced | deadcode | akrien | jigsaw | future | jessica | dreampool | norules | konas | richclient | rusherhack | thunderhack | moonhack | doomsday | nightware | ricardo | extazyy | troxill | antileak | arbuz | .akr | .wex | dauntiblyat | rename_me_please | editme | takker | fuzeclient | wisefolder | flauncher | vec.dll | USBOblivion.exe | Feather | delta | venus | baritone | spambot | CleanCut | spam_bot | inventory_walk | player_highlighter | aimbot | freecam | bedrock_breaker_mode | viaversion | double_hotbar | elytra_swap | armor_hotswap | smart_moving | chest | savesearcher | topkautobuy | topkaautobuy | tweakeroo | mob_hitbox | librarian_trade_finder | sacurachorusfind | autoattack | entity_outliner | invmove | viabackwards | viarewind | viafabric | viaforge | viaproxy | vialoader | viamcp | hitbox | elytrahack | DiamondSim | ForgeHax | clientcommands | Control-Tweaks | SwingThroughGrass | CutThrough | Haruka | NewLauncher | Blade | Hachclient | Inertia | Fluger | Exloader</div>
@@ -75,7 +75,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <div class="anticheat-block">
             <div class="anticheat-block-header">
-                <h2>🔗 Size Vec.dll</h2>
+                <h2>🔗 Сигнатура Vec.dll</h2>
                 <button class="btn btn-sm btn-outline anticheat-copy" data-target="sizeVec">📋 Копировать</button>
             </div>
             <div class="anticheat-block-content" id="sizeVec">size:30720 utf8content:net/minecraft/client/entity/player/ClientPlayerEntity|net/minecraft/util/math/AxisAlignedBB</div>
@@ -83,7 +83,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <div class="anticheat-block">
             <div class="anticheat-block-header">
-                <h2>💀 Size DoomsDay Client</h2>
+                <h2>💀 Сигнатура DoomsDay</h2>
                 <button class="btn btn-sm btn-outline anticheat-copy" data-target="sizeDoomsday">📋 Копировать</button>
             </div>
             <div class="anticheat-block-content" id="sizeDoomsday">ext:jar size:21kb-10mb content:"l.png" content:"mcmod.info"</div>
@@ -91,7 +91,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <div class="anticheat-block">
             <div class="anticheat-block-header">
-                <h2>⚡ Size .exe</h2>
+                <h2>⚡ Исполняемые файлы (.exe)</h2>
                 <button class="btn btn-sm btn-outline anticheat-copy" data-target="sizeExe">📋 Копировать</button>
             </div>
             <div class="anticheat-block-content" id="sizeExe">.exe size:12mb-25mb</div>
