@@ -26,15 +26,21 @@ require_once __DIR__ . '/includes/header.php';
             <h2 style="text-align:center;color:var(--accent);font-family:var(--font-mc);font-size:0.8rem;margin-bottom:20px;">Инструменты проверки</h2>
             <div class="anticheat-tools-grid">
                 <div class="anticheat-tool-card">
-                    <div style="font-size:2rem;margin-bottom:10px;">🔍</div>
+                    <div style="font-size:2rem;margin-bottom:10px;">�</div>
+                    <h3>Everything</h3>
+                    <p>Мгновенный поиск файлов по имени и размеру. Основной инструмент для поиска читов на ПК игрока.</p>
+                    <a href="https://www.voidtools.com/downloads/" target="_blank" rel="noopener" class="btn btn-sm btn-primary btn-block">Скачать</a>
+                </div>
+                <div class="anticheat-tool-card">
+                    <div style="font-size:2rem;margin-bottom:10px;">�🔍</div>
                     <h3>Process Hacker</h3>
-                    <p>Мониторинг процессов, DLL-инъекций и сетевой активности. Позволяет обнаружить скрытые процессы читов.</p>
+                    <p>Мониторинг процессов, DLL-инъекций и сетевой активности. Обнаружение скрытых процессов читов.</p>
                     <a href="https://processhacker.sourceforge.io/downloads.php" target="_blank" rel="noopener" class="btn btn-sm btn-primary btn-block">Скачать</a>
                 </div>
                 <div class="anticheat-tool-card">
                     <div style="font-size:2rem;margin-bottom:10px;">⚙️</div>
                     <h3>System Informer</h3>
-                    <p>Продвинутый системный монитор. Показывает все запущенные процессы, модули и сетевые соединения.</p>
+                    <p>Продвинутый системный монитор. Все запущенные процессы, модули и сетевые соединения.</p>
                     <a href="https://systeminformer.sourceforge.io/" target="_blank" rel="noopener" class="btn btn-sm btn-primary btn-block">Скачать</a>
                 </div>
                 <div class="anticheat-tool-card">
@@ -185,7 +191,7 @@ require_once __DIR__ . '/includes/header.php';
     }
     .anticheat-tools-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 16px;
     }
     .anticheat-tool-card {
@@ -240,9 +246,12 @@ require_once __DIR__ . '/includes/header.php';
     }
 
     @media (max-width: 768px) {
-        .anticheat-tools-grid { grid-template-columns: 1fr; }
+        .anticheat-tools-grid { grid-template-columns: 1fr 1fr; }
         .anticheat-block-header { flex-direction: column; gap: 8px; align-items: flex-start; }
         .anticheat-title { font-size: 0.8rem; }
+    }
+    @media (max-width: 480px) {
+        .anticheat-tools-grid { grid-template-columns: 1fr; }
     }
 </style>
 
